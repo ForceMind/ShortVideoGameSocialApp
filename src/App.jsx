@@ -47,7 +47,9 @@ const TEXTS = {
     disband: "解散房间", disband_warn: "解散房间将退还其他玩家入场费，但不退还您的房间费。且您将在15分钟内无法再次创建房间。",
     pay_confirm: "支付确认", pay_msg: "准备游戏需要支付入场费", pay_btn: "确认支付",
     cant_leave: "已支付入场费，无法退出", paid: "已支付",
-    cooldown_msg: "您处于创建冷却期 (15分钟)", friend_invite: "友谊赛邀请", comp_invite: "竞赛邀请"
+    cooldown_msg: "您处于创建冷却期 (15分钟)", friend_invite: "友谊赛邀请", comp_invite: "竞赛邀请",
+    exchange: "兑换", exchange_title: "金币兑换游戏豆", exchange_rate: "1 金币 = 100 游戏豆", 
+    confirm_exchange: "确认兑换", input_coins: "输入金币数量", withdraw: "提现"
   },
   en: {
     home: "Home", game: "Game", inbox: "Inbox", mine: "Mine",
@@ -87,23 +89,31 @@ const TEXTS = {
     disband: "Disband", disband_warn: "Disbanding will refund other players but NOT your room fee. You will be restricted from creating rooms for 15 mins.",
     pay_confirm: "Confirm Payment", pay_msg: "Pay entry fee to ready up", pay_btn: "Confirm Pay",
     cant_leave: "Entry fee paid. Cannot leave.", paid: "Paid",
-    cooldown_msg: "Creation Cooldown (15m)", friend_invite: "Friendly Invite", comp_invite: "Pro Challenge"
+    cooldown_msg: "Creation Cooldown (15m)", friend_invite: "Friendly Invite", comp_invite: "Pro Challenge",
+    exchange: "Exchange", exchange_title: "Exchange Coins to Beans", exchange_rate: "1 Coin = 100 Beans",
+    confirm_exchange: "Confirm", input_coins: "Input Coins", withdraw: "Withdraw"
   }
 };
 
 // --- Mock Data ---
 
 const GAMES = [
-  { id: 1, title: "Ludo Master", image: "from-yellow-500 to-red-500", players: "2.5M", type: "Board", minEntry: 100 },
-  { id: 2, title: "Fruit Slicer", image: "from-green-400 to-lime-600", players: "1.8M", type: "Action", minEntry: 50 },
-  { id: 3, title: "Cricket Clash", image: "from-blue-600 to-indigo-800", players: "5.0M", type: "Sports", minEntry: 200 },
-  { id: 4, title: "Candy Match", image: "from-pink-400 to-purple-500", players: "3.2M", type: "Puzzle", minEntry: 50 }
+  { id: 1, title: "Ludo Master", image: "from-yellow-500 to-red-500", players: "2.5M", type: "Board", minEntry: 100, category: "hot" },
+  { id: 2, title: "Fruit Slicer", image: "from-green-400 to-lime-600", players: "1.8M", type: "Action", minEntry: 50, category: "recent" },
+  { id: 3, title: "Cricket Clash", image: "from-blue-600 to-indigo-800", players: "5.0M", type: "Sports", minEntry: 200, category: "hot" },
+  { id: 4, title: "Candy Match", image: "from-pink-400 to-purple-500", players: "3.2M", type: "Puzzle", minEntry: 50, category: "recent" },
+  { id: 5, title: "Car Racing", image: "from-red-600 to-orange-600", players: "1.2M", type: "Racing", minEntry: 100, category: "all" },
+  { id: 6, title: "Chess Pro", image: "from-slate-600 to-slate-800", players: "900k", type: "Board", minEntry: 200, category: "all" },
+  { id: 7, title: "Bubble Shooter", image: "from-cyan-400 to-blue-500", players: "2.1M", type: "Puzzle", minEntry: 20, category: "all" },
+  { id: 8, title: "Sniper 3D", image: "from-green-800 to-emerald-900", players: "3.5M", type: "Action", minEntry: 500, category: "hot" }
 ];
 
 const MATCH_ROOMS = [
-  { id: 101, name: "Mumbai Elite", entry: 500, prize: 800, players: 1240, tag: "District", capacity: 4, current: 3, mode: 'compete', host: 'Raj' },
-  { id: 102, name: "Tech Park Ludo", entry: 1000, prize: 1600, players: 560, tag: "Nearby", capacity: 2, current: 1, mode: 'compete', host: 'Amit' },
-  { id: 103, name: "Friendly Match", entry: 0, prize: 0, players: 8900, tag: "Group", capacity: 4, current: 2, mode: 'friendly', host: 'Priya' },
+  { id: 101, name: "Mumbai Elite", entry: 500, prize: 800, players: 1240, tag: "District", capacity: 4, current: 3, mode: 'compete', host: 'Raj', gameName: "Ludo Master" },
+  { id: 102, name: "Tech Park Ludo", entry: 1000, prize: 1600, players: 560, tag: "Nearby", capacity: 2, current: 1, mode: 'compete', host: 'Amit', gameName: "Ludo Master" },
+  { id: 103, name: "Friendly Match", entry: 0, prize: 0, players: 8900, tag: "Group", capacity: 4, current: 2, mode: 'friendly', host: 'Priya', gameName: "Candy Match" },
+  { id: 104, name: "Pro Cricket", entry: 200, prize: 320, players: 120, tag: "Nearby", capacity: 2, current: 1, mode: 'compete', host: 'Vikram', gameName: "Cricket Clash" },
+  { id: 105, name: "Late Night Fun", entry: 50, prize: 80, players: 45, tag: "Group", capacity: 4, current: 3, mode: 'friendly', host: 'Neha', gameName: "Fruit Slicer" },
 ];
 
 const MATCH_TIERS = [
@@ -116,6 +126,8 @@ const EXTENDED_GROUPS = [
   { id: 101, name: "Mumbai Gamers Club", dist: 0.5, members: 4520, activity: 98, tags: ["Gaming", "Ludo"] },
   { id: 102, name: "Pune Food & Fun", dist: 12.5, members: 120, activity: 45, tags: ["Social"] },
   { id: 103, name: "Tech Park Ludo", dist: 1.2, members: 56, activity: 88, tags: ["Office"] },
+  { id: 104, name: "Bangalore Techies", dist: 850, members: 2300, activity: 92, tags: ["Tech", "Gaming"] },
+  { id: 105, name: "Delhi Daredevils", dist: 1200, members: 5600, activity: 99, tags: ["Cricket"] },
 ];
 
 const VIDEOS = [
@@ -127,6 +139,9 @@ const VIDEOS = [
 const CHATS = [
   { id: 1, name: "Maharashtra State Group", lastMsg: "System: Welcome!", time: "12:30", type: "State", unread: 5, avatar: "M" },
   { id: 2, name: "Pune District Gamers", lastMsg: "Rohan: Anyone for Ludo?", time: "11:45", type: "District", unread: 2, avatar: "P" },
+  { id: 3, name: "Mumbai Elite Club", lastMsg: "Admin: Tournament starts at 8 PM", time: "10:20", type: "City", unread: 0, avatar: "E" },
+  { id: 4, name: "Ludo Champions", lastMsg: "Rahul: Good game!", time: "Yesterday", type: "Game", unread: 0, avatar: "L" },
+  { id: 5, name: "Cricket Fans", lastMsg: "Match delayed due to rain", time: "Yesterday", type: "Interest", unread: 12, avatar: "C" },
 ];
 
 const GAME_HISTORY = [
@@ -134,11 +149,16 @@ const GAME_HISTORY = [
   { id: 2, game: "Cricket Clash", result: "Loss", amount: -200, time: "12:15", entry: 200, players: 2, avatars: ["V", "Me"] },
   { id: 3, game: "Fruit Slicer", result: "Win", amount: 120, time: "09:45", entry: 50, players: 2, avatars: ["N", "Me"] },
   { id: 4, game: "Candy Match", result: "Win", amount: 80, time: "08:20", entry: 50, players: 2, avatars: ["S", "Me"] },
+  { id: 5, game: "Car Racing", result: "Loss", amount: -100, time: "Yesterday", entry: 100, players: 4, avatars: ["X", "Y", "Z", "Me"] },
+  { id: 6, game: "Chess Pro", result: "Win", amount: 400, time: "Yesterday", entry: 200, players: 2, avatars: ["K", "Me"] },
 ];
 
 const TRANSACTIONS = [
   { id: 1, type: "game", title: "Ludo Master - Win", amount: 800, date: "Today, 14:30", currency: "beans" },
   { id: 2, type: "recharge", title: "UPI Top-up", amount: 5000, date: "Today, 10:00", currency: "beans" },
+  { id: 3, type: "game", title: "Cricket Clash - Loss", amount: -200, date: "Today, 12:15", currency: "beans" },
+  { id: 4, type: "gift", title: "Sent Gift to @Priya", amount: -50, date: "Yesterday", currency: "diamonds" },
+  { id: 5, type: "exchange", title: "Coins to Beans", amount: 10000, date: "Yesterday", currency: "beans" },
 ];
 
 const DAILY_TASKS = [
@@ -189,26 +209,138 @@ const BottomNav = ({ activeTab, onTabChange, t }) => {
 };
 
 const HomeTab = ({ t }) => {
-  const [currentVideo, setCurrentVideo] = useState(0);
-  const handleNextVideo = () => setCurrentVideo((prev) => (prev + 1) % VIDEOS.length);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState('foryou');
+  const [showComments, setShowComments] = useState(false);
+
+  // Mix content: Video, Video, Group, Video, Game, Video, Room
+  const feedItems = useMemo(() => [
+      { type: 'video', data: VIDEOS[0] },
+      { type: 'video', data: VIDEOS[1] },
+      { type: 'group_card', data: EXTENDED_GROUPS[0] },
+      { type: 'video', data: VIDEOS[2] },
+      { type: 'game_card', data: GAMES[0] },
+      { type: 'room_card', data: MATCH_ROOMS[0] },
+  ], []);
+
+  const handleNext = () => setCurrentIndex((prev) => (prev + 1) % feedItems.length);
+  const currentItem = feedItems[currentIndex];
+
+  const renderContent = () => {
+      if (currentItem.type === 'video') {
+          return (
+              <div className={`h-full w-full bg-gradient-to-b ${currentItem.data.color} flex items-center justify-center transition-colors duration-500 relative`}>
+                  <Play size={64} className="text-white/40 animate-pulse" fill="currentColor" />
+                  
+                  {/* Right Sidebar Actions */}
+                  <div className="absolute right-2 bottom-24 flex flex-col items-center gap-6 z-20" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex flex-col items-center gap-1"><div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white shadow-lg"><Gift size={20} /></div><span className="text-white text-xs font-bold">Gift</span></div>
+                      <div className="flex flex-col items-center gap-1"><Heart size={32} className="text-white" /><span className="text-white text-xs">{currentItem.data.likes}</span></div>
+                      <div className="flex flex-col items-center gap-1" onClick={() => setShowComments(true)}><MessageSquare size={32} className="text-white" /><span className="text-white text-xs">{currentItem.data.comments}</span></div>
+                      <div className="flex flex-col items-center gap-1"><Star size={32} className="text-white" /><span className="text-white text-xs">Fav</span></div>
+                      <div className="flex flex-col items-center gap-1"><Share2 size={32} className="text-white" /><span className="text-white text-xs">Share</span></div>
+                  </div>
+
+                  {/* Bottom Left Info */}
+                  <div className="absolute left-4 bottom-20 right-16 z-20 text-white flex flex-col items-start" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center gap-3 mb-3">
+                          <div className="w-12 h-12 rounded-full border-2 border-white overflow-hidden bg-gray-500 relative">
+                              {/* Avatar Image Placeholder */}
+                              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold border-2 border-black">+</div>
+                          </div>
+                          <h3 className="font-bold text-lg shadow-black drop-shadow-md">{currentItem.data.user}</h3>
+                      </div>
+                      <div className="flex items-center gap-2 mb-2 bg-black/30 w-fit px-2 py-1 rounded-lg backdrop-blur-sm"><MapPin size={14} className="text-red-400" /><span className="text-xs font-bold">{currentItem.data.location}</span></div>
+                      <p className="text-sm opacity-90 leading-tight mb-2 shadow-black drop-shadow-md">{currentItem.data.desc}</p>
+                  </div>
+              </div>
+          );
+      } else if (currentItem.type === 'group_card') {
+          return (
+              <div className="h-full w-full bg-slate-900 flex flex-col items-center justify-center p-8 relative">
+                  <div className="absolute top-4 right-4 text-slate-500 text-xs font-bold uppercase tracking-widest">Recommended Group</div>
+                  <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-4xl font-bold text-white mb-6 shadow-2xl shadow-indigo-500/20">{currentItem.data.name[0]}</div>
+                  <h2 className="text-2xl font-black text-white mb-2 text-center">{currentItem.data.name}</h2>
+                  <div className="flex gap-4 text-slate-400 text-sm mb-8">
+                      <span className="flex items-center gap-1"><Users size={16}/> {currentItem.data.members} Members</span>
+                      <span className="flex items-center gap-1"><MapPin size={16}/> {currentItem.data.dist}km</span>
+                  </div>
+                  <button className="w-full py-4 bg-blue-600 rounded-2xl font-bold text-white text-lg shadow-lg shadow-blue-600/20">Join Group</button>
+              </div>
+          );
+      } else if (currentItem.type === 'game_card') {
+           return (
+              <div className="h-full w-full bg-slate-900 flex flex-col items-center justify-center p-8 relative">
+                  <div className="absolute top-4 right-4 text-slate-500 text-xs font-bold uppercase tracking-widest">Recommended Game</div>
+                  <div className={`w-full aspect-video rounded-3xl bg-gradient-to-br ${currentItem.data.image} flex items-center justify-center mb-6 shadow-2xl`}>
+                      <Gamepad2 size={64} className="text-white/50"/>
+                  </div>
+                  <h2 className="text-2xl font-black text-white mb-2">{currentItem.data.title}</h2>
+                  <p className="text-slate-400 mb-8">{currentItem.data.players} Players Online</p>
+                  <button className="w-full py-4 bg-yellow-500 text-black rounded-2xl font-bold text-lg shadow-lg">Play Now</button>
+              </div>
+           );
+      } else { // room_card
+           return (
+              <div className="h-full w-full bg-slate-900 flex flex-col items-center justify-center p-8 relative">
+                  <div className="absolute top-4 right-4 text-slate-500 text-xs font-bold uppercase tracking-widest">Recommended Room</div>
+                  <div className="bg-slate-800 p-6 rounded-3xl border border-slate-700 w-full mb-8">
+                      <div className="flex justify-between items-center mb-4">
+                          <span className="bg-red-500/20 text-red-400 px-2 py-1 rounded text-xs font-bold">Competitive</span>
+                          <span className="text-yellow-400 font-bold flex items-center gap-1"><Coins size={14}/> {currentItem.data.entry}</span>
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-2">{currentItem.data.name}</h3>
+                      <div className="flex items-center gap-2 text-slate-400 text-sm">
+                          <Users size={14}/> {currentItem.data.current}/{currentItem.data.capacity} Players
+                      </div>
+                  </div>
+                  <button className="w-full py-4 bg-red-600 text-white rounded-2xl font-bold text-lg shadow-lg">Join Room</button>
+              </div>
+           );
+      }
+  };
+
   return (
-    <div className="h-full bg-black relative overflow-hidden" onClick={handleNextVideo}>
-      <div className="absolute top-12 left-0 right-0 z-20 flex justify-center gap-6 text-white text-base font-bold shadow-black drop-shadow-md">
-        <span className="opacity-60">{t.following}</span><span className="opacity-100 border-b-2 border-white pb-1">{t.foryou}</span>
+    <div className="h-full bg-black relative overflow-hidden" onClick={handleNext}>
+      {/* Header */}
+      <div className="absolute top-12 left-0 right-0 z-30 flex items-center justify-between px-4">
+          <Search className="text-white opacity-80" size={24} />
+          <div className="flex gap-4 text-white text-base font-bold shadow-black drop-shadow-md">
+            {['Followed', 'Nearby', 'Shorts', 'For You'].map(tab => (
+                <span key={tab} onClick={(e) => { e.stopPropagation(); setActiveTab(tab.toLowerCase().replace(' ', '')); }} className={`transition-opacity ${activeTab === tab.toLowerCase().replace(' ', '') ? 'opacity-100 border-b-2 border-white pb-1' : 'opacity-60'}`}>{tab}</span>
+            ))}
+          </div>
+          <div className="w-6"></div> {/* Spacer for centering */}
       </div>
-      <div className={`h-full w-full bg-gradient-to-b ${VIDEOS[currentVideo].color} flex items-center justify-center transition-colors duration-500`}>
-        <Play size={64} className="text-white/40 animate-pulse" fill="currentColor" />
-      </div>
-      <div className="absolute right-2 bottom-24 flex flex-col items-center gap-6 z-20" onClick={(e) => e.stopPropagation()}>
-        <div className="flex flex-col items-center gap-1 relative"><div className="w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-gray-500"></div><div className="w-5 h-5 bg-red-500 rounded-full -mt-3 flex items-center justify-center text-white text-[10px] font-bold">+</div></div>
-        <div className="flex flex-col items-center gap-1"><Heart size={32} className="text-white" /><span className="text-white text-xs">{VIDEOS[currentVideo].likes}</span></div>
-        <div className="flex flex-col items-center gap-1"><MessageSquare size={32} className="text-white" /><span className="text-white text-xs">{VIDEOS[currentVideo].comments}</span></div>
-      </div>
-      <div className="absolute left-4 bottom-20 right-16 z-20 text-white" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center gap-2 mb-2 bg-black/30 w-fit px-2 py-1 rounded-lg backdrop-blur-sm"><MapPin size={14} className="text-red-400" /><span className="text-xs font-bold">{VIDEOS[currentVideo].location}</span></div>
-        <h3 className="font-bold text-lg mb-1">{VIDEOS[currentVideo].user}</h3>
-        <p className="text-sm opacity-90 leading-tight mb-2">{VIDEOS[currentVideo].desc}</p>
-      </div>
+
+      {renderContent()}
+
+      {/* Comments Modal */}
+      {showComments && (
+          <div className="absolute inset-0 z-40 bg-black/50 backdrop-blur-sm flex flex-col justify-end animate-in slide-in-from-bottom" onClick={(e) => e.stopPropagation()}>
+              <div className="bg-slate-900 rounded-t-3xl h-2/3 p-4 flex flex-col">
+                  <div className="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
+                      <h3 className="font-bold text-white">Comments ({currentItem.data.comments || 0})</h3>
+                      <button onClick={() => setShowComments(false)}><X size={20} className="text-slate-400"/></button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto space-y-4">
+                      {[1,2,3,4,5].map(i => (
+                          <div key={i} className="flex gap-3">
+                              <div className="w-8 h-8 rounded-full bg-slate-700 flex-shrink-0"></div>
+                              <div>
+                                  <div className="text-xs font-bold text-slate-400 mb-0.5">User_{i}</div>
+                                  <div className="text-sm text-white">This is a great video! 🔥</div>
+                              </div>
+                          </div>
+                      ))}
+                  </div>
+                  <div className="mt-4 flex gap-2">
+                      <input type="text" placeholder="Add a comment..." className="flex-1 bg-slate-800 rounded-full px-4 py-2 text-white text-sm focus:outline-none"/>
+                      <button className="p-2 bg-blue-600 rounded-full text-white"><Send size={16}/></button>
+                  </div>
+              </div>
+          </div>
+      )}
     </div>
   );
 };
@@ -222,6 +354,7 @@ const RoomLobby = ({ room, onClose, t, onDisband }) => {
     ...(room.current > 1 ? [{ id: 2, name: 'Guest_1', isHost: false, status: 'ready', avatar: 'G', hasPaid: true }] : [])
   ]);
   const [showPayConfirm, setShowPayConfirm] = useState(false);
+  const [showDisbandConfirm, setShowDisbandConfirm] = useState(false);
   const [hostPaidEntry, setHostPaidEntry] = useState(false);
 
   const isHost = room.isMyRoom;
@@ -272,10 +405,12 @@ const RoomLobby = ({ room, onClose, t, onDisband }) => {
   };
 
   const handleDisbandRoom = () => {
-     if(window.confirm(t.disband_warn)) {
-        onDisband();
-        onClose();
-     }
+     setShowDisbandConfirm(true);
+  }
+
+  const confirmDisband = () => {
+     onDisband();
+     onClose();
   }
 
   const slots = Array(room.capacity).fill(null).map((_, i) => players[i] || null);
@@ -299,12 +434,29 @@ const RoomLobby = ({ room, onClose, t, onDisband }) => {
           </div>
        )}
 
+       {/* Disband Modal */}
+       {showDisbandConfirm && (
+          <div className="absolute inset-0 z-[70] bg-black/80 flex items-center justify-center p-4">
+             <div className="bg-slate-900 border border-red-900/50 p-6 rounded-2xl w-full max-w-xs text-center animate-slide-up">
+                <div className="w-16 h-16 bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                   <AlertTriangle size={32} className="text-red-500"/>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">{t.disband}</h3>
+                <p className="text-sm text-slate-400 mb-6 leading-relaxed">{t.disband_warn}</p>
+                <div className="flex gap-3">
+                   <button onClick={() => setShowDisbandConfirm(false)} className="flex-1 py-3 rounded-xl bg-slate-800 text-slate-400 font-bold">Cancel</button>
+                   <button onClick={confirmDisband} className="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold">{t.disband}</button>
+                </div>
+             </div>
+          </div>
+       )}
+
        <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
           <div>
              <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 {room.gameName || "Game Room"} <span className={`text-[10px] px-2 py-0.5 rounded-full ${room.mode === 'friendly' ? 'bg-green-600' : 'bg-red-600'}`}>{room.mode === 'friendly' ? t.mode_friendly : t.mode_compete}</span>
              </h2>
-             <div className="text-xs text-slate-400 flex items-center gap-2"><span>{t.room_id}: {room.id}</span>{room.mode === 'compete' && <span className="text-yellow-400 font-bold">{t.entry_fee}: {room.entry}</span>}</div>
+             <div className="text-xs text-slate-400 flex items-center gap-2"><span>{t.room_id}: {room.id}</span><span className="text-slate-300 font-bold flex items-center gap-1"><Users size={12}/>{room.current}/{room.capacity}</span>{room.mode === 'compete' && <span className="text-yellow-400 font-bold">{t.entry_fee}: {room.entry}</span>}</div>
           </div>
           <button onClick={handleExit} className="bg-red-500/20 text-red-500 p-2 rounded-full hover:bg-red-500/30"><LogOut size={20}/></button>
        </div>
@@ -344,8 +496,11 @@ const RoomLobby = ({ room, onClose, t, onDisband }) => {
 };
 
 const WalletPage = ({ onClose, t }) => {
-  const [selectedCurrency, setSelectedCurrency] = useState('beans');
+  const [selectedCurrency, setSelectedCurrency] = useState('coins');
   const [subPage, setSubPage] = useState('main');
+  const [showExchange, setShowExchange] = useState(false);
+  const [exchangeAmount, setExchangeAmount] = useState('');
+
   const CurrencyIcon = ({ type, className }) => {
      if(type==='beans') return <Coins className={className} size={16} fill="currentColor"/>;
      if(type==='diamonds') return <Gem className={className} size={16} fill="currentColor"/>;
@@ -363,13 +518,64 @@ const WalletPage = ({ onClose, t }) => {
         </div>
      )
   }
+
   return (
     <div className="absolute inset-0 bg-slate-950 z-50 flex flex-col animate-in slide-in-from-bottom">
+       {showExchange && (
+          <div className="absolute inset-0 z-[60] bg-black/80 flex items-center justify-center p-4">
+             <div className="bg-slate-900 border border-slate-700 p-6 rounded-2xl w-full max-w-xs animate-slide-up">
+                <div className="flex justify-between items-center mb-4"><h3 className="text-lg font-bold text-white">{t.exchange_title}</h3><button onClick={() => setShowExchange(false)}><X size={20} className="text-slate-400"/></button></div>
+                <div className="bg-slate-800 p-3 rounded-xl mb-4 text-center"><div className="text-xs text-slate-400 mb-1">{t.exchange_rate}</div></div>
+                
+                <div className="flex justify-between items-center mb-2 px-1">
+                    <span className="text-xs text-slate-400">Balance: <span className="text-yellow-400 font-bold">8,900</span></span>
+                </div>
+                <div className="flex gap-2 mb-4">
+                    {[10, 50, 100, 500].map(amt => (
+                        <button key={amt} onClick={() => setExchangeAmount(amt)} className="flex-1 py-2 bg-slate-800 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-700 border border-slate-700">{amt}</button>
+                    ))}
+                </div>
+
+                <div className="mb-4">
+                   <label className="text-xs text-slate-400 mb-1 block">{t.input_coins}</label>
+                   <input type="number" value={exchangeAmount} onChange={e => setExchangeAmount(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-bold focus:outline-none focus:border-yellow-500" placeholder="0"/>
+                </div>
+                <div className="flex justify-between items-center mb-6 px-2">
+                   <span className="text-xs text-slate-400">You get:</span>
+                   <span className="text-yellow-400 font-bold flex items-center gap-1"><Coins size={14} fill="currentColor"/> {exchangeAmount ? exchangeAmount * 100 : 0}</span>
+                </div>
+                <button onClick={() => { alert('Exchange Successful!'); setShowExchange(false); }} className="w-full bg-yellow-500 text-black font-bold py-3 rounded-xl">{t.confirm_exchange}</button>
+             </div>
+          </div>
+       )}
+
        <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center"><h2 className="text-xl font-bold flex items-center gap-2 text-white"><Wallet size={24} className="text-yellow-400"/> {t.wallet}</h2><button onClick={onClose} className="bg-slate-800 p-2 rounded-full"><X size={20} className="text-white"/></button></div>
        <div className="flex-1 overflow-y-auto p-6">
-          <div className="flex bg-slate-900 border border-slate-800 rounded-xl p-1 mb-6">{[{id: 'beans', label: t.beans, icon: Coins, color: 'text-yellow-400'}, {id: 'diamonds', label: t.diamonds, icon: Gem, color: 'text-pink-400'}, {id: 'coins', label: t.coins, icon: CircleDollarSign, color: 'text-blue-400'}].map(c => (<button key={c.id} onClick={() => setSelectedCurrency(c.id)} className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold transition-all ${selectedCurrency === c.id ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-500'}`}><c.icon size={14} className={c.color} /> {c.label}</button>))}</div>
-          <div className={`p-8 rounded-3xl mb-8 text-center transition-colors shadow-2xl relative overflow-hidden ${selectedCurrency === 'beans' ? 'bg-gradient-to-br from-yellow-500 to-orange-600' : selectedCurrency === 'diamonds' ? 'bg-gradient-to-br from-pink-500 to-purple-600' : 'bg-gradient-to-br from-blue-500 to-cyan-600'}`}><div className="absolute top-0 right-0 p-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div><div className="relative"><div className="text-white/80 text-sm mb-2 uppercase tracking-widest font-bold">{t.balance}</div><div className="text-5xl font-black text-white flex items-center justify-center gap-3 drop-shadow-md">{selectedCurrency === 'beans' ? <Coins size={40} fill="currentColor" /> : selectedCurrency === 'diamonds' ? <Gem size={40} fill="currentColor"/> : <CircleDollarSign size={40}/>} {selectedCurrency === 'beans' ? '12,450' : selectedCurrency === 'diamonds' ? '520' : '8,900'}</div></div></div>
-          <div className="grid grid-cols-2 gap-4 mb-8"><button className="bg-white text-slate-950 py-4 rounded-2xl font-black text-lg shadow-lg hover:bg-gray-100 transition-colors">{t.recharge}</button><button className="bg-slate-800 text-white py-4 rounded-2xl font-bold border border-slate-700">Withdraw</button></div>
+          <div className="flex bg-slate-900 border border-slate-800 rounded-xl p-1 mb-6">
+             {[{id: 'coins', label: t.coins, icon: CircleDollarSign, color: 'text-blue-400'}, {id: 'beans', label: t.beans, icon: Coins, color: 'text-yellow-400'}, {id: 'diamonds', label: t.diamonds, icon: Gem, color: 'text-pink-400'}].map(c => (
+                <button key={c.id} onClick={() => setSelectedCurrency(c.id)} className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold transition-all ${selectedCurrency === c.id ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-500'}`}>
+                   <c.icon size={14} className={c.color} /> {c.label}
+                </button>
+             ))}
+          </div>
+          
+          <div className={`p-8 rounded-3xl mb-8 text-center transition-colors shadow-2xl relative overflow-hidden ${selectedCurrency === 'beans' ? 'bg-gradient-to-br from-yellow-500 to-orange-600' : selectedCurrency === 'diamonds' ? 'bg-gradient-to-br from-pink-500 to-purple-600' : 'bg-gradient-to-br from-blue-500 to-cyan-600'}`}>
+             <div className="absolute top-0 right-0 p-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+             <div className="relative">
+                <div className="text-white/80 text-sm mb-2 uppercase tracking-widest font-bold">{t.balance}</div>
+                <div className="text-5xl font-black text-white flex items-center justify-center gap-3 drop-shadow-md">
+                   {selectedCurrency === 'beans' ? <Coins size={40} fill="currentColor" /> : selectedCurrency === 'diamonds' ? <Gem size={40} fill="currentColor"/> : <CircleDollarSign size={40}/>} 
+                   {selectedCurrency === 'beans' ? '12,450' : selectedCurrency === 'diamonds' ? '520' : '8,900'}
+                </div>
+             </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 mb-8">
+             {selectedCurrency === 'coins' && <button className="bg-white text-slate-950 py-4 rounded-2xl font-black text-lg shadow-lg hover:bg-gray-100 transition-colors">{t.recharge}</button>}
+             {selectedCurrency === 'beans' && <button onClick={() => setShowExchange(true)} className="bg-yellow-500 text-black py-4 rounded-2xl font-black text-lg shadow-lg hover:bg-yellow-400 transition-colors">{t.exchange}</button>}
+             {selectedCurrency === 'diamonds' && <button className="bg-slate-800 text-white py-4 rounded-2xl font-bold border border-slate-700">{t.withdraw}</button>}
+          </div>
+
           <div><div className="flex justify-between items-center mb-4"><h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">{t.recent_trans}</h3><button onClick={() => setSubPage('history')} className="text-blue-400 text-xs font-bold flex items-center gap-1">{t.view_all_trans} <ChevronRight size={12}/></button></div><div className="space-y-3">{TRANSACTIONS.slice(0, 3).map(tx => (<div key={tx.id} className="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex justify-between items-center"><div className="flex items-center gap-3"><div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.amount > 0 ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>{tx.amount > 0 ? <TrendingUp size={18}/> : <ArrowRightLeft size={18}/>}</div><div><div className="font-bold text-sm text-white">{tx.title}</div><div className="text-[10px] text-slate-500">{tx.date}</div></div></div><div className={`font-mono font-bold flex items-center gap-1 ${tx.amount > 0 ? 'text-green-400' : 'text-white'}`}>{tx.amount > 0 ? '+' : ''}{tx.amount}<CurrencyIcon type={tx.currency} className={tx.currency === 'beans' ? 'text-yellow-400' : tx.currency === 'diamonds' ? 'text-pink-400' : 'text-blue-400'} /></div></div>))}</div></div>
        </div>
     </div>
@@ -393,7 +599,7 @@ const MineTab = ({ lang, setLang, t }) => {
 
       <div className="pt-12 px-6 pb-6 bg-slate-950 flex justify-between items-start">
          <div className="flex items-center gap-4"><div className="w-16 h-16 rounded-full bg-gray-700 border-2 border-white/20 flex items-center justify-center text-2xl font-bold text-slate-400">AK</div><div><h2 className="text-2xl font-bold flex items-center gap-2">Amit Kumar <CheckCircle2 size={16} className="text-blue-500" fill="white"/></h2><div className="text-xs text-slate-500">ID: 8839201 • Pune 🇮🇳</div></div></div>
-         <div className="flex flex-col items-end gap-2"><Settings className="text-slate-400" size={20} /><button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')} className="text-[10px] border border-slate-700 px-2 py-1 rounded bg-slate-900 text-slate-300">{t.lang_switch}</button></div>
+         <div className="flex flex-col items-end gap-2"><Settings className="text-slate-400" size={20} /></div>
       </div>
       <div className="px-4 mb-6"><div className="grid grid-cols-3 gap-3">{[{id: 'wallet', label: t.wallet, icon: Wallet, color: 'text-yellow-400', bg: 'bg-yellow-500/10'}, {id: 'tasks', label: t.tasks, icon: Target, color: 'text-red-400', bg: 'bg-red-500/10'}, {id: 'skills', label: t.skills, icon: Star, color: 'text-purple-400', bg: 'bg-purple-500/10'},].map(item => (<button key={item.id} onClick={() => setActiveModal(item.id)} className="bg-slate-900 border border-slate-800 hover:border-slate-600 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-95"><div className={`w-10 h-10 rounded-full ${item.bg} flex items-center justify-center`}><item.icon className={item.color} size={20} /></div><span className="text-xs font-bold text-slate-300">{item.label}</span></button>))}</div></div>
       <div className="flex justify-around text-center mb-6 px-4"><div><div className="font-bold text-lg">12.5k</div><div className="text-xs text-slate-500">Fans</div></div><div><div className="font-bold text-lg">452</div><div className="text-xs text-slate-500">Following</div></div><div><div className="font-bold text-lg">1.2M</div><div className="text-xs text-slate-500">Likes</div></div></div>
@@ -440,6 +646,8 @@ const GameTab = ({ t, onJoinRoom, onCreateRoom, createCooldown }) => {
   const [selectedTier, setSelectedTier] = useState(MATCH_TIERS[0]);
   const [createMode, setCreateMode] = useState('friendly');
   const [createEntry, setCreateEntry] = useState(100);
+  const [showExchange, setShowExchange] = useState(false);
+  const [exchangeAmount, setExchangeAmount] = useState('');
 
   const handlePlayClick = (game) => {
     setSelectedGame(game);
@@ -470,18 +678,69 @@ const GameTab = ({ t, onJoinRoom, onCreateRoom, createCooldown }) => {
      }, 1500);
   };
 
+  const startSinglePlayer = () => {
+      alert("Starting Single Player Mode...");
+      setShowMatchModal(false);
+  };
+
+  const GameListSection = ({ title, games }) => (
+      <div className="mb-6">
+          <h3 className="text-lg font-bold text-white mb-3 px-1">{title}</h3>
+          <div className="grid grid-cols-2 gap-4">
+              {games.map(game => (
+                  <div key={game.id} onClick={() => handlePlayClick(game)} className="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 active:scale-95 transition-transform cursor-pointer">
+                      <div className={`h-24 bg-gradient-to-br ${game.image} flex items-center justify-center`}><span className="text-3xl font-black text-white/20 uppercase tracking-widest">Game</span></div>
+                      <div className="p-3">
+                          <div className="flex justify-between items-start mb-1"><h3 className="font-bold text-sm truncate">{game.title}</h3><span className="text-[10px] text-slate-400">{game.type}</span></div>
+                          <div className="flex justify-between items-center mt-2"><div className="flex items-center gap-1 text-xs text-yellow-500 font-bold"><Coins size={12} fill="currentColor" /> {game.minEntry}+</div><button className="bg-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full text-white">Play</button></div>
+                      </div>
+                  </div>
+              ))}
+          </div>
+      </div>
+  );
+
   return (
     <div className="h-full bg-slate-950 flex flex-col text-white pb-20 relative">
+      {showExchange && (
+          <div className="absolute inset-0 z-[60] bg-black/80 flex items-center justify-center p-4">
+             <div className="bg-slate-900 border border-slate-700 p-6 rounded-2xl w-full max-w-xs animate-slide-up">
+                <div className="flex justify-between items-center mb-4"><h3 className="text-lg font-bold text-white">{t.exchange_title}</h3><button onClick={() => setShowExchange(false)}><X size={20} className="text-slate-400"/></button></div>
+                <div className="bg-slate-800 p-3 rounded-xl mb-4 text-center"><div className="text-xs text-slate-400 mb-1">{t.exchange_rate}</div></div>
+                <div className="flex justify-between items-center mb-2 px-1">
+                    <span className="text-xs text-slate-400">Balance: <span className="text-yellow-400 font-bold">8,900</span></span>
+                </div>
+                <div className="flex gap-2 mb-4">
+                    {[10, 50, 100, 500].map(amt => (
+                        <button key={amt} onClick={() => setExchangeAmount(amt)} className="flex-1 py-2 bg-slate-800 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-700 border border-slate-700">{amt}</button>
+                    ))}
+                </div>
+                <div className="mb-4">
+                   <label className="text-xs text-slate-400 mb-1 block">{t.input_coins}</label>
+                   <input type="number" value={exchangeAmount} onChange={e => setExchangeAmount(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-bold focus:outline-none focus:border-yellow-500" placeholder="0"/>
+                </div>
+                <div className="flex justify-between items-center mb-6 px-2">
+                   <span className="text-xs text-slate-400">You get:</span>
+                   <span className="text-yellow-400 font-bold flex items-center gap-1"><Coins size={14} fill="currentColor"/> {exchangeAmount ? exchangeAmount * 100 : 0}</span>
+                </div>
+                <button onClick={() => { alert('Exchange Successful!'); setShowExchange(false); }} className="w-full bg-yellow-500 text-black font-bold py-3 rounded-xl">{t.confirm_exchange}</button>
+             </div>
+          </div>
+       )}
+
       {showSeasonModal && (<div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-slate-900 w-full max-w-sm rounded-3xl border border-slate-700 overflow-hidden animate-slide-up max-h-[80vh] flex flex-col"><div className="h-32 bg-gradient-to-r from-purple-600 to-blue-600 relative p-6 flex flex-col justify-end"><button onClick={(e) => { e.stopPropagation(); setShowSeasonModal(false); }} className="absolute top-4 right-4 bg-black/30 p-2 rounded-full"><X size={18} /></button><div className="text-yellow-300 font-bold text-xs">{t.season_week}</div><h2 className="text-2xl font-black italic text-white">Mumbai Cup</h2><div className="absolute right-6 bottom-4"><Trophy size={64} className="text-yellow-300 opacity-50 rotate-12" /></div></div><div className="p-6 overflow-y-auto flex-1"><div className="flex gap-4 mb-6"><div className="flex-1 bg-slate-800 p-3 rounded-xl text-center"><div className="text-xs text-slate-500 mb-1">Time Left</div><div className="font-bold flex items-center justify-center gap-1"><Clock size={14} className="text-blue-400" /> 12d</div></div><div className="flex-1 bg-slate-800 p-3 rounded-xl text-center"><div className="text-xs text-slate-500 mb-1">{t.season_pool}</div><div className="font-bold flex items-center justify-center gap-1 text-yellow-400"><Coins size={14} fill="currentColor" /> 10M</div></div></div><div className="mb-6"><h3 className="font-bold text-sm mb-3 flex items-center gap-2"><Award size={16} className="text-purple-400" /> {t.season_rules}</h3><ul className="text-xs text-slate-400 space-y-2 list-disc pl-4"><li>Win matches to earn points.</li><li>Top 100 players share the prize pool.</li></ul></div><div><h3 className="font-bold text-sm mb-3 flex items-center gap-2"><TrendingUp size={16} className="text-green-400" /> {t.season_rank}</h3><div className="space-y-2">{LEADERBOARD.map((p, i) => (<div key={i} className="flex items-center justify-between bg-slate-800 p-3 rounded-xl"><div className="flex items-center gap-3"><div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${i===0?'bg-yellow-500 text-black':i===1?'bg-gray-400 text-black':'bg-orange-700 text-white'}`}>{p.rank}</div><span className="font-bold text-sm">{p.name}</span></div><span className="font-mono text-yellow-400 font-bold text-sm">{p.score}</span></div>))}</div></div></div></div></div>)}
 
       <div className="px-4 pt-12 pb-4 bg-gradient-to-b from-slate-900 to-slate-950 border-b border-slate-800 flex justify-between items-center sticky top-0 z-10">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent italic">WinGaming</h1>
-        <div className="flex items-center gap-2 bg-slate-800 rounded-full px-3 py-1.5 border border-slate-700"><Coins className="text-yellow-400" size={16} fill="currentColor" /><span className="font-bold text-yellow-100">12,450</span><div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-[10px] font-bold ml-1">+</div></div>
+        <div className="flex items-center gap-2 bg-slate-800 rounded-full px-3 py-1.5 border border-slate-700"><Coins className="text-yellow-400" size={16} fill="currentColor" /><span className="font-bold text-yellow-100">12,450</span><button onClick={() => setShowExchange(true)} className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-[10px] font-bold ml-1">+</button></div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
         <div onClick={() => setShowSeasonModal(true)} className="w-full h-32 rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-between px-6 shadow-lg mb-6 relative overflow-hidden cursor-pointer active:scale-95 transition-transform"><div><div className="text-yellow-300 font-bold text-xs mb-1 flex items-center gap-1"><Award size={12}/> {t.season_week}</div><div className="text-2xl font-black italic">Mumbai Cup</div><div className="text-xs opacity-80 mt-1 bg-black/20 w-fit px-2 py-0.5 rounded-full flex items-center gap-1">Click to view <ChevronRight size={10}/></div></div><Trophy size={48} className="text-yellow-300 drop-shadow-lg" /></div>
-        <div className="grid grid-cols-2 gap-4">{GAMES.map(game => (<div key={game.id} onClick={() => handlePlayClick(game)} className="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 active:scale-95 transition-transform cursor-pointer"><div className={`h-24 bg-gradient-to-br ${game.image} flex items-center justify-center`}><span className="text-3xl font-black text-white/20 uppercase tracking-widest">Game</span></div><div className="p-3"><div className="flex justify-between items-start mb-1"><h3 className="font-bold text-sm truncate">{game.title}</h3><span className="text-[10px] text-slate-400">{game.type}</span></div><div className="flex justify-between items-center mt-2"><div className="flex items-center gap-1 text-xs text-yellow-500 font-bold"><Coins size={12} fill="currentColor" /> {game.minEntry}+</div><button className="bg-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full text-white">Play</button></div></div></div>))}</div>
+        
+        <GameListSection title="Recent Games" games={GAMES.filter(g => g.category === 'recent')} />
+        <GameListSection title="Hot Games" games={GAMES.filter(g => g.category === 'hot')} />
+        <GameListSection title="All Games" games={GAMES} />
       </div>
 
       {showMatchModal && selectedGame && (
@@ -492,7 +751,7 @@ const GameTab = ({ t, onJoinRoom, onCreateRoom, createCooldown }) => {
               ) : (
                 <>
                   <div className="flex justify-between items-center mb-6"><div><h2 className="text-xl font-bold">{selectedGame.title}</h2><p className="text-xs text-slate-400">{t.match_desc}</p></div><button onClick={() => setShowMatchModal(false)} className="p-2 bg-slate-800 rounded-full"><X size={20} /></button></div>
-                  <div className="flex gap-2 p-1 bg-slate-800 rounded-xl mb-6">{['quick', 'custom', 'create'].map(tab => (<button key={tab} onClick={() => setActiveRoomTab(tab)} className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeRoomTab === tab ? 'bg-slate-700 text-white shadow' : 'text-slate-400'}`}>{t[`room_${tab==='custom'?'lb':tab==='create'?'create':'qk'}`] || (tab==='custom'?t.custom_rooms:t.quick_match_title)}</button>))}</div>
+                  <div className="flex gap-2 p-1 bg-slate-800 rounded-xl mb-6">{['quick', 'single', 'custom', 'create'].map(tab => (<button key={tab} onClick={() => setActiveRoomTab(tab)} className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeRoomTab === tab ? 'bg-slate-700 text-white shadow' : 'text-slate-400'}`}>{tab === 'single' ? 'Single' : t[`room_${tab==='custom'?'lb':tab==='create'?'create':'qk'}`] || (tab==='custom'?t.custom_rooms:t.quick_match_title)}</button>))}</div>
 
                   {activeRoomTab === 'quick' && (
                      <div className="flex flex-col flex-1">
@@ -502,10 +761,37 @@ const GameTab = ({ t, onJoinRoom, onCreateRoom, createCooldown }) => {
                      </div>
                   )}
 
+                  {activeRoomTab === 'single' && (
+                      <div className="flex flex-col flex-1 items-center justify-center text-center p-4">
+                          <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mb-4"><User size={32} className="text-blue-400"/></div>
+                          <h3 className="text-lg font-bold text-white mb-2">Single Player Mode</h3>
+                          <p className="text-sm text-slate-400 mb-6">Practice your skills or play for fun. Entry fee required.</p>
+                          <div className="flex items-center gap-2 text-yellow-400 font-bold text-xl mb-8"><Coins size={24} fill="currentColor"/> 50</div>
+                          <button onClick={startSinglePlayer} className="w-full bg-blue-600 py-3.5 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-2"><Play size={20} fill="currentColor"/> Start Game</button>
+                      </div>
+                  )}
+
                   {activeRoomTab === 'custom' && (
                      <div className="flex flex-col flex-1 overflow-y-auto space-y-3 pb-4">
                         <div className="flex gap-4 border-b border-slate-800 mb-4 text-xs font-medium">{[{id: 'nearby', label: t.room_lb}, {id: 'group', label: t.room_gp}].map(tab => (<button key={tab.id} onClick={() => setRoomFilter(tab.id)} className={`pb-2 transition-colors ${roomFilter === tab.id ? 'border-b-2 border-blue-500 text-white' : 'text-slate-500'}`}>{tab.label}</button>))}</div>
-                        {MATCH_ROOMS.filter(r => roomFilter === 'nearby' ? (r.tag === 'District' || r.tag === 'Nearby') : true).map(room => (<div key={room.id} onClick={() => handleJoin(room)} className="bg-slate-800 p-3 rounded-xl flex justify-between items-center cursor-pointer hover:bg-slate-700 border border-transparent hover:border-slate-600"><div><div className="flex items-center gap-2 mb-1"><span className={`text-[10px] px-1.5 py-0.5 rounded ${room.tag === 'Nearby' ? 'bg-green-500/20 text-green-400' : 'bg-purple-500/20 text-purple-400'}`}>{room.tag}</span><span className="font-bold text-sm">{room.name}</span></div><div className="text-[10px] text-slate-400 flex items-center gap-3"><span className="flex items-center gap-1"><Users size={12}/> {room.capacity} {t.players}</span><span className="flex items-center gap-1 text-blue-400"><LayoutGrid size={12}/> {room.players} {t.playing}</span></div></div><div className="flex flex-col items-end"><div className="flex items-center gap-1 text-yellow-400 font-bold text-sm">{t.entry_fee}: <Coins size={12} /> {room.entry}</div><div className="text-[10px] text-slate-500">{t.prize}: <span className="text-green-400">{room.prize}</span></div></div></div>))}
+                        {MATCH_ROOMS.filter(r => roomFilter === 'nearby' ? (r.tag === 'District' || r.tag === 'Nearby') : true).map(room => (
+                           <div key={room.id} onClick={() => handleJoin(room)} className={`p-3 rounded-xl flex justify-between items-center cursor-pointer hover:bg-slate-700 border transition-all ${room.mode === 'friendly' ? 'bg-slate-800 border-green-900/30 hover:border-green-500/50' : 'bg-slate-800 border-red-900/30 hover:border-red-500/50'}`}>
+                              <div>
+                                 <div className="flex items-center gap-2 mb-1">
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded ${room.mode === 'friendly' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>{room.mode === 'friendly' ? 'Friendly' : 'Compete'}</span>
+                                    <span className="font-bold text-sm">{room.name}</span>
+                                 </div>
+                                 <div className="text-[10px] text-slate-400 flex items-center gap-3">
+                                    <span className="flex items-center gap-1 font-bold text-slate-300"><Users size={12}/> {room.current}/{room.capacity}</span>
+                                    <span className="flex items-center gap-1 text-blue-400"><LayoutGrid size={12}/> {room.players} {t.playing}</span>
+                                 </div>
+                              </div>
+                              <div className="flex flex-col items-end">
+                                 <div className="flex items-center gap-1 text-yellow-400 font-bold text-sm">{t.entry_fee}: <Coins size={12} /> {room.entry}</div>
+                                 <div className="text-[10px] text-slate-500">{t.prize}: <span className="text-green-400">{room.prize}</span></div>
+                              </div>
+                           </div>
+                        ))}
                      </div>
                   )}
 
@@ -532,7 +818,7 @@ const GameTab = ({ t, onJoinRoom, onCreateRoom, createCooldown }) => {
   );
 };
 
-const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown }) => {
+const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom }) => {
   const [activeChat, setActiveChat] = useState(null);
   const [chatHistory, setChatHistory] = useState([]);
   const [inputMsg, setInputMsg] = useState('');
@@ -542,6 +828,8 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown }) => {
   const [createMode, setCreateMode] = useState('compete');
   const [inviteEntry, setInviteEntry] = useState(MATCH_TIERS[0]); // Default Tier
   const [showFinder, setShowFinder] = useState(false);
+  const [joinedGroups, setJoinedGroups] = useState([]);
+  const [selectedGroupInfo, setSelectedGroupInfo] = useState(null);
 
   const openChat = (chat) => {
     setActiveChat(chat);
@@ -568,15 +856,54 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown }) => {
      setShowInviteMenu(false);
   };
 
+  const handleJoinGroup = (e, group) => {
+      e.stopPropagation();
+      if (!joinedGroups.includes(group.id)) {
+          setJoinedGroups([...joinedGroups, group.id]);
+          alert(`Joined ${group.name}!`);
+      }
+  };
+
+  const handleGroupClick = (group) => {
+      if (joinedGroups.includes(group.id)) {
+          openChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: "Welcome back!", time: "Now" });
+      } else {
+          setSelectedGroupInfo(group);
+      }
+  };
+
   if (showFinder) return <GroupFinder onClose={() => setShowFinder(false)} t={t} />;
 
   if (activeChat) {
     return (
       <div className="flex flex-col h-full bg-slate-950 z-50 animate-in slide-in-from-right absolute inset-0">
         <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0"><div className="flex items-center gap-3"><button onClick={() => setActiveChat(null)} className="text-slate-400 hover:text-white"><ChevronLeft size={24} /></button><div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold">{activeChat.avatar}</div><div className="font-bold text-white text-sm">{activeChat.name}</div></div><MoreHorizontal className="text-slate-400" /></div>
+        
+        {/* Sticky Room Header */}
+        <div className="bg-slate-900/95 backdrop-blur border-b border-slate-800 p-2 flex gap-2 overflow-x-auto shrink-0 no-scrollbar">
+             {activeRoom && (
+                <div className="flex items-center gap-2 bg-blue-900/20 border border-blue-500/50 rounded-lg p-2 pr-3 shrink-0">
+                   <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center"><Gamepad2 size={16} className="text-white"/></div>
+                   <div><div className="text-[10px] font-bold text-blue-400">MY ROOM</div><div className="text-xs font-bold text-white">{activeRoom.gameName}</div></div>
+                   <button onClick={() => onCreateRoom(activeRoom)} className="bg-blue-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg ml-2 shadow-lg shadow-blue-900/20">Return</button>
+                </div>
+             )}
+             {MATCH_ROOMS.filter(r => r.current < r.capacity).slice(0,3).map(r => (
+                <div key={r.id} className="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-lg p-2 pr-3 shrink-0">
+                   <div className="w-8 h-8 rounded bg-slate-700 flex items-center justify-center"><Gamepad2 size={16} className="text-slate-400"/></div>
+                   <div><div className="text-[10px] font-bold text-slate-500">WAITING</div><div className="text-xs font-bold text-white">{r.gameName}</div></div>
+                   <button onClick={() => onJoinRoom(r)} className="bg-slate-700 hover:bg-slate-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg ml-2 border border-slate-600">{t.join}</button>
+                </div>
+             ))}
+        </div>
+
         <div className="flex-1 overflow-y-auto p-4 space-y-4" onClick={() => setShowInviteMenu(false)}>
            {chatHistory.map(msg => (
-             <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
+             <div key={msg.id} className={`flex gap-3 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
+               <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white border border-slate-700 ${msg.sender === 'me' ? 'bg-slate-800' : 'bg-indigo-600'}`}>
+                  {msg.sender === 'me' ? 'Me' : activeChat.avatar}
+               </div>
+               <div className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}>
                {msg.type === 'invite' ? (
                  <div className={`border p-3 rounded-2xl w-56 shadow-lg relative overflow-hidden ${msg.room.mode === 'friendly' ? 'bg-gradient-to-br from-green-900 to-slate-900 border-green-500/50' : 'bg-gradient-to-br from-red-900 to-slate-900 border-red-500/50'}`}>
                     <div className={`text-[10px] font-bold mb-2 flex items-center gap-1 uppercase tracking-wider ${msg.room.mode === 'friendly' ? 'text-green-300' : 'text-red-300'}`}>{msg.room.mode === 'friendly' ? <Users size={12}/> : <Sword size={12}/>} {msg.room.mode === 'friendly' ? t.friend_invite : t.comp_invite}</div>
@@ -584,16 +911,18 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown }) => {
                     <button onClick={() => msg.sender === 'me' ? onCreateRoom(msg.room) : onJoinRoom(msg.room)} className={`w-full py-2 rounded-lg text-xs font-bold text-white transition-colors ${msg.room.mode === 'friendly' ? 'bg-green-600 hover:bg-green-500' : 'bg-red-600 hover:bg-red-500'}`}>{msg.sender === 'me' ? t.enter_room : t.join}</button>
                  </div>
                ) : (
-                 <div className={`max-w-[70%] p-3 rounded-2xl text-sm ${msg.sender === 'me' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-200 rounded-tl-none'}`}>{msg.text}</div>
+                 <div className={`max-w-[240px] p-3 rounded-2xl text-sm ${msg.sender === 'me' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-200 rounded-tl-none'}`}>{msg.text}</div>
                )}
+               </div>
              </div>
            ))}
            {/* Simulate other invite */}
-           <div className="flex justify-start">
+           <div className="flex gap-3 flex-row">
+              <div className="w-8 h-8 rounded-full bg-indigo-600 flex-shrink-0 flex items-center justify-center text-xs font-bold text-white border border-slate-700">{activeChat.avatar}</div>
               <div className="border p-3 rounded-2xl w-56 shadow-lg relative overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700">
                  <div className="text-[10px] font-bold mb-2 flex items-center gap-1 uppercase tracking-wider text-slate-400"><Users size={12}/> Join Room</div>
                  <div className="flex items-center gap-3 mb-3"><div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center"><Gamepad2 size={20} className="text-white"/></div><div><div className="font-bold text-white text-sm">Fruit Slicer</div><div className="text-[10px] text-slate-400">{t.entry_fee}: <span className="text-yellow-400 font-bold">50</span></div></div></div>
-                 <button className="w-full py-2 rounded-lg text-xs font-bold text-white transition-colors bg-slate-700 hover:bg-slate-600">{t.join}</button>
+                 <button onClick={() => onJoinRoom({ id: 888, gameName: 'Fruit Slicer', mode: 'compete', entry: 50, capacity: 4, host: 'Other', current: 1, isMyRoom: false })} className="w-full py-2 rounded-lg text-xs font-bold text-white transition-colors bg-slate-700 hover:bg-slate-600">{t.join}</button>
               </div>
            </div>
         </div>
@@ -615,13 +944,46 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown }) => {
     );
   }
 
+  // Use EXTENDED_GROUPS for the list
+  const nearbyGroups = EXTENDED_GROUPS;
+
   return (
-    <div className="h-full bg-slate-950 text-white flex flex-col pb-20">
+    <div className="h-full bg-slate-950 text-white flex flex-col pb-20 relative">
+      {/* Group Info Modal */}
+      {selectedGroupInfo && (
+          <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center p-6 animate-in fade-in">
+              <div className="bg-slate-900 w-full rounded-2xl border border-slate-700 p-6 flex flex-col items-center text-center relative">
+                  <button onClick={() => setSelectedGroupInfo(null)} className="absolute top-4 right-4 text-slate-400"><X size={20}/></button>
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-lg">{selectedGroupInfo.name[0]}</div>
+                  <h2 className="text-xl font-bold text-white mb-1">{selectedGroupInfo.name}</h2>
+                  <div className="flex items-center gap-2 text-slate-400 text-xs mb-6">
+                      <span className="flex items-center gap-1"><MapPin size={12}/> {selectedGroupInfo.dist}km</span>
+                      <span className="flex items-center gap-1"><Users size={12}/> {selectedGroupInfo.members}</span>
+                  </div>
+                  <p className="text-sm text-slate-300 mb-6">Join this group to connect with players nearby, organize matches, and share your gaming moments!</p>
+                  <button onClick={(e) => { handleJoinGroup(e, selectedGroupInfo); setSelectedGroupInfo(null); }} className="w-full py-3 bg-blue-600 rounded-xl font-bold text-white shadow-lg">Join Group</button>
+              </div>
+          </div>
+      )}
+
       <div className="p-4 pt-12 border-b border-slate-800 flex justify-between items-center sticky top-0 bg-slate-950/90 backdrop-blur z-10"><h1 className="text-xl font-bold">{t.inbox}</h1><div className="flex gap-4 text-slate-400"><div className="flex items-center gap-1 text-xs bg-slate-800 px-2 py-1 rounded-lg"><MapPin size={12} /> Pune</div><Bell size={20} /></div></div>
       <div className="flex-1 overflow-y-auto">
         <div className="p-4 bg-slate-900 border-b border-slate-800">
           <div className="flex justify-between items-center mb-3"><h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t.nearby_groups}</h3><button onClick={() => setShowFinder(true)} className="text-xs text-blue-400 font-bold flex items-center gap-1">More <ChevronRight size={12}/></button></div>
-          <div className="flex gap-3 overflow-x-auto no-scrollbar">{['MH Official', 'Pune Food', 'Mumbai GM', 'Tech Hub'].map((g, i) => (<button key={i} onClick={() => openChat({ id: 100+i, name: g, avatar: g[0], lastMsg: "Welcome!", time: "Now" })} className="flex-shrink-0 w-24 h-24 bg-slate-800 rounded-xl border border-slate-700 flex flex-col items-center justify-center gap-2 p-2 text-center active:scale-95 transition-transform"><div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold">{g[0]}</div><span className="text-[10px] text-slate-300 truncate w-full">{g}</span><span className="text-[10px] bg-blue-600 px-2 py-0.5 rounded text-white">{t.join}</span></button>))}</div>
+          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+             {nearbyGroups.map((item) => (
+                <div key={item.id} onClick={() => handleGroupClick(item)} className="flex-shrink-0 w-28 rounded-xl border border-slate-700 bg-slate-800 flex flex-col items-center justify-center gap-2 p-3 text-center active:scale-95 transition-transform cursor-pointer relative overflow-hidden">
+                   <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-lg font-bold shadow-lg">{item.name[0]}</div>
+                   <span className="text-xs font-bold text-slate-200 truncate w-full">{item.name}</span>
+                   <span className="text-[10px] text-slate-500">{item.members} members</span>
+                   {joinedGroups.includes(item.id) ? (
+                       <div className="text-[10px] text-green-400 font-bold mt-1">Joined</div>
+                   ) : (
+                       <button onClick={(e) => handleJoinGroup(e, item)} className="mt-1 bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full w-full">{t.join}</button>
+                   )}
+                </div>
+             ))}
+          </div>
         </div>
         <div className="p-2">{CHATS.map(chat => (<div key={chat.id} onClick={() => openChat(chat)} className="flex items-center gap-3 p-3 hover:bg-slate-900 rounded-xl transition-colors cursor-pointer active:bg-slate-800"><div className="relative"><div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center font-bold">{chat.avatar}</div>{chat.unread > 0 && <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-slate-950"></div>}</div><div className="flex-1"><div className="flex justify-between items-center"><h4 className="font-bold text-sm text-white">{chat.name}</h4><span className="text-[10px] text-slate-500">{chat.time}</span></div><div className="text-xs text-slate-400 truncate">{chat.lastMsg}</div></div></div>))}</div>
       </div>
@@ -653,13 +1015,16 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4 font-sans">
+    <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4 font-sans relative">
+      <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')} className="absolute top-4 right-4 bg-white px-4 py-2 rounded-full shadow-lg font-bold text-sm hover:bg-gray-100 transition-colors z-50 text-black">
+          {lang === 'en' ? '中文' : 'English'}
+      </button>
       <div className="w-full max-w-md h-[850px] bg-black rounded-[40px] overflow-hidden shadow-2xl relative border-[8px] border-slate-900 ring-1 ring-slate-900/50">
         <div className="absolute top-0 w-full h-10 z-50 flex justify-between items-center px-6 text-white pointer-events-none"><span className="text-xs font-bold">9:41</span><div className="flex gap-1.5"><div className="w-3 h-3 bg-white rounded-full opacity-80"></div><div className="w-3 h-3 bg-white rounded-full opacity-80"></div></div></div>
         <div className="h-full w-full">
           {activeTab === 'home' && <HomeTab t={t} />}
           {activeTab === 'game' && <GameTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} />}
-          {activeTab === 'inbox' && <InboxTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} />}
+          {activeTab === 'inbox' && <InboxTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} activeRoom={activeRoom} />}
           {activeTab === 'mine' && <MineTab lang={lang} setLang={setLang} t={t} />}
           {activeTab === 'plus' && <div className="h-full flex items-center justify-center text-white"><button onClick={() => setActiveTab('home')}>Close Camera</button></div>}
         </div>
