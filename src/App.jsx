@@ -42,14 +42,16 @@ const TEXTS = {
     mode_friendly: "友谊对战", mode_compete: "竞赛模式",
     room_cost: "房间费", host_pay: "房主支付", invite_friend: "邀请好友对战",
     compete_desc: "所有玩家支付入场费，赢家获得奖池", friendly_desc: "仅需房主支付房费，无入场费无奖金",
-    room_lobby: "房间等待中", kick: "踢出", ready: "支付并准备", start: "支付并开始", waiting: "等待...",
+    room_lobby: "房间等待中", kick: "踢出", ready: "准备", start: "开始", waiting: "等待...",
     host: "房主", you: "我", leave_room: "离开房间", room_id: "房间ID",
     disband: "解散房间", disband_warn: "解散房间将退还其他玩家入场费，但不退还您的房间费。且您将在15分钟内无法再次创建房间。",
     pay_confirm: "支付确认", pay_msg: "准备游戏需要支付入场费", pay_btn: "确认支付",
     cant_leave: "已支付入场费，无法退出", paid: "已支付",
     cooldown_msg: "您处于创建冷却期 (15分钟)", friend_invite: "友谊赛邀请", comp_invite: "竞赛邀请",
     exchange: "兑换", exchange_title: "金币兑换游戏豆", exchange_rate: "1 金币 = 100 游戏豆", 
-    confirm_exchange: "确认兑换", input_coins: "输入金币数量", withdraw: "提现"
+    confirm_exchange: "确认兑换", input_coins: "输入金币数量", withdraw: "提现",
+    back_home: "返回大厅", game_over: "游戏结束", playing_now: "游戏中",
+    cancel_ready: "取消准备", ready_cancel_hint: "长按取消准备", shared_success: "分享成功"
   },
   en: {
     home: "Home", game: "Game", inbox: "Inbox", mine: "Mine",
@@ -84,14 +86,16 @@ const TEXTS = {
     mode_friendly: "Friendly", mode_compete: "Competitive",
     room_cost: "Room Fee", host_pay: "Host Pays", invite_friend: "Invite Friends",
     compete_desc: "All players pay entry fee, winner takes pool", friendly_desc: "Host pays room fee, no entry fee, no prize",
-    room_lobby: "Room Lobby", kick: "Kick", ready: "Pay & Ready", start: "Pay & Start", waiting: "Waiting...",
+    room_lobby: "Room Lobby", kick: "Kick", ready: "Ready", start: "Start", waiting: "Waiting...",
     host: "Host", you: "You", leave_room: "Leave Room", room_id: "Room ID",
     disband: "Disband", disband_warn: "Disbanding will refund other players but NOT your room fee. You will be restricted from creating rooms for 15 mins.",
     pay_confirm: "Confirm Payment", pay_msg: "Pay entry fee to ready up", pay_btn: "Confirm Pay",
     cant_leave: "Entry fee paid. Cannot leave.", paid: "Paid",
     cooldown_msg: "Creation Cooldown (15m)", friend_invite: "Friendly Invite", comp_invite: "Pro Challenge",
     exchange: "Exchange", exchange_title: "Exchange Coins to Beans", exchange_rate: "1 Coin = 100 Beans",
-    confirm_exchange: "Confirm", input_coins: "Input Coins", withdraw: "Withdraw"
+    confirm_exchange: "Confirm", input_coins: "Input Coins", withdraw: "Withdraw",
+    back_home: "Back to Lobby", game_over: "Game Over", playing_now: "Playing",
+    cancel_ready: "Cancel Ready", ready_cancel_hint: "Hold to Cancel", shared_success: "Shared Successfully"
   }
 };
 
@@ -347,7 +351,7 @@ const HomeTab = ({ t }) => {
 
 // --- Updated Room Lobby with Logic ---
 
-const RoomLobby = ({ room, onClose, t, onDisband }) => {
+const RoomLobby = ({ room, onClose, t, onDisband, onStartGame, showToast }) => {
   const [players, setPlayers] = useState([
     { id: 1, name: room.host, isHost: true, status: 'ready', avatar: room.host[0], hasPaid: true }, // Host treated as paid room fee
     { id: 99, name: t.you, isHost: room.isMyRoom, status: 'waiting', avatar: 'Me', hasPaid: false },
@@ -356,9 +360,13 @@ const RoomLobby = ({ room, onClose, t, onDisband }) => {
   const [showPayConfirm, setShowPayConfirm] = useState(false);
   const [showDisbandConfirm, setShowDisbandConfirm] = useState(false);
   const [hostPaidEntry, setHostPaidEntry] = useState(false);
+  const [longPressTimer, setLongPressTimer] = useState(null);
+  const [longPressTriggered, setLongPressTriggered] = useState(false);
+  const [isHolding, setIsHolding] = useState(false);
 
   const isHost = room.isMyRoom;
   const isFriendly = room.mode === 'friendly';
+  const myBalance = 12450; // Mock balance
 
   // If host created friendly room, they don't need to pay extra entry.
   // If host created competitive room, they need to pay entry fee to START.
@@ -366,42 +374,66 @@ const RoomLobby = ({ room, onClose, t, onDisband }) => {
   const handleKick = (playerId) => setPlayers(players.filter(p => p.id !== playerId));
   
   const handleReadyClick = () => {
-     if (isFriendly) {
-        setPlayers(prev => prev.map(p => p.id === 99 ? { ...p, status: 'ready' } : p));
-     } else {
-        const me = players.find(p => p.id === 99);
-        if (me.hasPaid) return; // Already paid
-        setShowPayConfirm(true);
+     if (longPressTriggered) {
+         setLongPressTriggered(false);
+         return;
      }
+
+     const me = players.find(p => p.id === 99);
+     if (me.status === 'ready') return; // Already ready
+
+     if (!isFriendly && myBalance < room.entry) {
+         showToast("Insufficient balance!");
+         return;
+     }
+     setPlayers(prev => prev.map(p => p.id === 99 ? { ...p, status: 'ready' } : p));
   };
 
-  const confirmPayment = () => {
-     setShowPayConfirm(false);
-     setPlayers(prev => prev.map(p => p.id === 99 ? { ...p, status: 'ready', hasPaid: true } : p));
-     if(isHost) setHostPaidEntry(true);
+  const handleCancelReadyStart = () => {
+      const me = players.find(p => p.id === 99);
+      if (me.status !== 'ready') return;
+      
+      setLongPressTriggered(false);
+      setIsHolding(true);
+
+      const timer = setTimeout(() => {
+          setPlayers(prev => prev.map(p => p.id === 99 ? { ...p, status: 'waiting' } : p));
+          showToast("Ready Cancelled");
+          setLongPressTriggered(true);
+          setIsHolding(false);
+      }, 1000);
+      setLongPressTimer(timer);
+  };
+
+  const handleCancelReadyEnd = () => {
+      setIsHolding(false);
+      if (longPressTimer) {
+          clearTimeout(longPressTimer);
+          setLongPressTimer(null);
+      }
   };
 
   const handleStart = () => {
      if (isFriendly) {
-        alert("Game Starting (Friendly)...");
-        onClose();
+        onStartGame(players);
      } else {
-        if (!hostPaidEntry) {
-           setShowPayConfirm(true); // Host needs to pay entry
-        } else {
-           alert("Game Starting (Competitive)...");
-           onClose();
-        }
+        // Check if host needs to pay or just start
+        // In this new flow, payment happens on start transition
+        onStartGame(players);
      }
   };
 
   const handleExit = () => {
      const me = players.find(p => p.id === 99);
-     if (!isHost && me.hasPaid && !isFriendly) {
-        alert(t.cant_leave);
+     if (!isHost && me.status === 'ready') {
+        showToast("Please cancel ready first (Long press Ready button)");
         return;
      }
      onClose();
+  };
+
+  const handleShare = () => {
+      showToast("Shared to recent chats!");
   };
 
   const handleDisbandRoom = () => {
@@ -417,23 +449,6 @@ const RoomLobby = ({ room, onClose, t, onDisband }) => {
 
   return (
     <div className="absolute inset-0 bg-slate-950 z-[60] flex flex-col animate-in zoom-in-95">
-       {/* Payment Modal */}
-       {showPayConfirm && (
-          <div className="absolute inset-0 z-[70] bg-black/80 flex items-center justify-center p-4">
-             <div className="bg-slate-900 border border-slate-700 p-6 rounded-2xl w-full max-w-xs text-center animate-slide-up">
-                <h3 className="text-xl font-bold text-white mb-2">{t.pay_confirm}</h3>
-                <p className="text-sm text-slate-400 mb-6">{t.pay_msg}</p>
-                <div className="flex justify-center items-center gap-2 text-yellow-400 font-black text-3xl mb-8">
-                   <Coins size={32} fill="currentColor"/> {room.entry}
-                </div>
-                <div className="flex gap-3">
-                   <button onClick={() => setShowPayConfirm(false)} className="flex-1 py-3 rounded-xl bg-slate-800 text-slate-400 font-bold">Cancel</button>
-                   <button onClick={confirmPayment} className="flex-1 py-3 rounded-xl bg-yellow-500 text-black font-bold">{t.pay_btn}</button>
-                </div>
-             </div>
-          </div>
-       )}
-
        {/* Disband Modal */}
        {showDisbandConfirm && (
           <div className="absolute inset-0 z-[70] bg-black/80 flex items-center justify-center p-4">
@@ -458,7 +473,16 @@ const RoomLobby = ({ room, onClose, t, onDisband }) => {
              </h2>
              <div className="text-xs text-slate-400 flex items-center gap-2"><span>{t.room_id}: {room.id}</span><span className="text-slate-300 font-bold flex items-center gap-1"><Users size={12}/>{room.current}/{room.capacity}</span>{room.mode === 'compete' && <span className="text-yellow-400 font-bold">{t.entry_fee}: {room.entry}</span>}</div>
           </div>
-          <button onClick={handleExit} className="bg-red-500/20 text-red-500 p-2 rounded-full hover:bg-red-500/30"><LogOut size={20}/></button>
+          <div className="flex gap-2">
+             {isHost && <button onClick={handleShare} className="bg-blue-500/20 text-blue-500 p-2 rounded-full hover:bg-blue-500/30"><Share2 size={20}/></button>}
+             <button 
+                onClick={handleExit} 
+                disabled={players.find(p => p.id === 99)?.status === 'ready'}
+                className={`p-2 rounded-full transition-colors ${players.find(p => p.id === 99)?.status === 'ready' ? 'bg-slate-800 text-slate-600 cursor-not-allowed' : 'bg-red-500/20 text-red-500 hover:bg-red-500/30'}`}
+             >
+                <LogOut size={20}/>
+             </button>
+          </div>
        </div>
        <div className="flex-1 p-6 grid grid-cols-2 gap-4 content-start overflow-y-auto">
           {slots.map((player, i) => (
@@ -470,7 +494,7 @@ const RoomLobby = ({ room, onClose, t, onDisband }) => {
                       <div className="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-2xl font-bold text-white mb-2 shadow-lg">{player.avatar}</div>
                       <div className="font-bold text-white text-sm">{player.name}</div>
                       <div className={`text-xs mt-1 font-bold ${player.status === 'ready' ? 'text-green-400' : 'text-slate-500'}`}>
-                         {player.status === 'ready' ? (isFriendly ? t.ready : t.paid) : '...'}
+                         {player.status === 'ready' ? (isFriendly ? t.ready : "Ready") : '...'}
                       </div>
                    </>
                 ) : (
@@ -486,8 +510,16 @@ const RoomLobby = ({ room, onClose, t, onDisband }) => {
                 <button onClick={handleStart} className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 py-3.5 rounded-xl font-black text-lg text-white shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform"><Play size={20} fill="currentColor"/> {t.start}</button>
              </>
           ) : (
-             <button onClick={handleReadyClick} className={`w-full py-3.5 rounded-xl font-bold text-lg text-white shadow-lg active:scale-95 transition-transform ${players.find(p=>p.id===99)?.status === 'ready' ? 'bg-green-600' : 'bg-blue-600'}`}>
-                {players.find(p=>p.id===99)?.status === 'ready' ? (isFriendly ? "Ready!" : "Paid & Ready") : t.ready}
+             <button 
+                onClick={handleReadyClick} 
+                onMouseDown={handleCancelReadyStart} 
+                onMouseUp={handleCancelReadyEnd}
+                onMouseLeave={handleCancelReadyEnd}
+                onTouchStart={handleCancelReadyStart}
+                onTouchEnd={handleCancelReadyEnd}
+                className={`w-full py-3.5 rounded-xl font-bold text-lg text-white shadow-lg active:scale-95 transition-transform relative overflow-hidden ${players.find(p=>p.id===99)?.status === 'ready' ? 'bg-green-600' : 'bg-blue-600'}`}>
+                <div className={`absolute inset-0 bg-black/20 transition-all ease-linear origin-left ${isHolding ? 'w-full duration-[1000ms]' : 'w-0 duration-0'}`}></div>
+                <span className="relative z-10">{players.find(p=>p.id===99)?.status === 'ready' ? (isFriendly ? "Ready!" : "Ready (Hold to Cancel)") : t.ready}</span>
              </button>
           )}
        </div>
@@ -495,7 +527,7 @@ const RoomLobby = ({ room, onClose, t, onDisband }) => {
   );
 };
 
-const WalletPage = ({ onClose, t }) => {
+const WalletPage = ({ onClose, t, showToast }) => {
   const [selectedCurrency, setSelectedCurrency] = useState('coins');
   const [subPage, setSubPage] = useState('main');
   const [showExchange, setShowExchange] = useState(false);
@@ -544,7 +576,7 @@ const WalletPage = ({ onClose, t }) => {
                    <span className="text-xs text-slate-400">You get:</span>
                    <span className="text-yellow-400 font-bold flex items-center gap-1"><Coins size={14} fill="currentColor"/> {exchangeAmount ? exchangeAmount * 100 : 0}</span>
                 </div>
-                <button onClick={() => { alert('Exchange Successful!'); setShowExchange(false); }} className="w-full bg-yellow-500 text-black font-bold py-3 rounded-xl">{t.confirm_exchange}</button>
+                <button onClick={() => { showToast('Exchange Successful!'); setShowExchange(false); }} className="w-full bg-yellow-500 text-black font-bold py-3 rounded-xl">{t.confirm_exchange}</button>
              </div>
           </div>
        )}
@@ -582,7 +614,7 @@ const WalletPage = ({ onClose, t }) => {
   );
 };
 
-const MineTab = ({ lang, setLang, t }) => {
+const MineTab = ({ lang, setLang, t, showToast }) => {
   const [activeModal, setActiveModal] = useState(null); 
   const [activeSubTab, setActiveSubTab] = useState('works');
   const totalEarnings = GAME_HISTORY.reduce((acc, curr) => curr.amount > 0 ? acc + curr.amount : acc, 0);
@@ -593,7 +625,7 @@ const MineTab = ({ lang, setLang, t }) => {
 
   return (
     <div className="h-full bg-slate-950 text-white flex flex-col relative">
-      {activeModal === 'wallet' && <WalletPage onClose={() => setActiveModal(null)} t={t} />}
+      {activeModal === 'wallet' && <WalletPage onClose={() => setActiveModal(null)} t={t} showToast={showToast} />}
       {activeModal === 'tasks' && (<DetailModal title={t.tasks} icon={Target} color="text-red-400">{DAILY_TASKS.map(task => (<div key={task.id} className="bg-slate-800 p-4 rounded-xl flex justify-between items-center"><div><div className="font-bold text-sm mb-1">{task.title}</div><div className="text-xs text-slate-500">{task.progress}/{task.total}</div></div><button className={`px-3 py-1.5 rounded-lg text-xs font-bold ${task.claimed ? 'bg-slate-700 text-slate-500' : 'bg-yellow-500 text-black'}`}>{task.claimed ? 'Done' : 'Claim'}</button></div>))}</DetailModal>)}
       {activeModal === 'skills' && (<DetailModal title={t.skills} icon={Star} color="text-purple-400"><div className="grid grid-cols-1 gap-3">{GAME_SKILLS.map(skill => (<div key={skill.id} className="bg-slate-800 p-4 rounded-xl flex items-center gap-4"><div className={`w-12 h-12 rounded-full flex items-center justify-center ${skill.bg}`}><Trophy size={20} className={skill.color} /></div><div className="flex-1"><div className="flex justify-between mb-1"><span className="font-bold">{skill.name}</span><span className={`font-black ${skill.color}`}>{skill.title}</span></div><div className="w-full h-1.5 bg-slate-700 rounded-full"><div className={`h-full ${skill.color.replace('text', 'bg')}`} style={{width: '60%'}}></div></div><div className="text-[10px] text-slate-500 mt-1">Lv.{skill.level}</div></div></div>))}</div></DetailModal>)}
 
@@ -636,7 +668,7 @@ const GroupFinder = ({ onClose, t }) => {
   );
 };
 
-const GameTab = ({ t, onJoinRoom, onCreateRoom, createCooldown }) => {
+const GameTab = ({ t, onJoinRoom, onCreateRoom, createCooldown, showToast }) => {
   const [showMatchModal, setShowMatchModal] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
   const [showSeasonModal, setShowSeasonModal] = useState(false);
@@ -648,6 +680,7 @@ const GameTab = ({ t, onJoinRoom, onCreateRoom, createCooldown }) => {
   const [createEntry, setCreateEntry] = useState(100);
   const [showExchange, setShowExchange] = useState(false);
   const [exchangeAmount, setExchangeAmount] = useState('');
+  const [activeSubTab, setActiveSubTab] = useState('all');
 
   const handlePlayClick = (game) => {
     setSelectedGame(game);
@@ -658,7 +691,7 @@ const GameTab = ({ t, onJoinRoom, onCreateRoom, createCooldown }) => {
 
   const handleCreate = () => {
     if(createCooldown) {
-       alert(t.cooldown_msg);
+       showToast(t.cooldown_msg);
        return;
     }
     onCreateRoom({ gameName: selectedGame.title, mode: createMode, entry: createMode === 'compete' ? createEntry : 0, capacity: 4 });
@@ -673,32 +706,32 @@ const GameTab = ({ t, onJoinRoom, onCreateRoom, createCooldown }) => {
   const startQuickMatch = () => {
      setIsMatching(true);
      setTimeout(() => {
-        onJoinRoom({ id: 999, gameName: selectedGame.title, mode: 'compete', entry: selectedTier.entry, capacity: selectedTier.capacity, host: 'System_Bot', current: 1, isMyRoom: false });
+        // Directly start game with random players
+        const players = [
+            { id: 99, name: t.you, isHost: false, status: 'ready', avatar: 'Me', hasPaid: true },
+            { id: 2, name: 'Player_2', isHost: false, status: 'ready', avatar: 'P2', hasPaid: true },
+            { id: 3, name: 'Player_3', isHost: false, status: 'ready', avatar: 'P3', hasPaid: true },
+            { id: 4, name: 'Player_4', isHost: false, status: 'ready', avatar: 'P4', hasPaid: true }
+        ];
+        const room = { id: 999, gameName: selectedGame.title, mode: 'compete', entry: selectedTier.entry, capacity: 4, host: 'System', current: 4, isMyRoom: false };
+        
+        // We need to pass this up to App to start the game session directly
+        // Since we don't have a direct prop for onQuickStart, we can use onJoinRoom with a special flag or modify App to accept a new callback.
+        // However, the cleanest way given the current structure is to use onJoinRoom but let App handle the "auto-start" logic if we pass a flag, 
+        // OR better, just add a new prop to GameTab called onQuickStart.
+        // But I cannot change the props passed to GameTab in App easily without editing App first.
+        // Let's assume I will edit App to pass onQuickStart.
+        
+        // Actually, I can just call onJoinRoom with a special property `autoStart: true` and handle it in App.
+        onJoinRoom({ ...room, autoStart: true, players: players });
         setShowMatchModal(false);
      }, 1500);
   };
 
   const startSinglePlayer = () => {
-      alert("Starting Single Player Mode...");
+      showToast("Starting Single Player Mode...");
       setShowMatchModal(false);
   };
-
-  const GameListSection = ({ title, games }) => (
-      <div className="mb-6">
-          <h3 className="text-lg font-bold text-white mb-3 px-1">{title}</h3>
-          <div className="grid grid-cols-2 gap-4">
-              {games.map(game => (
-                  <div key={game.id} onClick={() => handlePlayClick(game)} className="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 active:scale-95 transition-transform cursor-pointer">
-                      <div className={`h-24 bg-gradient-to-br ${game.image} flex items-center justify-center`}><span className="text-3xl font-black text-white/20 uppercase tracking-widest">Game</span></div>
-                      <div className="p-3">
-                          <div className="flex justify-between items-start mb-1"><h3 className="font-bold text-sm truncate">{game.title}</h3><span className="text-[10px] text-slate-400">{game.type}</span></div>
-                          <div className="flex justify-between items-center mt-2"><div className="flex items-center gap-1 text-xs text-yellow-500 font-bold"><Coins size={12} fill="currentColor" /> {game.minEntry}+</div><button className="bg-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full text-white">Play</button></div>
-                      </div>
-                  </div>
-              ))}
-          </div>
-      </div>
-  );
 
   return (
     <div className="h-full bg-slate-950 flex flex-col text-white pb-20 relative">
@@ -723,7 +756,7 @@ const GameTab = ({ t, onJoinRoom, onCreateRoom, createCooldown }) => {
                    <span className="text-xs text-slate-400">You get:</span>
                    <span className="text-yellow-400 font-bold flex items-center gap-1"><Coins size={14} fill="currentColor"/> {exchangeAmount ? exchangeAmount * 100 : 0}</span>
                 </div>
-                <button onClick={() => { alert('Exchange Successful!'); setShowExchange(false); }} className="w-full bg-yellow-500 text-black font-bold py-3 rounded-xl">{t.confirm_exchange}</button>
+                <button onClick={() => { showToast('Exchange Successful!'); setShowExchange(false); }} className="w-full bg-yellow-500 text-black font-bold py-3 rounded-xl">{t.confirm_exchange}</button>
              </div>
           </div>
        )}
@@ -738,9 +771,35 @@ const GameTab = ({ t, onJoinRoom, onCreateRoom, createCooldown }) => {
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
         <div onClick={() => setShowSeasonModal(true)} className="w-full h-32 rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-between px-6 shadow-lg mb-6 relative overflow-hidden cursor-pointer active:scale-95 transition-transform"><div><div className="text-yellow-300 font-bold text-xs mb-1 flex items-center gap-1"><Award size={12}/> {t.season_week}</div><div className="text-2xl font-black italic">Mumbai Cup</div><div className="text-xs opacity-80 mt-1 bg-black/20 w-fit px-2 py-0.5 rounded-full flex items-center gap-1">Click to view <ChevronRight size={10}/></div></div><Trophy size={48} className="text-yellow-300 drop-shadow-lg" /></div>
         
-        <GameListSection title="Recent Games" games={GAMES.filter(g => g.category === 'recent')} />
-        <GameListSection title="Hot Games" games={GAMES.filter(g => g.category === 'hot')} />
-        <GameListSection title="All Games" games={GAMES} />
+        {/* Sub Tabs */}
+        <div className="flex items-center gap-6 border-b border-slate-800 px-2 mb-4 overflow-x-auto no-scrollbar">
+            {[{id: 'recent', label: 'Recent'}, {id: 'hot', label: 'Hot'}, {id: 'all', label: 'All Games'}].map(tab => (
+                <button 
+                    key={tab.id} 
+                    onClick={() => setActiveSubTab(tab.id)} 
+                    className={`pb-3 text-sm font-bold transition-all relative whitespace-nowrap ${activeSubTab === tab.id ? 'text-white' : 'text-slate-500'}`}
+                >
+                    {tab.label}
+                    {activeSubTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500 rounded-full animate-in fade-in zoom-in"></div>}
+                </button>
+            ))}
+        </div>
+
+        {/* Game Grid */}
+        <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+            {GAMES.filter(g => activeSubTab === 'all' ? true : g.category === activeSubTab).map(game => (
+                  <div key={game.id} onClick={() => handlePlayClick(game)} className="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 active:scale-95 transition-transform cursor-pointer group">
+                      <div className={`h-24 bg-gradient-to-br ${game.image} flex items-center justify-center relative overflow-hidden`}>
+                          <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                          <span className="text-3xl font-black text-white/20 uppercase tracking-widest group-hover:scale-110 transition-transform duration-500">Game</span>
+                      </div>
+                      <div className="p-3">
+                          <div className="flex justify-between items-start mb-1"><h3 className="font-bold text-sm truncate text-white">{game.title}</h3><span className="text-[10px] text-slate-400">{game.type}</span></div>
+                          <div className="flex justify-between items-center mt-2"><div className="flex items-center gap-1 text-xs text-yellow-500 font-bold"><Coins size={12} fill="currentColor" /> {game.minEntry}+</div><button className="bg-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full text-white shadow-lg shadow-blue-900/20">Play</button></div>
+                      </div>
+                  </div>
+            ))}
+        </div>
       </div>
 
       {showMatchModal && selectedGame && (
@@ -818,7 +877,7 @@ const GameTab = ({ t, onJoinRoom, onCreateRoom, createCooldown }) => {
   );
 };
 
-const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom }) => {
+const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, showToast }) => {
   const [activeChat, setActiveChat] = useState(null);
   const [chatHistory, setChatHistory] = useState([]);
   const [inputMsg, setInputMsg] = useState('');
@@ -844,7 +903,7 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom }) =
 
   const handleSendInvite = () => {
      if(createCooldown) {
-        alert(t.cooldown_msg);
+        showToast(t.cooldown_msg);
         return;
      }
      const roomId = Math.floor(Math.random() * 10000);
@@ -860,7 +919,7 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom }) =
       e.stopPropagation();
       if (!joinedGroups.includes(group.id)) {
           setJoinedGroups([...joinedGroups, group.id]);
-          alert(`Joined ${group.name}!`);
+          showToast(`Joined ${group.name}!`);
       }
   };
 
@@ -882,17 +941,17 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom }) =
         {/* Sticky Room Header */}
         <div className="bg-slate-900/95 backdrop-blur border-b border-slate-800 p-2 flex gap-2 overflow-x-auto shrink-0 no-scrollbar">
              {activeRoom && (
-                <div className="flex items-center gap-2 bg-blue-900/20 border border-blue-500/50 rounded-lg p-2 pr-3 shrink-0">
-                   <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center"><Gamepad2 size={16} className="text-white"/></div>
-                   <div><div className="text-[10px] font-bold text-blue-400">MY ROOM</div><div className="text-xs font-bold text-white">{activeRoom.gameName}</div></div>
-                   <button onClick={() => onCreateRoom(activeRoom)} className="bg-blue-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg ml-2 shadow-lg shadow-blue-900/20">Return</button>
+                <div className={`flex items-center gap-2 border rounded-lg p-2 pr-3 shrink-0 ${activeRoom.mode === 'friendly' ? 'bg-green-900/20 border-green-500/50' : 'bg-red-900/20 border-red-500/50'}`}>
+                   <div className={`w-8 h-8 rounded flex items-center justify-center ${activeRoom.mode === 'friendly' ? 'bg-green-600' : 'bg-red-600'}`}><Gamepad2 size={16} className="text-white"/></div>
+                   <div><div className={`text-[10px] font-bold ${activeRoom.mode === 'friendly' ? 'text-green-400' : 'text-red-400'}`}>MY ROOM</div><div className="text-xs font-bold text-white">{activeRoom.gameName}</div></div>
+                   <button onClick={() => onCreateRoom(activeRoom)} className={`text-white text-[10px] font-bold px-3 py-1.5 rounded-lg ml-2 shadow-lg ${activeRoom.mode === 'friendly' ? 'bg-green-600 shadow-green-900/20' : 'bg-red-600 shadow-red-900/20'}`}>Return</button>
                 </div>
              )}
              {MATCH_ROOMS.filter(r => r.current < r.capacity).slice(0,3).map(r => (
-                <div key={r.id} className="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-lg p-2 pr-3 shrink-0">
-                   <div className="w-8 h-8 rounded bg-slate-700 flex items-center justify-center"><Gamepad2 size={16} className="text-slate-400"/></div>
-                   <div><div className="text-[10px] font-bold text-slate-500">WAITING</div><div className="text-xs font-bold text-white">{r.gameName}</div></div>
-                   <button onClick={() => onJoinRoom(r)} className="bg-slate-700 hover:bg-slate-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg ml-2 border border-slate-600">{t.join}</button>
+                <div key={r.id} className={`flex items-center gap-2 border rounded-lg p-2 pr-3 shrink-0 ${r.mode === 'friendly' ? 'bg-green-900/10 border-green-500/30' : 'bg-red-900/10 border-red-500/30'}`}>
+                   <div className={`w-8 h-8 rounded flex items-center justify-center ${r.mode === 'friendly' ? 'bg-green-600/20 text-green-500' : 'bg-red-600/20 text-red-500'}`}><Gamepad2 size={16} fill="currentColor"/></div>
+                   <div><div className={`text-[10px] font-bold uppercase ${r.mode === 'friendly' ? 'text-green-500' : 'text-red-500'}`}>{r.mode}</div><div className="text-xs font-bold text-white">{r.gameName}</div></div>
+                   <button onClick={() => onJoinRoom(r)} className={`text-white text-[10px] font-bold px-3 py-1.5 rounded-lg ml-2 border transition-colors ${r.mode === 'friendly' ? 'bg-green-600 border-green-500 hover:bg-green-500' : 'bg-red-600 border-red-500 hover:bg-red-500'}`}>{t.join}</button>
                 </div>
              ))}
         </div>
@@ -919,10 +978,10 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom }) =
            {/* Simulate other invite */}
            <div className="flex gap-3 flex-row">
               <div className="w-8 h-8 rounded-full bg-indigo-600 flex-shrink-0 flex items-center justify-center text-xs font-bold text-white border border-slate-700">{activeChat.avatar}</div>
-              <div className="border p-3 rounded-2xl w-56 shadow-lg relative overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700">
-                 <div className="text-[10px] font-bold mb-2 flex items-center gap-1 uppercase tracking-wider text-slate-400"><Users size={12}/> Join Room</div>
+              <div className="border p-3 rounded-2xl w-56 shadow-lg relative overflow-hidden bg-gradient-to-br from-red-900 to-slate-900 border-red-500/50">
+                 <div className="text-[10px] font-bold mb-2 flex items-center gap-1 uppercase tracking-wider text-red-300"><Sword size={12}/> {t.comp_invite}</div>
                  <div className="flex items-center gap-3 mb-3"><div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center"><Gamepad2 size={20} className="text-white"/></div><div><div className="font-bold text-white text-sm">Fruit Slicer</div><div className="text-[10px] text-slate-400">{t.entry_fee}: <span className="text-yellow-400 font-bold">50</span></div></div></div>
-                 <button onClick={() => onJoinRoom({ id: 888, gameName: 'Fruit Slicer', mode: 'compete', entry: 50, capacity: 4, host: 'Other', current: 1, isMyRoom: false })} className="w-full py-2 rounded-lg text-xs font-bold text-white transition-colors bg-slate-700 hover:bg-slate-600">{t.join}</button>
+                 <button onClick={() => onJoinRoom({ id: 888, gameName: 'Fruit Slicer', mode: 'compete', entry: 50, capacity: 4, host: 'Other', current: 1, isMyRoom: false })} className="w-full py-2 rounded-lg text-xs font-bold text-white transition-colors bg-red-600 hover:bg-red-500">{t.join}</button>
               </div>
            </div>
         </div>
@@ -991,6 +1050,150 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom }) =
   );
 };
 
+const ActiveGameSession = ({ room, players, onGameOver, t }) => {
+  const [timeLeft, setTimeLeft] = useState(180); // 3 minutes
+  const [liveScores, setLiveScores] = useState(players.map(p => ({ ...p, score: 0 })));
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 0) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+
+      setLiveScores(prev => prev.map(p => ({
+        ...p,
+        score: p.score + Math.floor(Math.random() * 50) // Random score increment
+      })).sort((a, b) => b.score - a.score));
+
+    }, 50); // 20x speed
+
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+      if (timeLeft === 0) {
+          onGameOver(liveScores);
+      }
+  }, [timeLeft, liveScores, onGameOver]);
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
+
+  return (
+    <div className="absolute inset-0 bg-slate-950 z-[80] flex flex-col animate-in fade-in">
+       {/* Top Bar: Scores & Time */}
+       <div className="pt-12 px-3 pb-3 bg-slate-900 border-b border-slate-800 flex items-center gap-3 shadow-xl z-20">
+          <div className="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar">
+            {liveScores.map((p, i) => (
+               <div key={p.id} className={`flex-shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 ${p.id === 99 ? 'bg-blue-900/40 border-blue-500 shadow-blue-900/20 shadow-lg' : 'bg-slate-800 border-slate-700'}`}>
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${i===0 ? 'bg-yellow-500 text-black' : 'bg-slate-600 text-white'}`}>{i+1}</div>
+                  <div className="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white">{p.avatar}</div>
+                  <div className="font-mono font-bold text-white text-xs">{p.score}</div>
+               </div>
+            ))}
+          </div>
+          <div className="flex-shrink-0 flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 shadow-lg">
+             <Clock size={14} className={timeLeft < 30 ? "text-red-500 animate-pulse" : "text-blue-500"} />
+             <span className={`font-mono font-bold text-sm ${timeLeft < 30 ? "text-red-500" : "text-white"}`}>{formatTime(timeLeft)}</span>
+          </div>
+       </div>
+
+       {/* Game Area (H5 Placeholder) */}
+       <div className="flex-1 bg-black relative flex items-center justify-center overflow-hidden">
+          {/* Simulated Game Content */}
+          <div className="absolute inset-0 opacity-40 bg-[url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80')] bg-cover bg-center"></div>
+          <div className="relative z-10 text-center p-8 bg-black/50 backdrop-blur-sm rounded-3xl border border-white/10">
+             <Gamepad2 size={64} className="text-white/50 mx-auto mb-4 animate-bounce"/>
+             <h3 className="text-2xl font-black text-white uppercase tracking-widest mb-2">{room.gameName}</h3>
+             <p className="text-white/50 text-sm">Tap anywhere to play (Simulated)</p>
+          </div>
+          
+          {/* Interactive Click Area for "Playing" */}
+          <button 
+            className="absolute inset-0 z-20 w-full h-full cursor-crosshair focus:outline-none"
+            onClick={() => {
+                // Simulate score increase for "Me"
+                setLiveScores(prev => prev.map(p => p.id === 99 ? { ...p, score: p.score + 100 } : p).sort((a, b) => b.score - a.score));
+            }}
+          ></button>
+       </div>
+    </div>
+  );
+};
+
+const GameResultModal = ({ result, onClose, t }) => {
+  const { room, scores } = result;
+  const myRank = scores.findIndex(p => p.id === 99) + 1;
+  const totalPrize = room.mode === 'compete' ? (Number(room.entry) * room.capacity * 0.9) : 0; // 10% fee
+  
+  // Simple prize distribution: 1st: 60%, 2nd: 30%, 3rd: 10%
+  const getPrize = (rank) => {
+      if (room.mode === 'friendly') return 0;
+      if (rank === 1) return Math.floor(totalPrize * 0.6);
+      if (rank === 2) return Math.floor(totalPrize * 0.3);
+      if (rank === 3) return Math.floor(totalPrize * 0.1);
+      return 0;
+  };
+
+  return (
+    <div className="absolute inset-0 bg-black/90 z-[90] flex items-center justify-center p-4 animate-in zoom-in-95">
+       <div className="bg-slate-900 w-full max-w-sm rounded-3xl border border-slate-700 overflow-hidden flex flex-col max-h-[90vh] relative">
+          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-blue-600/20 to-transparent pointer-events-none"></div>
+          <div className="p-8 text-center relative z-10">
+             <div className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-orange-500/20">
+                <Trophy size={48} className="text-white" />
+             </div>
+             <h2 className="text-2xl font-black text-white mb-1">{t.game_over}</h2>
+             <p className="text-slate-400 text-sm">{room.gameName}</p>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-3">
+             {scores.map((p, i) => {
+                const prize = getPrize(i+1);
+                return (
+                   <div key={p.id} className={`p-3 rounded-xl flex items-center justify-between ${p.id === 99 ? 'bg-blue-600/20 border border-blue-500' : 'bg-slate-800 border border-slate-700'}`}>
+                      <div className="flex items-center gap-3">
+                         <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${i===0 ? 'bg-yellow-500 text-black' : i===1 ? 'bg-gray-300 text-black' : i===2 ? 'bg-orange-700 text-white' : 'bg-slate-700 text-slate-400'}`}>{i+1}</div>
+                         <div className="font-bold text-sm text-white">{p.name} {p.id === 99 && '(You)'}</div>
+                      </div>
+                      <div className="text-right">
+                         <div className="font-mono font-bold text-white">{p.score}</div>
+                         {prize > 0 && <div className="text-xs font-bold text-yellow-400 flex items-center justify-end gap-1"><Coins size={10} fill="currentColor"/> +{prize}</div>}
+                      </div>
+                   </div>
+                );
+             })}
+          </div>
+
+          <div className="p-6 border-t border-slate-800 bg-slate-950">
+             <button onClick={onClose} className="w-full py-3.5 rounded-xl bg-blue-600 font-bold text-white shadow-lg active:scale-95 transition-transform">{t.back_home}</button>
+          </div>
+       </div>
+    </div>
+  );
+};
+
+const Toast = ({ message, onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[100] bg-slate-800/90 backdrop-blur border border-slate-700 text-white px-6 py-3 rounded-full shadow-2xl animate-in slide-in-from-top-4 fade-in flex items-center gap-2 pointer-events-none">
+      <CheckCircle2 size={18} className="text-green-500" />
+      <span className="text-sm font-bold">{message}</span>
+    </div>
+  );
+};
+
 // --- Main App ---
 
 export default function App() {
@@ -998,7 +1201,13 @@ export default function App() {
   const [lang, setLang] = useState('zh');
   const [activeRoom, setActiveRoom] = useState(null); 
   const [createCooldown, setCreateCooldown] = useState(null); // Timestamp for cooldown
+  const [activeGameSession, setActiveGameSession] = useState(null);
+  const [gameResult, setGameResult] = useState(null);
+  const [isLoadingGame, setIsLoadingGame] = useState(false);
+  const [toastMsg, setToastMsg] = useState(null);
   const t = TEXTS[lang];
+
+  const showToast = (msg) => setToastMsg(msg);
 
   useEffect(() => {
      if(createCooldown && Date.now() > createCooldown) {
@@ -1006,12 +1215,37 @@ export default function App() {
      }
   }, [createCooldown, activeTab]);
 
-  const handleJoinRoom = (roomData) => setActiveRoom({ ...roomData, isMyRoom: roomData.host === 'Me' });
+  const handleJoinRoom = (roomData) => {
+      if (roomData.autoStart) {
+          // Quick match flow
+          setIsLoadingGame(true);
+          setTimeout(() => {
+              setIsLoadingGame(false);
+              setActiveGameSession({ room: roomData, players: roomData.players });
+          }, 2000);
+      } else {
+          setActiveRoom({ ...roomData, isMyRoom: roomData.host === 'Me' });
+      }
+  };
   const handleCreateRoom = (roomConfig) => setActiveRoom({ id: Math.floor(Math.random()*10000), gameName: roomConfig.gameName, mode: roomConfig.mode, entry: roomConfig.entry, capacity: roomConfig.capacity, host: 'Me', current: 1, isMyRoom: true });
   const handleDisband = () => {
      // Set cooldown 15 minutes from now (simulated as 15 seconds for demo purposes usually, but logic here is real)
      setCreateCooldown(Date.now() + 15 * 60 * 1000); 
      setActiveRoom(null);
+  };
+
+  const handleGameStart = (players) => {
+      setActiveRoom(null);
+      setIsLoadingGame(true);
+      setTimeout(() => {
+          setIsLoadingGame(false);
+          setActiveGameSession({ room: activeRoom, players });
+      }, 2000);
+  };
+
+  const handleGameOver = (finalScores) => {
+      setGameResult({ room: activeGameSession.room, scores: finalScores });
+      setActiveGameSession(null);
   };
 
   return (
@@ -1021,14 +1255,26 @@ export default function App() {
       </button>
       <div className="w-full max-w-md h-[850px] bg-black rounded-[40px] overflow-hidden shadow-2xl relative border-[8px] border-slate-900 ring-1 ring-slate-900/50">
         <div className="absolute top-0 w-full h-10 z-50 flex justify-between items-center px-6 text-white pointer-events-none"><span className="text-xs font-bold">9:41</span><div className="flex gap-1.5"><div className="w-3 h-3 bg-white rounded-full opacity-80"></div><div className="w-3 h-3 bg-white rounded-full opacity-80"></div></div></div>
+        
+        {isLoadingGame && (
+            <div className="absolute inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center animate-in fade-in">
+                <Loader2 size={64} className="text-blue-500 animate-spin mb-6" />
+                <h2 className="text-2xl font-bold text-white mb-2">Loading Game...</h2>
+                <p className="text-slate-400 text-sm">Preparing assets and connecting players</p>
+            </div>
+        )}
+
         <div className="h-full w-full">
           {activeTab === 'home' && <HomeTab t={t} />}
-          {activeTab === 'game' && <GameTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} />}
-          {activeTab === 'inbox' && <InboxTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} activeRoom={activeRoom} />}
-          {activeTab === 'mine' && <MineTab lang={lang} setLang={setLang} t={t} />}
+          {activeTab === 'game' && <GameTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} showToast={showToast} />}
+          {activeTab === 'inbox' && <InboxTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} activeRoom={activeRoom} showToast={showToast} />}
+          {activeTab === 'mine' && <MineTab lang={lang} setLang={setLang} t={t} showToast={showToast} />}
           {activeTab === 'plus' && <div className="h-full flex items-center justify-center text-white"><button onClick={() => setActiveTab('home')}>Close Camera</button></div>}
         </div>
-        {activeRoom && <RoomLobby room={activeRoom} onClose={() => setActiveRoom(null)} t={t} onDisband={handleDisband} />}
+        {activeRoom && <RoomLobby room={activeRoom} onClose={() => setActiveRoom(null)} t={t} onDisband={handleDisband} onStartGame={handleGameStart} showToast={showToast} />}
+        {activeGameSession && <ActiveGameSession room={activeGameSession.room} players={activeGameSession.players} onGameOver={handleGameOver} t={t} />}
+        {gameResult && <GameResultModal result={gameResult} onClose={() => setGameResult(null)} t={t} />}
+        {toastMsg && <Toast message={toastMsg} onClose={() => setToastMsg(null)} />}
         {activeTab !== 'plus' && <BottomNav activeTab={activeTab} onTabChange={setActiveTab} t={t} />}
         <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full z-50"></div>
       </div>
