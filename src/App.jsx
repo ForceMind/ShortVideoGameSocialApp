@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-  Home, Gamepad2, PlusSquare, MessageCircle, User, Search, Heart, MessageSquare, Share2, MapPin, Coins, 
+  Home, Gamepad2, PlusSquare, Plus, MessageCircle, User, Search, Heart, MessageSquare, Share2, MapPin, Coins, 
   Trophy, Clock, ChevronRight, ChevronLeft, Play, Pause, Users, Bell, Settings, X, Send, Mic, MoreHorizontal, 
   Wallet, CheckCircle2, Loader2, RefreshCw, TrendingUp, Calendar, Award, Gem, CircleDollarSign, Star, Zap, 
-  Target, Gift, Languages, Filter, Flame, UserPlus, ArrowRightLeft, Receipt, Sword, Crown, LayoutGrid, LogOut, Ban, AlertTriangle, Lock
+  Target, Gift, Languages, Filter, Flame, UserPlus, ArrowRightLeft, Receipt, Sword, Crown, LayoutGrid, LogOut, Ban, AlertTriangle, Lock, HelpCircle
 } from 'lucide-react';
 
 // --- Internationalization (i18n) ---
@@ -217,14 +217,13 @@ const HomeTab = ({ t }) => {
   const [activeTab, setActiveTab] = useState('foryou');
   const [showComments, setShowComments] = useState(false);
 
-  // Mix content: Video, Video, Group, Video, Game, Video, Room
+  // Mix content: Video, Video, Group, Video, Game, Video
   const feedItems = useMemo(() => [
       { type: 'video', data: VIDEOS[0] },
       { type: 'video', data: VIDEOS[1] },
       { type: 'group_card', data: EXTENDED_GROUPS[0] },
       { type: 'video', data: VIDEOS[2] },
       { type: 'game_card', data: GAMES[0] },
-      { type: 'room_card', data: MATCH_ROOMS[0] },
   ], []);
 
   const handleNext = () => setCurrentIndex((prev) => (prev + 1) % feedItems.length);
@@ -645,7 +644,7 @@ const MineTab = ({ lang, setLang, t, showToast }) => {
   );
 };
 
-const GroupFinder = ({ onClose, t }) => {
+const GroupFinder = ({ onClose, t, onOpenChat }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("dist");
   const filteredGroups = useMemo(() => {
@@ -662,223 +661,301 @@ const GroupFinder = ({ onClose, t }) => {
        <div className="p-4 space-y-4">
          <div className="relative"><Search className="absolute left-3 top-2.5 text-slate-500" size={18} /><input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t.search_placeholder} className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white text-sm focus:border-blue-500 focus:outline-none"/></div>
          <div className="flex gap-2">{[{id: 'dist', label: t.sort_dist, icon: MapPin}, {id: 'pop', label: t.sort_pop, icon: Flame}, {id: 'mem', label: t.sort_mem, icon: Users}].map(opt => (<button key={opt.id} onClick={() => setSortBy(opt.id)} className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-bold transition-all ${sortBy === opt.id ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-400'}`}><opt.icon size={12}/> {opt.label}</button>))}</div>
-         <div className="space-y-3 pb-20 overflow-y-auto">{filteredGroups.map(group => (<div key={group.id} className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex justify-between items-center"><div className="flex items-center gap-3"><div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-lg font-bold text-white">{group.name[0]}</div><div><h3 className="font-bold text-white text-sm">{group.name}</h3><div className="flex items-center gap-3 text-[10px] text-slate-400 mt-1"><span className="flex items-center gap-0.5"><MapPin size={10}/> {group.dist < 100 ? `${group.dist}km` : '100+km'}</span><span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span><span className="flex items-center gap-0.5 text-green-400"><Flame size={10}/> {group.activity}</span></div></div></div><button className="bg-white/10 hover:bg-white/20 text-blue-400 px-4 py-1.5 rounded-full text-xs font-bold border border-blue-500/50">{t.join}</button></div>))}</div>
+         <div className="space-y-3 pb-20 overflow-y-auto">{filteredGroups.map(group => (<div key={group.id} className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex justify-between items-center"><div className="flex items-center gap-3"><div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-lg font-bold text-white">{group.name[0]}</div><div><h3 className="font-bold text-white text-sm">{group.name}</h3><div className="flex items-center gap-3 text-[10px] text-slate-400 mt-1"><span className="flex items-center gap-0.5"><MapPin size={10}/> {group.dist < 100 ? `${group.dist}km` : '100+km'}</span><span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span><span className="flex items-center gap-0.5 text-green-400"><Flame size={10}/> {group.activity}</span></div></div></div><button onClick={() => onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: 'Welcome to the group!', time: 'Just now', unread: 0, type: 'group' })} className="bg-white/10 hover:bg-white/20 text-blue-400 px-4 py-1.5 rounded-full text-xs font-bold border border-blue-500/50">{t.join}</button></div>))}</div>
        </div>
     </div>
   );
 };
 
-const GameTab = ({ t, onJoinRoom, onCreateRoom, createCooldown, showToast }) => {
-  const [showMatchModal, setShowMatchModal] = useState(false);
-  const [selectedGame, setSelectedGame] = useState(null);
-  const [showSeasonModal, setShowSeasonModal] = useState(false);
-  const [activeRoomTab, setActiveRoomTab] = useState('quick');
-  const [roomFilter, setRoomFilter] = useState('nearby');
-  const [isMatching, setIsMatching] = useState(false);
-  const [selectedTier, setSelectedTier] = useState(MATCH_TIERS[0]);
-  const [createMode, setCreateMode] = useState('friendly');
-  const [createEntry, setCreateEntry] = useState(100);
-  const [showExchange, setShowExchange] = useState(false);
-  const [exchangeAmount, setExchangeAmount] = useState('');
-  const [activeSubTab, setActiveSubTab] = useState('all');
+const TaskCenter = ({ onClose, t, showToast }) => {
+  const [tasks, setTasks] = useState(DAILY_TASKS);
+  const [level, setLevel] = useState(5);
+  const [exp, setExp] = useState(350);
+  const maxExp = 500;
 
-  const handlePlayClick = (game) => {
-    setSelectedGame(game);
-    setShowMatchModal(true);
-    setActiveRoomTab('quick');
-    setIsMatching(false);
-  };
-
-  const handleCreate = () => {
-    if(createCooldown) {
-       showToast(t.cooldown_msg);
-       return;
-    }
-    onCreateRoom({ gameName: selectedGame.title, mode: createMode, entry: createMode === 'compete' ? createEntry : 0, capacity: 4 });
-    setShowMatchModal(false);
-  };
-
-  const handleJoin = (room) => {
-    onJoinRoom({ id: room.id, gameName: selectedGame.title, mode: room.mode, entry: room.entry, capacity: room.capacity, host: room.host, current: room.current, isMyRoom: false });
-    setShowMatchModal(false);
-  }
-
-  const startQuickMatch = () => {
-     setIsMatching(true);
-     setTimeout(() => {
-        // Directly start game with random players
-        const players = [
-            { id: 99, name: t.you, isHost: false, status: 'ready', avatar: 'Me', hasPaid: true },
-            { id: 2, name: 'Player_2', isHost: false, status: 'ready', avatar: 'P2', hasPaid: true },
-            { id: 3, name: 'Player_3', isHost: false, status: 'ready', avatar: 'P3', hasPaid: true },
-            { id: 4, name: 'Player_4', isHost: false, status: 'ready', avatar: 'P4', hasPaid: true }
-        ];
-        const room = { id: 999, gameName: selectedGame.title, mode: 'compete', entry: selectedTier.entry, capacity: 4, host: 'System', current: 4, isMyRoom: false };
-        
-        // We need to pass this up to App to start the game session directly
-        // Since we don't have a direct prop for onQuickStart, we can use onJoinRoom with a special flag or modify App to accept a new callback.
-        // However, the cleanest way given the current structure is to use onJoinRoom but let App handle the "auto-start" logic if we pass a flag, 
-        // OR better, just add a new prop to GameTab called onQuickStart.
-        // But I cannot change the props passed to GameTab in App easily without editing App first.
-        // Let's assume I will edit App to pass onQuickStart.
-        
-        // Actually, I can just call onJoinRoom with a special property `autoStart: true` and handle it in App.
-        onJoinRoom({ ...room, autoStart: true, players: players });
-        setShowMatchModal(false);
-     }, 1500);
-  };
-
-  const startSinglePlayer = () => {
-      showToast("Starting Single Player Mode...");
-      setShowMatchModal(false);
+  const handleClaim = (taskId) => {
+      setTasks(prev => prev.map(task => {
+          if (task.id === taskId) {
+              showToast(`Claimed reward for ${task.title}!`);
+              setExp(e => Math.min(e + 50, maxExp));
+              return { ...task, claimed: true };
+          }
+          return task;
+      }));
   };
 
   return (
-    <div className="h-full bg-slate-950 flex flex-col text-white pb-20 relative">
-      {showExchange && (
-          <div className="absolute inset-0 z-[60] bg-black/80 flex items-center justify-center p-4">
-             <div className="bg-slate-900 border border-slate-700 p-6 rounded-2xl w-full max-w-xs animate-slide-up">
-                <div className="flex justify-between items-center mb-4"><h3 className="text-lg font-bold text-white">{t.exchange_title}</h3><button onClick={() => setShowExchange(false)}><X size={20} className="text-slate-400"/></button></div>
-                <div className="bg-slate-800 p-3 rounded-xl mb-4 text-center"><div className="text-xs text-slate-400 mb-1">{t.exchange_rate}</div></div>
-                <div className="flex justify-between items-center mb-2 px-1">
-                    <span className="text-xs text-slate-400">Balance: <span className="text-yellow-400 font-bold">8,900</span></span>
-                </div>
-                <div className="flex gap-2 mb-4">
-                    {[10, 50, 100, 500].map(amt => (
-                        <button key={amt} onClick={() => setExchangeAmount(amt)} className="flex-1 py-2 bg-slate-800 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-700 border border-slate-700">{amt}</button>
-                    ))}
-                </div>
-                <div className="mb-4">
-                   <label className="text-xs text-slate-400 mb-1 block">{t.input_coins}</label>
-                   <input type="number" value={exchangeAmount} onChange={e => setExchangeAmount(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-bold focus:outline-none focus:border-yellow-500" placeholder="0"/>
-                </div>
-                <div className="flex justify-between items-center mb-6 px-2">
-                   <span className="text-xs text-slate-400">You get:</span>
-                   <span className="text-yellow-400 font-bold flex items-center gap-1"><Coins size={14} fill="currentColor"/> {exchangeAmount ? exchangeAmount * 100 : 0}</span>
-                </div>
-                <button onClick={() => { showToast('Exchange Successful!'); setShowExchange(false); }} className="w-full bg-yellow-500 text-black font-bold py-3 rounded-xl">{t.confirm_exchange}</button>
-             </div>
-          </div>
-       )}
-
-      {showSeasonModal && (<div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-slate-900 w-full max-w-sm rounded-3xl border border-slate-700 overflow-hidden animate-slide-up max-h-[80vh] flex flex-col"><div className="h-32 bg-gradient-to-r from-purple-600 to-blue-600 relative p-6 flex flex-col justify-end"><button onClick={(e) => { e.stopPropagation(); setShowSeasonModal(false); }} className="absolute top-4 right-4 bg-black/30 p-2 rounded-full"><X size={18} /></button><div className="text-yellow-300 font-bold text-xs">{t.season_week}</div><h2 className="text-2xl font-black italic text-white">Mumbai Cup</h2><div className="absolute right-6 bottom-4"><Trophy size={64} className="text-yellow-300 opacity-50 rotate-12" /></div></div><div className="p-6 overflow-y-auto flex-1"><div className="flex gap-4 mb-6"><div className="flex-1 bg-slate-800 p-3 rounded-xl text-center"><div className="text-xs text-slate-500 mb-1">Time Left</div><div className="font-bold flex items-center justify-center gap-1"><Clock size={14} className="text-blue-400" /> 12d</div></div><div className="flex-1 bg-slate-800 p-3 rounded-xl text-center"><div className="text-xs text-slate-500 mb-1">{t.season_pool}</div><div className="font-bold flex items-center justify-center gap-1 text-yellow-400"><Coins size={14} fill="currentColor" /> 10M</div></div></div><div className="mb-6"><h3 className="font-bold text-sm mb-3 flex items-center gap-2"><Award size={16} className="text-purple-400" /> {t.season_rules}</h3><ul className="text-xs text-slate-400 space-y-2 list-disc pl-4"><li>Win matches to earn points.</li><li>Top 100 players share the prize pool.</li></ul></div><div><h3 className="font-bold text-sm mb-3 flex items-center gap-2"><TrendingUp size={16} className="text-green-400" /> {t.season_rank}</h3><div className="space-y-2">{LEADERBOARD.map((p, i) => (<div key={i} className="flex items-center justify-between bg-slate-800 p-3 rounded-xl"><div className="flex items-center gap-3"><div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${i===0?'bg-yellow-500 text-black':i===1?'bg-gray-400 text-black':'bg-orange-700 text-white'}`}>{p.rank}</div><span className="font-bold text-sm">{p.name}</span></div><span className="font-mono text-yellow-400 font-bold text-sm">{p.score}</span></div>))}</div></div></div></div></div>)}
-
-      <div className="px-4 pt-12 pb-4 bg-gradient-to-b from-slate-900 to-slate-950 border-b border-slate-800 flex justify-between items-center sticky top-0 z-10">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent italic">WinGaming</h1>
-        <div className="flex items-center gap-2 bg-slate-800 rounded-full px-3 py-1.5 border border-slate-700"><Coins className="text-yellow-400" size={16} fill="currentColor" /><span className="font-bold text-yellow-100">12,450</span><button onClick={() => setShowExchange(true)} className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-[10px] font-bold ml-1">+</button></div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
-        <div onClick={() => setShowSeasonModal(true)} className="w-full h-32 rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-between px-6 shadow-lg mb-6 relative overflow-hidden cursor-pointer active:scale-95 transition-transform"><div><div className="text-yellow-300 font-bold text-xs mb-1 flex items-center gap-1"><Award size={12}/> {t.season_week}</div><div className="text-2xl font-black italic">Mumbai Cup</div><div className="text-xs opacity-80 mt-1 bg-black/20 w-fit px-2 py-0.5 rounded-full flex items-center gap-1">Click to view <ChevronRight size={10}/></div></div><Trophy size={48} className="text-yellow-300 drop-shadow-lg" /></div>
-        
-        {/* Sub Tabs */}
-        <div className="flex items-center gap-6 border-b border-slate-800 px-2 mb-4 overflow-x-auto no-scrollbar">
-            {[{id: 'recent', label: 'Recent'}, {id: 'hot', label: 'Hot'}, {id: 'all', label: 'All Games'}].map(tab => (
-                <button 
-                    key={tab.id} 
-                    onClick={() => setActiveSubTab(tab.id)} 
-                    className={`pb-3 text-sm font-bold transition-all relative whitespace-nowrap ${activeSubTab === tab.id ? 'text-white' : 'text-slate-500'}`}
-                >
-                    {tab.label}
-                    {activeSubTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500 rounded-full animate-in fade-in zoom-in"></div>}
-                </button>
-            ))}
-        </div>
-
-        {/* Game Grid */}
-        <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            {GAMES.filter(g => activeSubTab === 'all' ? true : g.category === activeSubTab).map(game => (
-                  <div key={game.id} onClick={() => handlePlayClick(game)} className="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 active:scale-95 transition-transform cursor-pointer group">
-                      <div className={`h-24 bg-gradient-to-br ${game.image} flex items-center justify-center relative overflow-hidden`}>
-                          <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
-                          <span className="text-3xl font-black text-white/20 uppercase tracking-widest group-hover:scale-110 transition-transform duration-500">Game</span>
-                      </div>
-                      <div className="p-3">
-                          <div className="flex justify-between items-start mb-1"><h3 className="font-bold text-sm truncate text-white">{game.title}</h3><span className="text-[10px] text-slate-400">{game.type}</span></div>
-                          <div className="flex justify-between items-center mt-2"><div className="flex items-center gap-1 text-xs text-yellow-500 font-bold"><Coins size={12} fill="currentColor" /> {game.minEntry}+</div><button className="bg-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full text-white shadow-lg shadow-blue-900/20">Play</button></div>
-                      </div>
-                  </div>
-            ))}
-        </div>
-      </div>
-
-      {showMatchModal && selectedGame && (
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center animate-in fade-in">
-           <div className="bg-slate-900 w-full sm:w-[90%] sm:rounded-2xl rounded-t-2xl p-6 border-t border-slate-700 animate-slide-up flex flex-col max-h-[90vh]">
-              {isMatching ? (
-                 <div className="flex flex-col items-center justify-center py-10"><Loader2 size={48} className="text-blue-500 animate-spin mb-4"/><h2 className="text-xl font-bold mb-1">{t.match_title}</h2><p className="text-sm text-slate-400">{t.match_desc}</p></div>
-              ) : (
-                <>
-                  <div className="flex justify-between items-center mb-6"><div><h2 className="text-xl font-bold">{selectedGame.title}</h2><p className="text-xs text-slate-400">{t.match_desc}</p></div><button onClick={() => setShowMatchModal(false)} className="p-2 bg-slate-800 rounded-full"><X size={20} /></button></div>
-                  <div className="flex gap-2 p-1 bg-slate-800 rounded-xl mb-6">{['quick', 'single', 'custom', 'create'].map(tab => (<button key={tab} onClick={() => setActiveRoomTab(tab)} className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeRoomTab === tab ? 'bg-slate-700 text-white shadow' : 'text-slate-400'}`}>{tab === 'single' ? 'Single' : t[`room_${tab==='custom'?'lb':tab==='create'?'create':'qk'}`] || (tab==='custom'?t.custom_rooms:t.quick_match_title)}</button>))}</div>
-
-                  {activeRoomTab === 'quick' && (
-                     <div className="flex flex-col flex-1">
-                        <div className="grid grid-cols-3 gap-3 mb-6">{MATCH_TIERS.map(tier => (<button key={tier.id} onClick={() => setSelectedTier(tier)} className={`relative p-3 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${selectedTier.id === tier.id ? `border-transparent bg-slate-800 ring-2 ring-blue-500` : 'border-slate-800 bg-slate-900 opacity-60'}`}>{selectedTier.id === tier.id && <div className="absolute -top-2 -right-2 bg-blue-500 rounded-full p-0.5"><CheckCircle2 size={12} className="text-white"/></div>}<div className={`w-8 h-8 rounded-full ${tier.color} flex items-center justify-center text-white font-bold text-xs mb-2`}>{tier.name === 'tier_master' ? <Crown size={14}/> : <Zap size={14}/>}</div><div className="text-xs font-bold mb-1 text-white">{t[tier.name]}</div><div className="flex items-center gap-1 text-[10px] text-yellow-400"><Coins size={10} fill="currentColor"/> {tier.entry}</div></button>))}</div>
-                        <div className="bg-slate-800/50 p-4 rounded-xl flex justify-around items-center mb-6 border border-slate-700"><div className="text-center"><div className="text-xs text-slate-400 mb-1">{t.capacity}</div><div className="font-bold text-white">{selectedTier.capacity} {t.players}</div></div><div className="w-px h-8 bg-slate-700"></div><div className="text-center"><div className="text-xs text-slate-400 mb-1">{t.prize}</div><div className="font-bold text-green-400">{selectedTier.prize}</div></div></div>
-                        <button onClick={startQuickMatch} className="w-full bg-gradient-to-r from-blue-600 to-purple-600 py-3.5 rounded-xl font-bold text-lg shadow-lg mt-auto flex items-center justify-center gap-2"><Sword size={20} fill="currentColor"/> {t.pay_start}</button>
-                     </div>
-                  )}
-
-                  {activeRoomTab === 'single' && (
-                      <div className="flex flex-col flex-1 items-center justify-center text-center p-4">
-                          <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mb-4"><User size={32} className="text-blue-400"/></div>
-                          <h3 className="text-lg font-bold text-white mb-2">Single Player Mode</h3>
-                          <p className="text-sm text-slate-400 mb-6">Practice your skills or play for fun. Entry fee required.</p>
-                          <div className="flex items-center gap-2 text-yellow-400 font-bold text-xl mb-8"><Coins size={24} fill="currentColor"/> 50</div>
-                          <button onClick={startSinglePlayer} className="w-full bg-blue-600 py-3.5 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-2"><Play size={20} fill="currentColor"/> Start Game</button>
-                      </div>
-                  )}
-
-                  {activeRoomTab === 'custom' && (
-                     <div className="flex flex-col flex-1 overflow-y-auto space-y-3 pb-4">
-                        <div className="flex gap-4 border-b border-slate-800 mb-4 text-xs font-medium">{[{id: 'nearby', label: t.room_lb}, {id: 'group', label: t.room_gp}].map(tab => (<button key={tab.id} onClick={() => setRoomFilter(tab.id)} className={`pb-2 transition-colors ${roomFilter === tab.id ? 'border-b-2 border-blue-500 text-white' : 'text-slate-500'}`}>{tab.label}</button>))}</div>
-                        {MATCH_ROOMS.filter(r => roomFilter === 'nearby' ? (r.tag === 'District' || r.tag === 'Nearby') : true).map(room => (
-                           <div key={room.id} onClick={() => handleJoin(room)} className={`p-3 rounded-xl flex justify-between items-center cursor-pointer hover:bg-slate-700 border transition-all ${room.mode === 'friendly' ? 'bg-slate-800 border-green-900/30 hover:border-green-500/50' : 'bg-slate-800 border-red-900/30 hover:border-red-500/50'}`}>
-                              <div>
-                                 <div className="flex items-center gap-2 mb-1">
-                                    <span className={`text-[10px] px-1.5 py-0.5 rounded ${room.mode === 'friendly' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>{room.mode === 'friendly' ? 'Friendly' : 'Compete'}</span>
-                                    <span className="font-bold text-sm">{room.name}</span>
-                                 </div>
-                                 <div className="text-[10px] text-slate-400 flex items-center gap-3">
-                                    <span className="flex items-center gap-1 font-bold text-slate-300"><Users size={12}/> {room.current}/{room.capacity}</span>
-                                    <span className="flex items-center gap-1 text-blue-400"><LayoutGrid size={12}/> {room.players} {t.playing}</span>
-                                 </div>
-                              </div>
-                              <div className="flex flex-col items-end">
-                                 <div className="flex items-center gap-1 text-yellow-400 font-bold text-sm">{t.entry_fee}: <Coins size={12} /> {room.entry}</div>
-                                 <div className="text-[10px] text-slate-500">{t.prize}: <span className="text-green-400">{room.prize}</span></div>
-                              </div>
-                           </div>
-                        ))}
-                     </div>
-                  )}
-
-                  {activeRoomTab === 'create' && (
-                     <div className="flex flex-col flex-1">
-                        <div className="bg-slate-800 p-1 rounded-xl flex gap-1 mb-6"><button onClick={() => setCreateMode('friendly')} className={`flex-1 py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${createMode === 'friendly' ? 'bg-green-600 text-white' : 'text-slate-400'}`}><Users size={14}/> {t.mode_friendly}</button><button onClick={() => setCreateMode('compete')} className={`flex-1 py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${createMode === 'compete' ? 'bg-red-600 text-white' : 'text-slate-400'}`}><Trophy size={14}/> {t.mode_compete}</button></div>
-                        <div className="bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-6"><p className="text-xs text-center text-slate-400 mb-4">{createMode === 'friendly' ? t.friendly_desc : t.compete_desc}</p><div className="flex justify-between items-center py-2 border-b border-slate-700/50 mb-2"><span className="text-sm text-slate-300">{t.room_cost} ({t.host_pay})</span><span className="text-yellow-400 font-bold flex items-center gap-1"><Coins size={14} fill="currentColor"/> 10</span></div>{createMode === 'compete' && (<div className="flex justify-between items-center py-2"><span className="text-sm text-slate-300">{t.entry_fee}</span><select className="bg-slate-900 border border-slate-600 rounded px-2 py-1 text-xs text-white" value={createEntry} onChange={(e) => setCreateEntry(e.target.value)}><option value="10">10</option><option value="50">50</option><option value="100">100</option><option value="500">500</option></select></div>)}</div>
-                        
-                        {createCooldown ? (
-                           <div className="w-full py-3.5 rounded-xl bg-slate-800 text-slate-500 font-bold flex items-center justify-center gap-2 border border-slate-700">
-                              <Lock size={16} /> {t.cooldown_msg}
-                           </div>
-                        ) : (
-                           <button onClick={handleCreate} className={`w-full py-3.5 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform mt-auto ${createMode === 'friendly' ? 'bg-green-600 hover:bg-green-500' : 'bg-red-600 hover:bg-red-500'}`}>{createMode === 'friendly' ? <Users size={20}/> : <Sword size={20} fill="currentColor"/>} {t.room_create}</button>
-                        )}
-                     </div>
-                  )}
-                </>
-              )}
+    <div className="absolute inset-0 bg-slate-950 z-50 flex flex-col animate-in slide-in-from-right">
+       {/* Header */}
+       <div className="pt-12 px-4 pb-6 bg-gradient-to-b from-indigo-900 to-slate-900 border-b border-slate-800 relative overflow-hidden">
+           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+           <div className="relative z-10 flex items-center justify-between mb-6">
+               <button onClick={onClose} className="bg-slate-800/50 p-2 rounded-full backdrop-blur-sm"><ChevronLeft size={24} className="text-white"/></button>
+               <h1 className="text-lg font-bold text-white">Task Center</h1>
+               <button className="bg-slate-800/50 p-2 rounded-full backdrop-blur-sm"><HelpCircle size={20} className="text-slate-400"/></button>
            </div>
-        </div>
-      )}
+           
+           {/* Level Card */}
+           <div className="relative z-10 flex items-center gap-4">
+               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 to-orange-600 p-1 shadow-lg shadow-orange-500/20">
+                   <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center flex-col">
+                       <span className="text-[10px] text-slate-400 font-bold uppercase">Level</span>
+                       <span className="text-3xl font-black text-white">{level}</span>
+                   </div>
+               </div>
+               <div className="flex-1">
+                   <div className="flex justify-between items-end mb-2">
+                       <span className="text-white font-bold text-lg">Elite Gamer</span>
+                       <span className="text-xs text-indigo-300 font-mono">{exp}/{maxExp} EXP</span>
+                   </div>
+                   <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                       <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{width: `${(exp/maxExp)*100}%`}}></div>
+                   </div>
+                   <div className="text-[10px] text-slate-400 mt-2">Next Level: Unlock Exclusive Avatar Frame</div>
+               </div>
+           </div>
+       </div>
+
+       {/* Task List */}
+       <div className="flex-1 overflow-y-auto p-4 space-y-4">
+           <div className="flex items-center gap-2 mb-2">
+               <Target size={18} className="text-yellow-400"/>
+               <h2 className="font-bold text-white">Daily Missions</h2>
+           </div>
+           
+           {tasks.map(task => (
+               <div key={task.id} className="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center gap-4">
+                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${task.claimed ? 'bg-slate-800 text-slate-600' : 'bg-indigo-500/20 text-indigo-400'}`}>
+                       {task.claimed ? <CheckCircle2 size={24}/> : <Star size={24}/>}
+                   </div>
+                   <div className="flex-1">
+                       <h3 className={`font-bold text-sm ${task.claimed ? 'text-slate-500' : 'text-white'}`}>{task.title}</h3>
+                       <div className="flex items-center gap-2 mt-1">
+                           <div className="w-24 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                               <div className={`h-full ${task.claimed ? 'bg-slate-600' : 'bg-yellow-500'}`} style={{width: `${(task.progress/task.total)*100}%`}}></div>
+                           </div>
+                           <span className="text-[10px] text-slate-500">{task.progress}/{task.total}</span>
+                       </div>
+                   </div>
+                   <button 
+                       disabled={task.claimed || task.progress < task.total}
+                       onClick={() => handleClaim(task.id)}
+                       className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                           task.claimed 
+                               ? 'bg-slate-800 text-slate-500 cursor-default' 
+                               : task.progress >= task.total 
+                                   ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20 active:scale-95' 
+                                   : 'bg-slate-800 text-slate-400 cursor-not-allowed'
+                       }`}
+                   >
+                       {task.claimed ? 'Done' : 'Claim'}
+                   </button>
+               </div>
+           ))}
+
+           <div className="bg-gradient-to-r from-pink-600/20 to-purple-600/20 border border-pink-500/30 rounded-2xl p-4 mt-6">
+               <div className="flex items-center gap-3 mb-3">
+                   <div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white"><Gift size={20}/></div>
+                   <div>
+                       <h3 className="font-bold text-white text-sm">Weekly Chest</h3>
+                       <p className="text-[10px] text-pink-200">Complete 15 daily tasks to open</p>
+                   </div>
+               </div>
+               <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                   <div className="h-full bg-pink-500 w-2/3"></div>
+               </div>
+               <div className="text-right text-[10px] text-pink-300 mt-1">10/15 Completed</div>
+           </div>
+       </div>
     </div>
   );
 };
 
-const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, showToast }) => {
-  const [activeChat, setActiveChat] = useState(null);
+const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
+  const [showAllGames, setShowAllGames] = useState(false);
+  const [showAllGroups, setShowAllGroups] = useState(false);
+  const [sortBy, setSortBy] = useState('hot');
+  const [showSortMenu, setShowSortMenu] = useState(false);
+  const [showWallet, setShowWallet] = useState(false);
+  const [showTaskCenter, setShowTaskCenter] = useState(false);
+
+  const handlePlayClick = (game) => {
+     const players = [
+        { id: 99, name: t.you, isHost: false, status: 'ready', avatar: 'Me', hasPaid: true },
+        { id: 2, name: 'Player_2', isHost: false, status: 'ready', avatar: 'P2', hasPaid: true },
+        { id: 3, name: 'Player_3', isHost: false, status: 'ready', avatar: 'P3', hasPaid: true },
+        { id: 4, name: 'Player_4', isHost: false, status: 'ready', avatar: 'P4', hasPaid: true }
+    ];
+    const room = { id: 999, gameName: game.title, mode: 'compete', entry: 100, capacity: 4, host: 'System', current: 4, isMyRoom: false };
+    onJoinRoom({ ...room, autoStart: true, players: players });
+  };
+
+  const sortedGames = useMemo(() => {
+      let games = [...GAMES];
+      if (sortBy === 'players') {
+          return games.sort((a, b) => {
+              const parse = (s) => parseFloat(s.replace('M', '000000').replace('k', '000'));
+              return parse(b.players) - parse(a.players);
+          });
+      }
+      if (sortBy === 'recent') {
+           return games.sort((a, b) => (a.category === 'recent' ? -1 : 1));
+      }
+      return games.sort((a, b) => (a.category === 'hot' ? -1 : 1));
+  }, [sortBy]);
+
+  if (showAllGames) {
+      return (
+          <div className="h-full bg-slate-950 flex flex-col text-white pb-20 relative animate-in slide-in-from-right">
+              <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                      <button onClick={() => setShowAllGames(false)}><ChevronLeft size={24} className="text-white"/></button>
+                      <h1 className="text-lg font-bold text-white">All Games</h1>
+                  </div>
+                  <div className="relative">
+                      <button onClick={() => setShowSortMenu(!showSortMenu)} className="p-2 bg-slate-800 rounded-full"><Filter size={16} className="text-white"/></button>
+                      {showSortMenu && (
+                          <div className="absolute right-0 top-full mt-2 bg-slate-800 rounded-xl border border-slate-700 p-2 w-32 z-50 shadow-xl">
+                              {['hot', 'recent', 'players'].map(s => (
+                                  <button key={s} onClick={() => { setSortBy(s); setShowSortMenu(false); }} className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold mb-1 last:mb-0 ${sortBy === s ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-700'}`}>
+                                      {s === 'hot' ? 'Popular' : s === 'recent' ? 'Newest' : 'Most Played'}
+                                  </button>
+                              ))}
+                          </div>
+                      )}
+                  </div>
+              </div>
+              <div className="p-4 grid grid-cols-2 gap-4 overflow-y-auto">
+                  {sortedGames.map(game => (
+                      <div key={game.id} onClick={() => handlePlayClick(game)} className="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 active:scale-95 transition-transform cursor-pointer group">
+                          <div className={`h-24 bg-gradient-to-br ${game.image} flex items-center justify-center relative overflow-hidden`}>
+                              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                              <span className="text-xl font-black text-white/20 uppercase tracking-widest group-hover:scale-110 transition-transform duration-500">Game</span>
+                          </div>
+                          <div className="p-3">
+                              <h3 className="font-bold text-sm truncate text-white">{game.title}</h3>
+                              <div className="flex justify-between items-center mt-2 text-[10px] text-slate-400">
+                                  <span>{game.type}</span>
+                                  <span className="flex items-center gap-1"><Users size={10}/> {game.players}</span>
+                              </div>
+                          </div>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      );
+  }
+
+  if (showAllGroups) {
+      return <GroupFinder onClose={() => setShowAllGroups(false)} t={t} onOpenChat={onOpenChat} />;
+  }
+
+  return (
+    <div className="h-full bg-slate-950 flex flex-col text-white pb-20 relative">
+      {showWallet && <WalletPage onClose={() => setShowWallet(false)} t={t} showToast={showToast} />}
+      {showTaskCenter && <TaskCenter onClose={() => setShowTaskCenter(false)} t={t} showToast={showToast} />}
+      <div className="px-4 pt-12 pb-4 bg-gradient-to-b from-slate-900 to-slate-950 border-b border-slate-800 flex justify-between items-center sticky top-0 z-10">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent italic">WinGaming</h1>
+        <div className="flex items-center gap-2 bg-slate-800 rounded-full pl-3 pr-1 py-1 border border-slate-700">
+            <Coins className="text-yellow-400" size={16} fill="currentColor" />
+            <span className="font-bold text-yellow-100 text-sm mr-1">12,450</span>
+            <button onClick={() => setShowWallet(true)} className="bg-yellow-500 hover:bg-yellow-400 text-black rounded-full w-5 h-5 flex items-center justify-center transition-colors">
+                <Plus size={12} strokeWidth={4} />
+            </button>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        {/* Top Half: Games List */}
+        <div>
+            <div className="flex justify-between items-center mb-3">
+                <h2 className="text-lg font-bold text-white">Hot Games</h2>
+                <button onClick={() => setShowAllGames(true)} className="text-xs text-blue-400 font-bold flex items-center gap-1">More <ChevronRight size={12}/></button>
+            </div>
+            
+            <div className="space-y-4">
+                {/* Big Cards Grid (Top 2) */}
+                <div className="grid grid-cols-2 gap-3">
+                    {GAMES.slice(0, 2).map(game => (
+                        <div key={game.id} onClick={() => handlePlayClick(game)} className="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 active:scale-95 transition-transform cursor-pointer group relative aspect-square">
+                            <div className={`absolute inset-0 bg-gradient-to-br ${game.image} opacity-60 group-hover:opacity-80 transition-opacity`}></div>
+                            <div className="absolute inset-0 flex flex-col justify-end p-3 bg-gradient-to-t from-black/80 via-transparent to-transparent">
+                                <h3 className="font-bold text-white text-lg leading-tight mb-1">{game.title}</h3>
+                                <span className="text-[10px] text-slate-300 bg-white/10 px-2 py-1 rounded-full w-fit backdrop-blur-sm border border-white/10">{game.players} Playing</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                
+                {/* Small List Items (Rest) - Horizontal Scroll */}
+                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide px-1">
+                    {GAMES.slice(2).map(game => (
+                        <div key={game.id} onClick={() => handlePlayClick(game)} className="flex-shrink-0 relative w-20 h-20 rounded-xl overflow-hidden active:scale-95 transition-transform cursor-pointer group shadow-lg">
+                            {/* Icon/Image Background */}
+                            <div className={`absolute inset-0 bg-gradient-to-br ${game.image}`}></div>
+                            
+                            {/* Overlay Gradient for Text Readability */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                            
+                            {/* Content */}
+                            <div className="absolute inset-0 flex flex-col justify-end p-2 text-center">
+                                <h3 className="font-bold text-white text-[10px] leading-tight truncate drop-shadow-md">{game.title}</h3>
+                                <div className="text-[8px] text-slate-300 drop-shadow-md">{game.players}</div>
+                            </div>
+                            
+                            {/* Center Letter (Optional fallback) */}
+                            <div className="absolute inset-0 flex items-center justify-center pb-4 opacity-30 text-2xl font-black text-white pointer-events-none mix-blend-overlay">
+                                {game.title[0]}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+
+        {/* Task Center Banner */}
+        <div onClick={() => setShowTaskCenter(true)} className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-4 flex justify-between items-center shadow-lg relative overflow-hidden group cursor-pointer active:scale-95 transition-transform">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+            <div className="relative z-10">
+                <h3 className="font-bold text-white text-lg flex items-center gap-2"><Trophy size={18} className="text-yellow-300"/> Level Up Tasks</h3>
+                <p className="text-indigo-200 text-xs mt-1">Complete daily missions to earn EXP & Beans!</p>
+            </div>
+            <div className="relative z-10 bg-white/20 p-2 rounded-full backdrop-blur-sm">
+                <ChevronRight size={20} className="text-white"/>
+            </div>
+        </div>
+
+        {/* Bottom Half: Group Recommendations */}
+        <div>
+            <div className="flex justify-between items-center mb-3">
+                <h2 className="text-lg font-bold text-white">Recommended Groups</h2>
+                <button onClick={() => setShowAllGroups(true)} className="text-xs text-blue-400 font-bold flex items-center gap-1">More <ChevronRight size={12}/></button>
+            </div>
+            <div className="space-y-3">
+                {EXTENDED_GROUPS.slice(0, 5).map(group => (
+                    <div key={group.id} className="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-bold text-white">{group.name[0]}</div>
+                            <div>
+                                <h3 className="font-bold text-white text-sm">{group.name}</h3>
+                                <div className="flex items-center gap-3 text-[10px] text-slate-400 mt-0.5">
+                                    <span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span>
+                                    <span className="flex items-center gap-0.5 text-green-400"><Flame size={10}/> {group.activity}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onClick={() => onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: 'Welcome to the group!', time: 'Just now', unread: 0, type: 'group' })} className="bg-white/10 hover:bg-white/20 text-blue-400 px-3 py-1.5 rounded-full text-xs font-bold border border-blue-500/50">{t.join}</button>
+                    </div>
+                ))}
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, showToast, activeChat, setActiveChat }) => {
+  // const [activeChat, setActiveChat] = useState(null); // Lifted to App
   const [chatHistory, setChatHistory] = useState([]);
   const [inputMsg, setInputMsg] = useState('');
   const [showInviteMenu, setShowInviteMenu] = useState(false);
@@ -902,17 +979,28 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
   };
 
   const handleSendInvite = () => {
+     // This function is now repurposed for "Start Game" from chat
      if(createCooldown) {
         showToast(t.cooldown_msg);
         return;
      }
-     const roomId = Math.floor(Math.random() * 10000);
-     const entryFee = createMode === 'compete' ? inviteEntry.entry : 0;
-     const newRoom = { id: roomId, gameName: selectedInviteGame.title, mode: createMode, entry: entryFee, capacity: createMode === 'compete' ? inviteEntry.capacity : 4, host: 'Me', current: 1, isMyRoom: true };
-     setChatHistory(prev => [...prev, { id: Date.now(), sender: 'me', time: 'Just now', type: 'invite', room: newRoom }]);
-     onCreateRoom(newRoom);
-     setShowGameSelector(false);
-     setShowInviteMenu(false);
+     
+     // Start Game Logic
+     const players = [
+        { id: 99, name: t.you, isHost: false, status: 'ready', avatar: 'Me', hasPaid: true },
+        { id: 2, name: 'Player_2', isHost: false, status: 'ready', avatar: 'P2', hasPaid: true },
+        { id: 3, name: 'Player_3', isHost: false, status: 'ready', avatar: 'P3', hasPaid: true },
+        { id: 4, name: 'Player_4', isHost: false, status: 'ready', avatar: 'P4', hasPaid: true }
+    ];
+    const room = { id: 999, gameName: selectedInviteGame.title, mode: 'compete', entry: 100, capacity: 4, host: 'System', current: 4, isMyRoom: false };
+    
+    // Add "Playing" card to chat
+    setChatHistory(prev => [...prev, { id: Date.now(), sender: 'me', time: 'Just now', type: 'playing_card', game: selectedInviteGame }]);
+    
+    // Start Game
+    onJoinRoom({ ...room, autoStart: true, players: players });
+    setShowGameSelector(false);
+    setShowInviteMenu(false);
   };
 
   const handleJoinGroup = (e, group) => {
@@ -938,23 +1026,9 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
       <div className="flex flex-col h-full bg-slate-950 z-50 animate-in slide-in-from-right absolute inset-0">
         <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0"><div className="flex items-center gap-3"><button onClick={() => setActiveChat(null)} className="text-slate-400 hover:text-white"><ChevronLeft size={24} /></button><div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold">{activeChat.avatar}</div><div className="font-bold text-white text-sm">{activeChat.name}</div></div><MoreHorizontal className="text-slate-400" /></div>
         
-        {/* Sticky Room Header */}
-        <div className="bg-slate-900/95 backdrop-blur border-b border-slate-800 p-2 flex gap-2 overflow-x-auto shrink-0 no-scrollbar">
-             {activeRoom && (
-                <div className={`flex items-center gap-2 border rounded-lg p-2 pr-3 shrink-0 ${activeRoom.mode === 'friendly' ? 'bg-green-900/20 border-green-500/50' : 'bg-red-900/20 border-red-500/50'}`}>
-                   <div className={`w-8 h-8 rounded flex items-center justify-center ${activeRoom.mode === 'friendly' ? 'bg-green-600' : 'bg-red-600'}`}><Gamepad2 size={16} className="text-white"/></div>
-                   <div><div className={`text-[10px] font-bold ${activeRoom.mode === 'friendly' ? 'text-green-400' : 'text-red-400'}`}>MY ROOM</div><div className="text-xs font-bold text-white">{activeRoom.gameName}</div></div>
-                   <button onClick={() => onCreateRoom(activeRoom)} className={`text-white text-[10px] font-bold px-3 py-1.5 rounded-lg ml-2 shadow-lg ${activeRoom.mode === 'friendly' ? 'bg-green-600 shadow-green-900/20' : 'bg-red-600 shadow-red-900/20'}`}>Return</button>
-                </div>
-             )}
-             {MATCH_ROOMS.filter(r => r.current < r.capacity).slice(0,3).map(r => (
-                <div key={r.id} className={`flex items-center gap-2 border rounded-lg p-2 pr-3 shrink-0 ${r.mode === 'friendly' ? 'bg-green-900/10 border-green-500/30' : 'bg-red-900/10 border-red-500/30'}`}>
-                   <div className={`w-8 h-8 rounded flex items-center justify-center ${r.mode === 'friendly' ? 'bg-green-600/20 text-green-500' : 'bg-red-600/20 text-red-500'}`}><Gamepad2 size={16} fill="currentColor"/></div>
-                   <div><div className={`text-[10px] font-bold uppercase ${r.mode === 'friendly' ? 'text-green-500' : 'text-red-500'}`}>{r.mode}</div><div className="text-xs font-bold text-white">{r.gameName}</div></div>
-                   <button onClick={() => onJoinRoom(r)} className={`text-white text-[10px] font-bold px-3 py-1.5 rounded-lg ml-2 border transition-colors ${r.mode === 'friendly' ? 'bg-green-600 border-green-500 hover:bg-green-500' : 'bg-red-600 border-red-500 hover:bg-red-500'}`}>{t.join}</button>
-                </div>
-             ))}
-        </div>
+        
+        {/* Sticky Room Header Removed */}
+
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4" onClick={() => setShowInviteMenu(false)}>
            {chatHistory.map(msg => (
@@ -963,39 +1037,34 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
                   {msg.sender === 'me' ? 'Me' : activeChat.avatar}
                </div>
                <div className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}>
-               {msg.type === 'invite' ? (
-                 <div className={`border p-3 rounded-2xl w-56 shadow-lg relative overflow-hidden ${msg.room.mode === 'friendly' ? 'bg-gradient-to-br from-green-900 to-slate-900 border-green-500/50' : 'bg-gradient-to-br from-red-900 to-slate-900 border-red-500/50'}`}>
-                    <div className={`text-[10px] font-bold mb-2 flex items-center gap-1 uppercase tracking-wider ${msg.room.mode === 'friendly' ? 'text-green-300' : 'text-red-300'}`}>{msg.room.mode === 'friendly' ? <Users size={12}/> : <Sword size={12}/>} {msg.room.mode === 'friendly' ? t.friend_invite : t.comp_invite}</div>
-                    <div className="flex items-center gap-3 mb-3"><div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center"><Gamepad2 size={20} className="text-white"/></div><div><div className="font-bold text-white text-sm">{msg.room.gameName}</div><div className="text-[10px] text-slate-400">{t.entry_fee}: <span className="text-yellow-400 font-bold">{msg.room.entry}</span></div></div></div>
-                    <button onClick={() => msg.sender === 'me' ? onCreateRoom(msg.room) : onJoinRoom(msg.room)} className={`w-full py-2 rounded-lg text-xs font-bold text-white transition-colors ${msg.room.mode === 'friendly' ? 'bg-green-600 hover:bg-green-500' : 'bg-red-600 hover:bg-red-500'}`}>{msg.sender === 'me' ? t.enter_room : t.join}</button>
+               {msg.type === 'playing_card' ? (
+                 <div className="border p-3 rounded-2xl w-56 shadow-lg relative overflow-hidden bg-gradient-to-br from-blue-900 to-slate-900 border-blue-500/50">
+                    <div className="text-[10px] font-bold mb-2 flex items-center gap-1 uppercase tracking-wider text-blue-300"><Gamepad2 size={12}/> {t.playing_now}</div>
+                    <div className="flex items-center gap-3 mb-3"><div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center"><Gamepad2 size={20} className="text-white"/></div><div><div className="font-bold text-white text-sm">{msg.game.title}</div><div className="text-[10px] text-slate-400">{msg.game.type}</div></div></div>
+                    <button className="w-full py-2 rounded-lg text-xs font-bold text-white transition-colors bg-blue-600 hover:bg-blue-500">Play Also</button>
                  </div>
+               ) : msg.type === 'invite' ? (
+                 // Hidden invite card logic (kept for compatibility but not used)
+                 null
                ) : (
                  <div className={`max-w-[240px] p-3 rounded-2xl text-sm ${msg.sender === 'me' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-200 rounded-tl-none'}`}>{msg.text}</div>
                )}
                </div>
              </div>
            ))}
-           {/* Simulate other invite */}
-           <div className="flex gap-3 flex-row">
-              <div className="w-8 h-8 rounded-full bg-indigo-600 flex-shrink-0 flex items-center justify-center text-xs font-bold text-white border border-slate-700">{activeChat.avatar}</div>
-              <div className="border p-3 rounded-2xl w-56 shadow-lg relative overflow-hidden bg-gradient-to-br from-red-900 to-slate-900 border-red-500/50">
-                 <div className="text-[10px] font-bold mb-2 flex items-center gap-1 uppercase tracking-wider text-red-300"><Sword size={12}/> {t.comp_invite}</div>
-                 <div className="flex items-center gap-3 mb-3"><div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center"><Gamepad2 size={20} className="text-white"/></div><div><div className="font-bold text-white text-sm">Fruit Slicer</div><div className="text-[10px] text-slate-400">{t.entry_fee}: <span className="text-yellow-400 font-bold">50</span></div></div></div>
-                 <button onClick={() => onJoinRoom({ id: 888, gameName: 'Fruit Slicer', mode: 'compete', entry: 50, capacity: 4, host: 'Other', current: 1, isMyRoom: false })} className="w-full py-2 rounded-lg text-xs font-bold text-white transition-colors bg-red-600 hover:bg-red-500">{t.join}</button>
-              </div>
-           </div>
+           {/* Simulate other invite removed */}
         </div>
         {showGameSelector && (
            <div className="absolute bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-700 rounded-t-3xl p-4 z-50 animate-slide-up">
               <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white">{t.select_game}</h3><button onClick={() => setShowGameSelector(false)} className="bg-slate-800 p-1 rounded-full"><X size={16}/></button></div>
               <div className="flex gap-3 overflow-x-auto pb-4 mb-2 no-scrollbar">{GAMES.map(g => (<div key={g.id} onClick={() => setSelectedInviteGame(g)} className={`flex-shrink-0 w-24 p-2 rounded-xl border cursor-pointer transition-all ${selectedInviteGame.id === g.id ? 'bg-blue-600/20 border-blue-500' : 'bg-slate-800 border-slate-700'}`}><div className={`w-full h-16 rounded-lg bg-gradient-to-br ${g.image} mb-2`}></div><div className="text-[10px] text-center font-bold truncate">{g.title}</div></div>))}</div>
-              <div className="bg-slate-800 p-3 rounded-xl mb-4 space-y-3"><div className="flex gap-1"><button onClick={() => setCreateMode('friendly')} className={`flex-1 py-1.5 text-[10px] rounded font-bold ${createMode === 'friendly' ? 'bg-green-600' : 'bg-slate-700 text-slate-400'}`}>{t.mode_friendly}</button><button onClick={() => setCreateMode('compete')} className={`flex-1 py-1.5 text-[10px] rounded font-bold ${createMode === 'compete' ? 'bg-red-600' : 'bg-slate-700 text-slate-400'}`}>{t.mode_compete}</button></div>{createMode === 'compete' && (<div className="flex justify-between text-xs items-center"><span className="text-slate-400">{t.set_entry}</span><div className="flex gap-1">{MATCH_TIERS.map(tier => (<button key={tier.id} onClick={() => setInviteEntry(tier)} className={`px-2 py-1 rounded text-[10px] font-bold ${inviteEntry.id === tier.id ? 'bg-yellow-500 text-black' : 'bg-slate-700 text-white'}`}>{tier.entry}</button>))}</div></div>)}<div className="flex justify-between text-xs border-t border-slate-700 pt-2"><span className="text-slate-300">{t.room_cost}</span><span className="text-yellow-400 font-bold flex items-center gap-1"><Coins size={12}/> 10</span></div></div>
-              <button onClick={handleSendInvite} className="w-full bg-blue-600 py-3 rounded-xl font-bold text-white">{t.send_invite}</button>
+              
+              <button onClick={handleSendInvite} className="w-full bg-blue-600 py-3 rounded-xl font-bold text-white mt-4">{t.start}</button>
            </div>
         )}
         <div className="p-3 bg-slate-900 border-t border-slate-800 shrink-0 relative flex items-center gap-2">
-           {showInviteMenu && (<div className="absolute bottom-16 left-3 bg-slate-800 border border-slate-700 rounded-xl p-2 shadow-xl flex flex-col gap-2 w-36 animate-in fade-in slide-in-from-bottom-2 z-40"><button onClick={() => { setShowGameSelector(true); setShowInviteMenu(false); }} className="flex items-center gap-3 text-xs text-white p-3 hover:bg-slate-700 rounded-lg transition-colors"><div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-green-500"><Sword size={14}/></div>{t.invite}</button><button className="flex items-center gap-3 text-xs text-white p-3 hover:bg-slate-700 rounded-lg transition-colors"><div className="w-6 h-6 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-500"><Gift size={14}/></div>{t.gift}</button></div>)}
-           <button onClick={() => setShowInviteMenu(!showInviteMenu)} className={`p-2 rounded-full transition-colors ${showInviteMenu ? 'bg-slate-700 text-white' : 'text-slate-400'}`}><PlusSquare size={20} className={showInviteMenu ? 'rotate-45 transition-transform' : 'transition-transform'}/></button>
+           {showInviteMenu && (<div className="absolute bottom-16 left-3 bg-slate-800 border border-slate-700 rounded-xl p-2 shadow-xl flex flex-col gap-2 w-36 animate-in fade-in slide-in-from-bottom-2 z-40"><button className="flex items-center gap-3 text-xs text-white p-3 hover:bg-slate-700 rounded-lg transition-colors"><div className="w-6 h-6 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-500"><Gift size={14}/></div>{t.gift}</button></div>)}
+           <button onClick={() => setShowGameSelector(true)} className="p-2 rounded-full transition-colors text-slate-400 hover:text-white"><Gamepad2 size={24} /></button>
            <input type="text" value={inputMsg} onChange={(e) => setInputMsg(e.target.value)} placeholder={t.chat_input} className="flex-1 bg-slate-950 border border-slate-700 rounded-full px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500" />
            <button onClick={sendMessage} className="p-2 bg-blue-600 rounded-full text-white"><Send size={18} /></button>
         </div>
@@ -1027,23 +1096,6 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
 
       <div className="p-4 pt-12 border-b border-slate-800 flex justify-between items-center sticky top-0 bg-slate-950/90 backdrop-blur z-10"><h1 className="text-xl font-bold">{t.inbox}</h1><div className="flex gap-4 text-slate-400"><div className="flex items-center gap-1 text-xs bg-slate-800 px-2 py-1 rounded-lg"><MapPin size={12} /> Pune</div><Bell size={20} /></div></div>
       <div className="flex-1 overflow-y-auto">
-        <div className="p-4 bg-slate-900 border-b border-slate-800">
-          <div className="flex justify-between items-center mb-3"><h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t.nearby_groups}</h3><button onClick={() => setShowFinder(true)} className="text-xs text-blue-400 font-bold flex items-center gap-1">More <ChevronRight size={12}/></button></div>
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-             {nearbyGroups.map((item) => (
-                <div key={item.id} onClick={() => handleGroupClick(item)} className="flex-shrink-0 w-28 rounded-xl border border-slate-700 bg-slate-800 flex flex-col items-center justify-center gap-2 p-3 text-center active:scale-95 transition-transform cursor-pointer relative overflow-hidden">
-                   <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-lg font-bold shadow-lg">{item.name[0]}</div>
-                   <span className="text-xs font-bold text-slate-200 truncate w-full">{item.name}</span>
-                   <span className="text-[10px] text-slate-500">{item.members} members</span>
-                   {joinedGroups.includes(item.id) ? (
-                       <div className="text-[10px] text-green-400 font-bold mt-1">Joined</div>
-                   ) : (
-                       <button onClick={(e) => handleJoinGroup(e, item)} className="mt-1 bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full w-full">{t.join}</button>
-                   )}
-                </div>
-             ))}
-          </div>
-        </div>
         <div className="p-2">{CHATS.map(chat => (<div key={chat.id} onClick={() => openChat(chat)} className="flex items-center gap-3 p-3 hover:bg-slate-900 rounded-xl transition-colors cursor-pointer active:bg-slate-800"><div className="relative"><div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center font-bold">{chat.avatar}</div>{chat.unread > 0 && <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-slate-950"></div>}</div><div className="flex-1"><div className="flex justify-between items-center"><h4 className="font-bold text-sm text-white">{chat.name}</h4><span className="text-[10px] text-slate-500">{chat.time}</span></div><div className="text-xs text-slate-400 truncate">{chat.lastMsg}</div></div></div>))}</div>
       </div>
     </div>
@@ -1205,6 +1257,7 @@ export default function App() {
   const [gameResult, setGameResult] = useState(null);
   const [isLoadingGame, setIsLoadingGame] = useState(false);
   const [toastMsg, setToastMsg] = useState(null);
+  const [activeChat, setActiveChat] = useState(null); // Lifted state for chat
   const t = TEXTS[lang];
 
   const showToast = (msg) => setToastMsg(msg);
@@ -1218,11 +1271,12 @@ export default function App() {
   const handleJoinRoom = (roomData) => {
       if (roomData.autoStart) {
           // Quick match flow
-          setIsLoadingGame(true);
-          setTimeout(() => {
-              setIsLoadingGame(false);
-              setActiveGameSession({ room: roomData, players: roomData.players });
-          }, 2000);
+          // setIsLoadingGame(true);
+          // setTimeout(() => {
+          //     setIsLoadingGame(false);
+          //     setActiveGameSession({ room: roomData, players: roomData.players });
+          // }, 2000);
+          showToast("Game Started (Simulated)");
       } else {
           setActiveRoom({ ...roomData, isMyRoom: roomData.host === 'Me' });
       }
@@ -1248,6 +1302,11 @@ export default function App() {
       setActiveGameSession(null);
   };
 
+  const handleOpenChat = (chat) => {
+      setActiveChat(chat);
+      setActiveTab('inbox');
+  };
+
   return (
     <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4 font-sans relative">
       <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')} className="absolute top-4 right-4 bg-white px-4 py-2 rounded-full shadow-lg font-bold text-sm hover:bg-gray-100 transition-colors z-50 text-black">
@@ -1266,8 +1325,8 @@ export default function App() {
 
         <div className="h-full w-full">
           {activeTab === 'home' && <HomeTab t={t} />}
-          {activeTab === 'game' && <GameTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} showToast={showToast} />}
-          {activeTab === 'inbox' && <InboxTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} activeRoom={activeRoom} showToast={showToast} />}
+          {activeTab === 'game' && <GameTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} showToast={showToast} onOpenChat={handleOpenChat} />}
+          {activeTab === 'inbox' && <InboxTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} activeRoom={activeRoom} showToast={showToast} activeChat={activeChat} setActiveChat={setActiveChat} />}
           {activeTab === 'mine' && <MineTab lang={lang} setLang={setLang} t={t} showToast={showToast} />}
           {activeTab === 'plus' && <div className="h-full flex items-center justify-center text-white"><button onClick={() => setActiveTab('home')}>Close Camera</button></div>}
         </div>
