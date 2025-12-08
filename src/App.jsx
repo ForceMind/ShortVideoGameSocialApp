@@ -3,7 +3,7 @@ import {
   Home, Gamepad2, PlusSquare, Plus, MessageCircle, User, Search, Heart, MessageSquare, Share2, MapPin, Coins, 
   Trophy, Clock, ChevronRight, ChevronLeft, Play, Pause, Users, Bell, Settings, X, Send, Mic, MoreHorizontal, 
   Wallet, CheckCircle2, Loader2, RefreshCw, TrendingUp, Calendar, Award, Gem, CircleDollarSign, Star, Zap, 
-  Target, Gift, Languages, Filter, Flame, UserPlus, ArrowRightLeft, Receipt, Sword, Crown, LayoutGrid, LogOut, Ban, AlertTriangle, Lock, HelpCircle
+  Target, Gift, Languages, Filter, Flame, UserPlus, ArrowRightLeft, Receipt, Sword, Crown, LayoutGrid, LayoutList, LogOut, Ban, AlertTriangle, Lock, HelpCircle
 } from 'lucide-react';
 
 // --- Internationalization (i18n) ---
@@ -51,7 +51,27 @@ const TEXTS = {
     exchange: "兑换", exchange_title: "金币兑换游戏豆", exchange_rate: "1 金币 = 100 游戏豆", 
     confirm_exchange: "确认兑换", input_coins: "输入金币数量", withdraw: "提现",
     back_home: "返回大厅", game_over: "游戏结束", playing_now: "游戏中",
-    cancel_ready: "取消准备", ready_cancel_hint: "长按取消准备", shared_success: "分享成功"
+    cancel_ready: "取消准备", ready_cancel_hint: "长按取消准备", shared_success: "分享成功",
+    hot_games: "热门游戏", all_games: "全部游戏", rec_groups: "推荐群组",
+    level_up_tasks: "升级任务", level_up_desc: "完成每日任务赚取经验和游戏豆！",
+    task_center: "任务中心", daily_missions: "每日任务", weekly_chest: "周宝箱",
+    weekly_chest_desc: "完成15个每日任务开启", claim: "领取", claimed: "已领",
+    next_level: "下一级：解锁专属头像框", elite_gamer: "精英玩家",
+    join_group_modal_title: "加入群组", join_group_desc: "加入群组，结识附近玩家，组织比赛，分享游戏精彩瞬间！",
+    welcome_group: "欢迎加入群组！", welcome_back: "欢迎回来！",
+    popular: "热门", newest: "最新", most_played: "最多游玩", more: "更多",
+    play_also: "我也玩", loading_game: "加载游戏中...", preparing_assets: "准备资源并连接玩家...",
+    game_started: "游戏开始（模拟）", joined_group_toast: "已加入",
+    tap_to_play: "点击任意位置开始（模拟）", you_brackets: "（我）",
+    fans: "粉丝", likes_count: "获赞", just_now: "刚刚", km: "公里",
+    level: "等级", exp: "经验", favorite: "收藏", share: "分享",
+    rec_game: "推荐游戏", players_online: "在线玩家", play_now: "立即玩",
+    rec_room: "推荐房间", nearby: "附近", shorts: "短视频",
+    comments: "评论", add_comment: "添加评论...", sample_comment: "这个视频太棒了！🔥",
+    guest: "访客", game_room: "游戏房间", ready_excl: "已准备！",
+    cancel_ready_first: "请先取消准备（长按准备按钮）", insufficient_balance: "余额不足！",
+    ready_cancelled: "已取消准备", host_badge: "房主", cancel: "取消",
+    all: "全部", balance_label: "余额："
   },
   en: {
     home: "Home", game: "Game", inbox: "Inbox", mine: "Mine",
@@ -95,7 +115,27 @@ const TEXTS = {
     exchange: "Exchange", exchange_title: "Exchange Coins to Beans", exchange_rate: "1 Coin = 100 Beans",
     confirm_exchange: "Confirm", input_coins: "Input Coins", withdraw: "Withdraw",
     back_home: "Back to Lobby", game_over: "Game Over", playing_now: "Playing",
-    cancel_ready: "Cancel Ready", ready_cancel_hint: "Hold to Cancel", shared_success: "Shared Successfully"
+    cancel_ready: "Cancel Ready", ready_cancel_hint: "Hold to Cancel", shared_success: "Shared Successfully",
+    hot_games: "Hot Games", all_games: "All Games", rec_groups: "Recommended Groups",
+    level_up_tasks: "Level Up Tasks", level_up_desc: "Complete daily missions to earn EXP & Beans!",
+    task_center: "Task Center", daily_missions: "Daily Missions", weekly_chest: "Weekly Chest",
+    weekly_chest_desc: "Complete 15 daily tasks to open", claim: "Claim", claimed: "Done",
+    next_level: "Next Level: Unlock Exclusive Avatar Frame", elite_gamer: "Elite Gamer",
+    join_group_modal_title: "Join Group", join_group_desc: "Join this group to connect with players nearby, organize matches, and share your gaming moments!",
+    welcome_group: "Welcome to the group!", welcome_back: "Welcome back!",
+    popular: "Popular", newest: "Newest", most_played: "Most Played", more: "More",
+    play_also: "Play Also", loading_game: "Loading Game...", preparing_assets: "Preparing assets and connecting players",
+    game_started: "Game Started (Simulated)", joined_group_toast: "Joined",
+    tap_to_play: "Tap anywhere to play (Simulated)", you_brackets: "(You)",
+    fans: "Fans", likes_count: "Likes", just_now: "Just now", km: "km",
+    level: "Level", exp: "EXP", favorite: "Favorite", share: "Share",
+    rec_game: "Recommended Game", players_online: "Players Online", play_now: "Play Now",
+    rec_room: "Recommended Room", nearby: "Nearby", shorts: "Shorts",
+    comments: "Comments", add_comment: "Add a comment...", sample_comment: "This is a great video! 🔥",
+    guest: "Guest", game_room: "Game Room", ready_excl: "Ready!",
+    cancel_ready_first: "Please cancel ready first (Long press Ready button)", insufficient_balance: "Insufficient balance!",
+    ready_cancelled: "Ready Cancelled", host_badge: "HOST", cancel: "Cancel",
+    all: "All", balance_label: "Balance:"
   }
 };
 
@@ -108,8 +148,18 @@ const GAMES = [
   { id: 4, title: "Candy Match", image: "from-pink-400 to-purple-500", players: "3.2M", type: "Puzzle", minEntry: 50, category: "recent" },
   { id: 5, title: "Car Racing", image: "from-red-600 to-orange-600", players: "1.2M", type: "Racing", minEntry: 100, category: "all" },
   { id: 6, title: "Chess Pro", image: "from-slate-600 to-slate-800", players: "900k", type: "Board", minEntry: 200, category: "all" },
-  { id: 7, title: "Bubble Shooter", image: "from-cyan-400 to-blue-500", players: "2.1M", type: "Puzzle", minEntry: 20, category: "all" },
-  { id: 8, title: "Sniper 3D", image: "from-green-800 to-emerald-900", players: "3.5M", type: "Action", minEntry: 500, category: "hot" }
+  { id: 7, title: "Bubble Shooter", image: "from-cyan-400 to-blue-500", players: "850k", type: "Puzzle", minEntry: 50, category: "all" },
+  { id: 8, title: "Snake.io", image: "from-green-500 to-emerald-700", players: "2.1M", type: "Action", minEntry: 100, category: "hot" },
+  { id: 9, title: "Pool 8 Ball", image: "from-indigo-500 to-purple-700", players: "1.5M", type: "Sports", minEntry: 200, category: "all" },
+  { id: 10, title: "Word Connect", image: "from-yellow-400 to-orange-500", players: "600k", type: "Puzzle", minEntry: 50, category: "all" },
+  { id: 11, title: "Archery King", image: "from-stone-500 to-stone-700", players: "450k", type: "Sports", minEntry: 100, category: "all" },
+  { id: 12, title: "Knife Hit", image: "from-red-500 to-rose-700", players: "1.1M", type: "Action", minEntry: 50, category: "recent" },
+  { id: 13, title: "Tower Stack", image: "from-blue-400 to-cyan-600", players: "750k", type: "Arcade", minEntry: 50, category: "all" },
+  { id: 14, title: "Piano Tiles", image: "from-purple-500 to-pink-600", players: "3.5M", type: "Music", minEntry: 100, category: "hot" },
+  { id: 15, title: "Solitaire", image: "from-green-600 to-emerald-800", players: "950k", type: "Card", minEntry: 50, category: "all" },
+  { id: 16, title: "Dominoes", image: "from-slate-500 to-gray-700", players: "500k", type: "Board", minEntry: 100, category: "all" },
+  { id: 17, title: "Bingo Bash", image: "from-pink-500 to-rose-600", players: "1.3M", type: "Casino", minEntry: 200, category: "all" },
+  { id: 18, title: "Subway Run", image: "from-yellow-500 to-orange-600", players: "4.2M", type: "Action", minEntry: 100, category: "hot" },
 ];
 
 const MATCH_ROOMS = [
@@ -237,11 +287,11 @@ const HomeTab = ({ t }) => {
                   
                   {/* Right Sidebar Actions */}
                   <div className="absolute right-2 bottom-24 flex flex-col items-center gap-6 z-20" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex flex-col items-center gap-1"><div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white shadow-lg"><Gift size={20} /></div><span className="text-white text-xs font-bold">Gift</span></div>
+                      <div className="flex flex-col items-center gap-1"><div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white shadow-lg"><Gift size={20} /></div><span className="text-white text-xs font-bold">{t.gift}</span></div>
                       <div className="flex flex-col items-center gap-1"><Heart size={32} className="text-white" /><span className="text-white text-xs">{currentItem.data.likes}</span></div>
                       <div className="flex flex-col items-center gap-1" onClick={() => setShowComments(true)}><MessageSquare size={32} className="text-white" /><span className="text-white text-xs">{currentItem.data.comments}</span></div>
-                      <div className="flex flex-col items-center gap-1"><Star size={32} className="text-white" /><span className="text-white text-xs">Fav</span></div>
-                      <div className="flex flex-col items-center gap-1"><Share2 size={32} className="text-white" /><span className="text-white text-xs">Share</span></div>
+                      <div className="flex flex-col items-center gap-1"><Star size={32} className="text-white" /><span className="text-white text-xs">{t.favorite}</span></div>
+                      <div className="flex flex-col items-center gap-1"><Share2 size={32} className="text-white" /><span className="text-white text-xs">{t.share}</span></div>
                   </div>
 
                   {/* Bottom Left Info */}
@@ -261,43 +311,43 @@ const HomeTab = ({ t }) => {
       } else if (currentItem.type === 'group_card') {
           return (
               <div className="h-full w-full bg-slate-900 flex flex-col items-center justify-center p-8 relative">
-                  <div className="absolute top-4 right-4 text-slate-500 text-xs font-bold uppercase tracking-widest">Recommended Group</div>
+                  <div className="absolute top-4 right-4 text-slate-500 text-xs font-bold uppercase tracking-widest">{t.rec_groups}</div>
                   <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-4xl font-bold text-white mb-6 shadow-2xl shadow-indigo-500/20">{currentItem.data.name[0]}</div>
                   <h2 className="text-2xl font-black text-white mb-2 text-center">{currentItem.data.name}</h2>
                   <div className="flex gap-4 text-slate-400 text-sm mb-8">
-                      <span className="flex items-center gap-1"><Users size={16}/> {currentItem.data.members} Members</span>
-                      <span className="flex items-center gap-1"><MapPin size={16}/> {currentItem.data.dist}km</span>
+                      <span className="flex items-center gap-1"><Users size={16}/> {currentItem.data.members} {t.members}</span>
+                      <span className="flex items-center gap-1"><MapPin size={16}/> {currentItem.data.dist}{t.km}</span>
                   </div>
-                  <button className="w-full py-4 bg-blue-600 rounded-2xl font-bold text-white text-lg shadow-lg shadow-blue-600/20">Join Group</button>
+                  <button className="w-full py-4 bg-blue-600 rounded-2xl font-bold text-white text-lg shadow-lg shadow-blue-600/20">{t.join_group_modal_title}</button>
               </div>
           );
       } else if (currentItem.type === 'game_card') {
            return (
               <div className="h-full w-full bg-slate-900 flex flex-col items-center justify-center p-8 relative">
-                  <div className="absolute top-4 right-4 text-slate-500 text-xs font-bold uppercase tracking-widest">Recommended Game</div>
+                  <div className="absolute top-4 right-4 text-slate-500 text-xs font-bold uppercase tracking-widest">{t.rec_game}</div>
                   <div className={`w-full aspect-video rounded-3xl bg-gradient-to-br ${currentItem.data.image} flex items-center justify-center mb-6 shadow-2xl`}>
                       <Gamepad2 size={64} className="text-white/50"/>
                   </div>
                   <h2 className="text-2xl font-black text-white mb-2">{currentItem.data.title}</h2>
-                  <p className="text-slate-400 mb-8">{currentItem.data.players} Players Online</p>
-                  <button className="w-full py-4 bg-yellow-500 text-black rounded-2xl font-bold text-lg shadow-lg">Play Now</button>
+                  <p className="text-slate-400 mb-8">{currentItem.data.players} {t.players_online}</p>
+                  <button className="w-full py-4 bg-yellow-500 text-black rounded-2xl font-bold text-lg shadow-lg">{t.play_now}</button>
               </div>
            );
       } else { // room_card
            return (
               <div className="h-full w-full bg-slate-900 flex flex-col items-center justify-center p-8 relative">
-                  <div className="absolute top-4 right-4 text-slate-500 text-xs font-bold uppercase tracking-widest">Recommended Room</div>
+                  <div className="absolute top-4 right-4 text-slate-500 text-xs font-bold uppercase tracking-widest">{t.rec_room}</div>
                   <div className="bg-slate-800 p-6 rounded-3xl border border-slate-700 w-full mb-8">
                       <div className="flex justify-between items-center mb-4">
-                          <span className="bg-red-500/20 text-red-400 px-2 py-1 rounded text-xs font-bold">Competitive</span>
+                          <span className="bg-red-500/20 text-red-400 px-2 py-1 rounded text-xs font-bold">{t.mode_compete}</span>
                           <span className="text-yellow-400 font-bold flex items-center gap-1"><Coins size={14}/> {currentItem.data.entry}</span>
                       </div>
                       <h3 className="text-xl font-bold text-white mb-2">{currentItem.data.name}</h3>
                       <div className="flex items-center gap-2 text-slate-400 text-sm">
-                          <Users size={14}/> {currentItem.data.current}/{currentItem.data.capacity} Players
+                          <Users size={14}/> {currentItem.data.current}/{currentItem.data.capacity} {t.players}
                       </div>
                   </div>
-                  <button className="w-full py-4 bg-red-600 text-white rounded-2xl font-bold text-lg shadow-lg">Join Room</button>
+                  <button className="w-full py-4 bg-red-600 text-white rounded-2xl font-bold text-lg shadow-lg">{t.enter_room}</button>
               </div>
            );
       }
@@ -309,8 +359,8 @@ const HomeTab = ({ t }) => {
       <div className="absolute top-12 left-0 right-0 z-30 flex items-center justify-between px-4">
           <Search className="text-white opacity-80" size={24} />
           <div className="flex gap-4 text-white text-base font-bold shadow-black drop-shadow-md">
-            {['Followed', 'Nearby', 'Shorts', 'For You'].map(tab => (
-                <span key={tab} onClick={(e) => { e.stopPropagation(); setActiveTab(tab.toLowerCase().replace(' ', '')); }} className={`transition-opacity ${activeTab === tab.toLowerCase().replace(' ', '') ? 'opacity-100 border-b-2 border-white pb-1' : 'opacity-60'}`}>{tab}</span>
+            {['following', 'nearby', 'shorts', 'foryou'].map(key => (
+                <span key={key} onClick={(e) => { e.stopPropagation(); setActiveTab(key); }} className={`transition-opacity ${activeTab === key ? 'opacity-100 border-b-2 border-white pb-1' : 'opacity-60'}`}>{t[key]}</span>
             ))}
           </div>
           <div className="w-6"></div> {/* Spacer for centering */}
@@ -323,7 +373,7 @@ const HomeTab = ({ t }) => {
           <div className="absolute inset-0 z-40 bg-black/50 backdrop-blur-sm flex flex-col justify-end animate-in slide-in-from-bottom" onClick={(e) => e.stopPropagation()}>
               <div className="bg-slate-900 rounded-t-3xl h-2/3 p-4 flex flex-col">
                   <div className="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                      <h3 className="font-bold text-white">Comments ({currentItem.data.comments || 0})</h3>
+                      <h3 className="font-bold text-white">{t.comments} ({currentItem.data.comments || 0})</h3>
                       <button onClick={() => setShowComments(false)}><X size={20} className="text-slate-400"/></button>
                   </div>
                   <div className="flex-1 overflow-y-auto space-y-4">
@@ -332,13 +382,13 @@ const HomeTab = ({ t }) => {
                               <div className="w-8 h-8 rounded-full bg-slate-700 flex-shrink-0"></div>
                               <div>
                                   <div className="text-xs font-bold text-slate-400 mb-0.5">User_{i}</div>
-                                  <div className="text-sm text-white">This is a great video! 🔥</div>
+                                  <div className="text-sm text-white">{t.sample_comment}</div>
                               </div>
                           </div>
                       ))}
                   </div>
                   <div className="mt-4 flex gap-2">
-                      <input type="text" placeholder="Add a comment..." className="flex-1 bg-slate-800 rounded-full px-4 py-2 text-white text-sm focus:outline-none"/>
+                      <input type="text" placeholder={t.add_comment} className="flex-1 bg-slate-800 rounded-full px-4 py-2 text-white text-sm focus:outline-none"/>
                       <button className="p-2 bg-blue-600 rounded-full text-white"><Send size={16}/></button>
                   </div>
               </div>
@@ -353,8 +403,8 @@ const HomeTab = ({ t }) => {
 const RoomLobby = ({ room, onClose, t, onDisband, onStartGame, showToast }) => {
   const [players, setPlayers] = useState([
     { id: 1, name: room.host, isHost: true, status: 'ready', avatar: room.host[0], hasPaid: true }, // Host treated as paid room fee
-    { id: 99, name: t.you, isHost: room.isMyRoom, status: 'waiting', avatar: 'Me', hasPaid: false },
-    ...(room.current > 1 ? [{ id: 2, name: 'Guest_1', isHost: false, status: 'ready', avatar: 'G', hasPaid: true }] : [])
+    { id: 99, name: t.you, isHost: room.isMyRoom, status: 'waiting', avatar: t.you, hasPaid: false },
+    ...(room.current > 1 ? [{ id: 2, name: `${t.guest}_1`, isHost: false, status: 'ready', avatar: 'G', hasPaid: true }] : [])
   ]);
   const [showPayConfirm, setShowPayConfirm] = useState(false);
   const [showDisbandConfirm, setShowDisbandConfirm] = useState(false);
@@ -382,7 +432,7 @@ const RoomLobby = ({ room, onClose, t, onDisband, onStartGame, showToast }) => {
      if (me.status === 'ready') return; // Already ready
 
      if (!isFriendly && myBalance < room.entry) {
-         showToast("Insufficient balance!");
+         showToast(t.insufficient_balance);
          return;
      }
      setPlayers(prev => prev.map(p => p.id === 99 ? { ...p, status: 'ready' } : p));
@@ -397,7 +447,7 @@ const RoomLobby = ({ room, onClose, t, onDisband, onStartGame, showToast }) => {
 
       const timer = setTimeout(() => {
           setPlayers(prev => prev.map(p => p.id === 99 ? { ...p, status: 'waiting' } : p));
-          showToast("Ready Cancelled");
+          showToast(t.ready_cancelled);
           setLongPressTriggered(true);
           setIsHolding(false);
       }, 1000);
@@ -425,14 +475,14 @@ const RoomLobby = ({ room, onClose, t, onDisband, onStartGame, showToast }) => {
   const handleExit = () => {
      const me = players.find(p => p.id === 99);
      if (!isHost && me.status === 'ready') {
-        showToast("Please cancel ready first (Long press Ready button)");
+        showToast(t.cancel_ready_first);
         return;
      }
      onClose();
   };
 
   const handleShare = () => {
-      showToast("Shared to recent chats!");
+      showToast(t.shared_success);
   };
 
   const handleDisbandRoom = () => {
@@ -458,7 +508,7 @@ const RoomLobby = ({ room, onClose, t, onDisband, onStartGame, showToast }) => {
                 <h3 className="text-xl font-bold text-white mb-2">{t.disband}</h3>
                 <p className="text-sm text-slate-400 mb-6 leading-relaxed">{t.disband_warn}</p>
                 <div className="flex gap-3">
-                   <button onClick={() => setShowDisbandConfirm(false)} className="flex-1 py-3 rounded-xl bg-slate-800 text-slate-400 font-bold">Cancel</button>
+                   <button onClick={() => setShowDisbandConfirm(false)} className="flex-1 py-3 rounded-xl bg-slate-800 text-slate-400 font-bold">{t.cancel}</button>
                    <button onClick={confirmDisband} className="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold">{t.disband}</button>
                 </div>
              </div>
@@ -468,7 +518,7 @@ const RoomLobby = ({ room, onClose, t, onDisband, onStartGame, showToast }) => {
        <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
           <div>
              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                {room.gameName || "Game Room"} <span className={`text-[10px] px-2 py-0.5 rounded-full ${room.mode === 'friendly' ? 'bg-green-600' : 'bg-red-600'}`}>{room.mode === 'friendly' ? t.mode_friendly : t.mode_compete}</span>
+                {room.gameName || t.game_room} <span className={`text-[10px] px-2 py-0.5 rounded-full ${room.mode === 'friendly' ? 'bg-green-600' : 'bg-red-600'}`}>{room.mode === 'friendly' ? t.mode_friendly : t.mode_compete}</span>
              </h2>
              <div className="text-xs text-slate-400 flex items-center gap-2"><span>{t.room_id}: {room.id}</span><span className="text-slate-300 font-bold flex items-center gap-1"><Users size={12}/>{room.current}/{room.capacity}</span>{room.mode === 'compete' && <span className="text-yellow-400 font-bold">{t.entry_fee}: {room.entry}</span>}</div>
           </div>
@@ -489,7 +539,7 @@ const RoomLobby = ({ room, onClose, t, onDisband, onStartGame, showToast }) => {
                 {player ? (
                    <>
                       {isHost && !player.isHost && (<button onClick={() => handleKick(player.id)} className="absolute top-2 right-2 text-red-500 hover:scale-110 transition-transform"><Ban size={16}/></button>)}
-                      {player.isHost && (<div className="absolute top-2 left-2 bg-yellow-500 text-black text-[10px] font-bold px-1.5 rounded">HOST</div>)}
+                      {player.isHost && (<div className="absolute top-2 left-2 bg-yellow-500 text-black text-[10px] font-bold px-1.5 rounded">{t.host_badge}</div>)}
                       <div className="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-2xl font-bold text-white mb-2 shadow-lg">{player.avatar}</div>
                       <div className="font-bold text-white text-sm">{player.name}</div>
                       <div className={`text-xs mt-1 font-bold ${player.status === 'ready' ? 'text-green-400' : 'text-slate-500'}`}>
@@ -518,7 +568,7 @@ const RoomLobby = ({ room, onClose, t, onDisband, onStartGame, showToast }) => {
                 onTouchEnd={handleCancelReadyEnd}
                 className={`w-full py-3.5 rounded-xl font-bold text-lg text-white shadow-lg active:scale-95 transition-transform relative overflow-hidden ${players.find(p=>p.id===99)?.status === 'ready' ? 'bg-green-600' : 'bg-blue-600'}`}>
                 <div className={`absolute inset-0 bg-black/20 transition-all ease-linear origin-left ${isHolding ? 'w-full duration-[1000ms]' : 'w-0 duration-0'}`}></div>
-                <span className="relative z-10">{players.find(p=>p.id===99)?.status === 'ready' ? (isFriendly ? "Ready!" : "Ready (Hold to Cancel)") : t.ready}</span>
+                <span className="relative z-10">{players.find(p=>p.id===99)?.status === 'ready' ? (isFriendly ? t.ready_excl : t.ready_cancel_hint) : t.ready}</span>
              </button>
           )}
        </div>
@@ -544,7 +594,7 @@ const WalletPage = ({ onClose, t, showToast }) => {
            <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex items-center gap-3">
              <button onClick={() => setSubPage('main')}><ChevronLeft size={24} className="text-white"/></button><h1 className="text-lg font-bold text-white">{t.trans_history}</h1>
            </div>
-           <div className="flex p-4 gap-2 overflow-x-auto">{['all', 'beans', 'diamonds', 'coins'].map(c => (<button key={c} className={`px-4 py-1.5 rounded-full text-xs font-bold capitalize ${c==='all' ? 'bg-white text-black' : 'bg-slate-800 text-slate-400'}`}>{t[c] || 'All'}</button>))}</div>
+           <div className="flex p-4 gap-2 overflow-x-auto">{['all', 'beans', 'diamonds', 'coins'].map(c => (<button key={c} className={`px-4 py-1.5 rounded-full text-xs font-bold capitalize ${c==='all' ? 'bg-white text-black' : 'bg-slate-800 text-slate-400'}`}>{t[c] || t.all}</button>))}</div>
            <div className="flex-1 overflow-y-auto p-4 space-y-3">{TRANSACTIONS.map(tx => (<div key={tx.id} className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex justify-between items-center"><div className="flex items-center gap-3"><div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.amount > 0 ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>{tx.amount > 0 ? <TrendingUp size={18}/> : <ArrowRightLeft size={18}/>}</div><div><div className="font-bold text-sm text-white">{tx.title}</div><div className="text-[10px] text-slate-500">{tx.date}</div></div></div><div className={`font-mono font-bold flex items-center gap-1 ${tx.amount > 0 ? 'text-green-400' : 'text-white'}`}>{tx.amount > 0 ? '+' : ''}{tx.amount}<CurrencyIcon type={tx.currency} className={tx.currency === 'beans' ? 'text-yellow-400' : tx.currency === 'diamonds' ? 'text-pink-400' : 'text-blue-400'} /></div></div>))}</div>
         </div>
      )
@@ -559,7 +609,7 @@ const WalletPage = ({ onClose, t, showToast }) => {
                 <div className="bg-slate-800 p-3 rounded-xl mb-4 text-center"><div className="text-xs text-slate-400 mb-1">{t.exchange_rate}</div></div>
                 
                 <div className="flex justify-between items-center mb-2 px-1">
-                    <span className="text-xs text-slate-400">Balance: <span className="text-yellow-400 font-bold">8,900</span></span>
+                    <span className="text-xs text-slate-400">{t.balance_label} <span className="text-yellow-400 font-bold">8,900</span></span>
                 </div>
                 <div className="flex gap-2 mb-4">
                     {[10, 50, 100, 500].map(amt => (
@@ -625,7 +675,7 @@ const MineTab = ({ lang, setLang, t, showToast }) => {
   return (
     <div className="h-full bg-slate-950 text-white flex flex-col relative">
       {activeModal === 'wallet' && <WalletPage onClose={() => setActiveModal(null)} t={t} showToast={showToast} />}
-      {activeModal === 'tasks' && (<DetailModal title={t.tasks} icon={Target} color="text-red-400">{DAILY_TASKS.map(task => (<div key={task.id} className="bg-slate-800 p-4 rounded-xl flex justify-between items-center"><div><div className="font-bold text-sm mb-1">{task.title}</div><div className="text-xs text-slate-500">{task.progress}/{task.total}</div></div><button className={`px-3 py-1.5 rounded-lg text-xs font-bold ${task.claimed ? 'bg-slate-700 text-slate-500' : 'bg-yellow-500 text-black'}`}>{task.claimed ? 'Done' : 'Claim'}</button></div>))}</DetailModal>)}
+      {activeModal === 'tasks' && (<DetailModal title={t.tasks} icon={Target} color="text-red-400">{DAILY_TASKS.map(task => (<div key={task.id} className="bg-slate-800 p-4 rounded-xl flex justify-between items-center"><div><div className="font-bold text-sm mb-1">{task.title}</div><div className="text-xs text-slate-500">{task.progress}/{task.total}</div></div><button className={`px-3 py-1.5 rounded-lg text-xs font-bold ${task.claimed ? 'bg-slate-700 text-slate-500' : 'bg-yellow-500 text-black'}`}>{task.claimed ? t.claimed : t.claim}</button></div>))}</DetailModal>)}
       {activeModal === 'skills' && (<DetailModal title={t.skills} icon={Star} color="text-purple-400"><div className="grid grid-cols-1 gap-3">{GAME_SKILLS.map(skill => (<div key={skill.id} className="bg-slate-800 p-4 rounded-xl flex items-center gap-4"><div className={`w-12 h-12 rounded-full flex items-center justify-center ${skill.bg}`}><Trophy size={20} className={skill.color} /></div><div className="flex-1"><div className="flex justify-between mb-1"><span className="font-bold">{skill.name}</span><span className={`font-black ${skill.color}`}>{skill.title}</span></div><div className="w-full h-1.5 bg-slate-700 rounded-full"><div className={`h-full ${skill.color.replace('text', 'bg')}`} style={{width: '60%'}}></div></div><div className="text-[10px] text-slate-500 mt-1">Lv.{skill.level}</div></div></div>))}</div></DetailModal>)}
 
       <div className="pt-12 px-6 pb-6 bg-slate-950 flex justify-between items-start">
@@ -633,7 +683,7 @@ const MineTab = ({ lang, setLang, t, showToast }) => {
          <div className="flex flex-col items-end gap-2"><Settings className="text-slate-400" size={20} /></div>
       </div>
       <div className="px-4 mb-6"><div className="grid grid-cols-3 gap-3">{[{id: 'wallet', label: t.wallet, icon: Wallet, color: 'text-yellow-400', bg: 'bg-yellow-500/10'}, {id: 'tasks', label: t.tasks, icon: Target, color: 'text-red-400', bg: 'bg-red-500/10'}, {id: 'skills', label: t.skills, icon: Star, color: 'text-purple-400', bg: 'bg-purple-500/10'},].map(item => (<button key={item.id} onClick={() => setActiveModal(item.id)} className="bg-slate-900 border border-slate-800 hover:border-slate-600 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-95"><div className={`w-10 h-10 rounded-full ${item.bg} flex items-center justify-center`}><item.icon className={item.color} size={20} /></div><span className="text-xs font-bold text-slate-300">{item.label}</span></button>))}</div></div>
-      <div className="flex justify-around text-center mb-6 px-4"><div><div className="font-bold text-lg">12.5k</div><div className="text-xs text-slate-500">Fans</div></div><div><div className="font-bold text-lg">452</div><div className="text-xs text-slate-500">Following</div></div><div><div className="font-bold text-lg">1.2M</div><div className="text-xs text-slate-500">Likes</div></div></div>
+      <div className="flex justify-around text-center mb-6 px-4"><div><div className="font-bold text-lg">12.5k</div><div className="text-xs text-slate-500">{t.fans}</div></div><div><div className="font-bold text-lg">452</div><div className="text-xs text-slate-500">{t.following}</div></div><div><div className="font-bold text-lg">1.2M</div><div className="text-xs text-slate-500">{t.likes_count}</div></div></div>
       <div className="flex-1 bg-slate-900 rounded-t-3xl border-t border-slate-800 p-4 overflow-y-auto">
          <div className="flex border-b border-slate-800 mb-4">{['works', 'likes', 'games'].map(tab => (<button key={tab} onClick={() => setActiveSubTab(tab)} className={`flex-1 pb-3 text-sm font-bold transition-colors ${activeSubTab === tab ? 'text-white border-b-2 border-white' : 'text-slate-500'}`}>{tab === 'works' ? t.works : tab === 'likes' ? t.likes : t.history}</button>))}</div>
          {activeSubTab === 'works' && (<div className="grid grid-cols-3 gap-1">{MY_WORKS.map(i => (<div key={i.id} className="aspect-[3/4] bg-slate-800 rounded-lg relative"><div className="absolute bottom-1 left-1 text-[10px] flex items-center gap-1"><Play size={8} fill="white"/> {i.views}</div></div>))}</div>)}
@@ -661,7 +711,7 @@ const GroupFinder = ({ onClose, t, onOpenChat }) => {
        <div className="p-4 space-y-4">
          <div className="relative"><Search className="absolute left-3 top-2.5 text-slate-500" size={18} /><input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t.search_placeholder} className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white text-sm focus:border-blue-500 focus:outline-none"/></div>
          <div className="flex gap-2">{[{id: 'dist', label: t.sort_dist, icon: MapPin}, {id: 'pop', label: t.sort_pop, icon: Flame}, {id: 'mem', label: t.sort_mem, icon: Users}].map(opt => (<button key={opt.id} onClick={() => setSortBy(opt.id)} className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-bold transition-all ${sortBy === opt.id ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-400'}`}><opt.icon size={12}/> {opt.label}</button>))}</div>
-         <div className="space-y-3 pb-20 overflow-y-auto">{filteredGroups.map(group => (<div key={group.id} className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex justify-between items-center"><div className="flex items-center gap-3"><div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-lg font-bold text-white">{group.name[0]}</div><div><h3 className="font-bold text-white text-sm">{group.name}</h3><div className="flex items-center gap-3 text-[10px] text-slate-400 mt-1"><span className="flex items-center gap-0.5"><MapPin size={10}/> {group.dist < 100 ? `${group.dist}km` : '100+km'}</span><span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span><span className="flex items-center gap-0.5 text-green-400"><Flame size={10}/> {group.activity}</span></div></div></div><button onClick={() => onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: 'Welcome to the group!', time: 'Just now', unread: 0, type: 'group' })} className="bg-white/10 hover:bg-white/20 text-blue-400 px-4 py-1.5 rounded-full text-xs font-bold border border-blue-500/50">{t.join}</button></div>))}</div>
+         <div className="space-y-3 pb-20 overflow-y-auto">{filteredGroups.map(group => (<div key={group.id} className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex justify-between items-center"><div className="flex items-center gap-3"><div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-lg font-bold text-white">{group.name[0]}</div><div><h3 className="font-bold text-white text-sm">{group.name}</h3><div className="flex items-center gap-3 text-[10px] text-slate-400 mt-1"><span className="flex items-center gap-0.5"><MapPin size={10}/> {group.dist < 100 ? `${group.dist}${t.km}` : `100+${t.km}`}</span><span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span><span className="flex items-center gap-0.5 text-green-400"><Flame size={10}/> {group.activity}</span></div></div></div><button onClick={() => onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: t.welcome_group, time: t.just_now, unread: 0, type: 'group' })} className="bg-white/10 hover:bg-white/20 text-blue-400 px-4 py-1.5 rounded-full text-xs font-bold border border-blue-500/50">{t.join}</button></div>))}</div>
        </div>
     </div>
   );
@@ -676,7 +726,7 @@ const TaskCenter = ({ onClose, t, showToast }) => {
   const handleClaim = (taskId) => {
       setTasks(prev => prev.map(task => {
           if (task.id === taskId) {
-              showToast(`Claimed reward for ${task.title}!`);
+              showToast(`${t.claim} ${task.title}!`);
               setExp(e => Math.min(e + 50, maxExp));
               return { ...task, claimed: true };
           }
@@ -691,7 +741,7 @@ const TaskCenter = ({ onClose, t, showToast }) => {
            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
            <div className="relative z-10 flex items-center justify-between mb-6">
                <button onClick={onClose} className="bg-slate-800/50 p-2 rounded-full backdrop-blur-sm"><ChevronLeft size={24} className="text-white"/></button>
-               <h1 className="text-lg font-bold text-white">Task Center</h1>
+               <h1 className="text-lg font-bold text-white">{t.task_center}</h1>
                <button className="bg-slate-800/50 p-2 rounded-full backdrop-blur-sm"><HelpCircle size={20} className="text-slate-400"/></button>
            </div>
            
@@ -699,19 +749,19 @@ const TaskCenter = ({ onClose, t, showToast }) => {
            <div className="relative z-10 flex items-center gap-4">
                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 to-orange-600 p-1 shadow-lg shadow-orange-500/20">
                    <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center flex-col">
-                       <span className="text-[10px] text-slate-400 font-bold uppercase">Level</span>
+                       <span className="text-[10px] text-slate-400 font-bold uppercase">{t.level}</span>
                        <span className="text-3xl font-black text-white">{level}</span>
                    </div>
                </div>
                <div className="flex-1">
                    <div className="flex justify-between items-end mb-2">
-                       <span className="text-white font-bold text-lg">Elite Gamer</span>
-                       <span className="text-xs text-indigo-300 font-mono">{exp}/{maxExp} EXP</span>
+                       <span className="text-white font-bold text-lg">{t.elite_gamer}</span>
+                       <span className="text-xs text-indigo-300 font-mono">{exp}/{maxExp} {t.exp}</span>
                    </div>
                    <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
                        <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{width: `${(exp/maxExp)*100}%`}}></div>
                    </div>
-                   <div className="text-[10px] text-slate-400 mt-2">Next Level: Unlock Exclusive Avatar Frame</div>
+                   <div className="text-[10px] text-slate-400 mt-2">{t.next_level}</div>
                </div>
            </div>
        </div>
@@ -720,7 +770,7 @@ const TaskCenter = ({ onClose, t, showToast }) => {
        <div className="flex-1 overflow-y-auto p-4 space-y-4">
            <div className="flex items-center gap-2 mb-2">
                <Target size={18} className="text-yellow-400"/>
-               <h2 className="font-bold text-white">Daily Missions</h2>
+               <h2 className="font-bold text-white">{t.daily_missions}</h2>
            </div>
            
            {tasks.map(task => (
@@ -748,7 +798,7 @@ const TaskCenter = ({ onClose, t, showToast }) => {
                                    : 'bg-slate-800 text-slate-400 cursor-not-allowed'
                        }`}
                    >
-                       {task.claimed ? 'Done' : 'Claim'}
+                       {task.claimed ? t.claimed : t.claim}
                    </button>
                </div>
            ))}
@@ -757,8 +807,8 @@ const TaskCenter = ({ onClose, t, showToast }) => {
                <div className="flex items-center gap-3 mb-3">
                    <div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white"><Gift size={20}/></div>
                    <div>
-                       <h3 className="font-bold text-white text-sm">Weekly Chest</h3>
-                       <p className="text-[10px] text-pink-200">Complete 15 daily tasks to open</p>
+                       <h3 className="font-bold text-white text-sm">{t.weekly_chest}</h3>
+                       <p className="text-[10px] text-pink-200">{t.weekly_chest_desc}</p>
                    </div>
                </div>
                <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
@@ -771,6 +821,132 @@ const TaskCenter = ({ onClose, t, showToast }) => {
   );
 };
 
+const GameRoomList = ({ game, onClose, t, onJoinRoom }) => {
+    const rooms = MATCH_ROOMS.filter(r => r.gameName === game.title);
+    const [viewMode, setViewMode] = useState('list'); // 'list' or 'card'
+    
+    return (
+        <div className="h-full bg-slate-950 flex flex-col text-white pb-20 relative animate-in slide-in-from-right">
+            <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <button onClick={onClose}><ChevronLeft size={24} className="text-white"/></button>
+                    <h1 className="text-lg font-bold text-white">{game.title}</h1>
+                </div>
+                <button onClick={() => setViewMode(viewMode === 'list' ? 'card' : 'list')} className="p-2 bg-slate-800 rounded-full border border-slate-700">
+                    {viewMode === 'list' ? <LayoutGrid size={18} className="text-white"/> : <LayoutList size={18} className="text-white"/>}
+                </button>
+            </div>
+            
+            <div className={`flex-1 overflow-y-auto p-4 ${viewMode === 'card' ? 'grid grid-cols-2 gap-3 content-start' : 'space-y-3'}`}>
+                {rooms.map(room => {
+                    // Dynamic avatar spacing
+                    const maxAvatarWidth = 100; // Max width for the avatar stack
+                    const avatarSize = 40; // w-10 = 40px
+                    const count = room.current;
+                    // Calculate overlap: if count * size > max, we need negative margin
+                    // Total width = size + (count-1) * (size + margin)
+                    // We want Total width <= maxAvatarWidth (roughly)
+                    // Actually simpler: just increase negative margin as count increases
+                    // If count is high, margin is more negative (closer to -30). If count is low, margin is -10.
+                    const overlapPx = count > 3 ? -25 : -15;
+
+                    // Logic for List View fixed width container
+                    let listMarginLeft = -15;
+                    if (count > 1) {
+                         const containerWidth = 80; // w-20
+                         const maxOffset = (containerWidth - avatarSize) / (count - 1);
+                         const calculatedMargin = maxOffset - avatarSize;
+                         listMarginLeft = Math.min(-15, calculatedMargin);
+                    }
+
+                    const joinRoom = () => {
+                        const players = [
+                            { id: 99, name: t.you, isHost: false, status: 'ready', avatar: 'Me', hasPaid: true },
+                            { id: 2, name: 'Player_2', isHost: false, status: 'ready', avatar: 'P2', hasPaid: true },
+                            { id: 3, name: 'Player_3', isHost: false, status: 'ready', avatar: 'P3', hasPaid: true },
+                            { id: 4, name: 'Player_4', isHost: false, status: 'ready', avatar: 'P4', hasPaid: true }
+                        ];
+                        onJoinRoom({ ...room, autoStart: true, players: players });
+                    };
+
+                    if (viewMode === 'card') {
+                        return (
+                            <div key={room.id} onClick={joinRoom} className="bg-slate-900 p-3 rounded-xl border border-slate-800 flex flex-col gap-2 active:scale-95 transition-transform cursor-pointer relative overflow-hidden">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white">
+                                            {room.host[0]}
+                                        </div>
+                                        <div className="font-bold text-white text-sm truncate max-w-[80px]">{room.host}</div>
+                                    </div>
+                                    <div className="text-xs text-slate-400 flex items-center gap-1">
+                                        <Users size={12}/> {room.current}/{room.capacity}
+                                    </div>
+                                </div>
+                                
+                                <div className="flex items-center gap-2 text-xs text-yellow-400 font-bold">
+                                     <Coins size={12}/> {t.entry_fee}: {room.entry}
+                                </div>
+
+                                <div className="flex items-center h-8 pl-2 mt-1">
+                                     {[...Array(room.current)].map((_, i) => (
+                                        <div key={i} style={{ marginLeft: i === 0 ? 0 : `${overlapPx}px`, zIndex: 10-i }} className="w-8 h-8 rounded-full border-2 border-slate-900 bg-slate-700 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
+                                            {i === 0 ? room.host[0] : `P${i+1}`}
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                <button className="w-full bg-blue-600 py-1.5 rounded-lg text-xs font-bold text-white mt-1">
+                                    {t.join}
+                                </button>
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <div key={room.id} className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center w-20 flex-shrink-0 relative">
+                                    {[...Array(room.current)].map((_, i) => (
+                                        <div key={i} style={{ marginLeft: i === 0 ? 0 : `${listMarginLeft}px`, zIndex: 10-i }} className="w-10 h-10 rounded-full border-2 border-slate-900 flex items-center justify-center text-xs font-bold text-white shadow-sm bg-slate-700 relative">
+                                            {i === 0 ? room.host[0] : `P${i+1}`}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <div className="font-bold text-white text-sm truncate">{room.host}</div>
+                                    <div className="text-xs text-yellow-400 font-bold flex items-center gap-1 mt-1">
+                                        <Coins size={12}/> {t.entry_fee}: {room.entry}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="flex flex-col items-end gap-2">
+                                <div className="text-xs text-slate-400 flex items-center gap-1">
+                                    <Users size={12}/> {room.current}/{room.capacity}
+                                </div>
+                                <button onClick={joinRoom} className="bg-blue-600 px-4 py-1.5 rounded-lg text-xs font-bold text-white">
+                                    {t.join}
+                                </button>
+                            </div>
+                        </div>
+                    );
+                })}
+                
+                {rooms.length === 0 && (
+                    <div className="text-center text-slate-500 mt-10">No rooms available. Create one!</div>
+                )}
+            </div>
+            
+             <div className="p-4 bg-slate-900 border-t border-slate-800">
+                <button className="w-full py-3 bg-yellow-500 text-black rounded-xl font-bold shadow-lg">
+                    {t.room_create}
+                </button>
+            </div>
+        </div>
+    )
+};
+
 const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
   const [showAllGames, setShowAllGames] = useState(false);
   const [showAllGroups, setShowAllGroups] = useState(false);
@@ -778,8 +954,15 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [showWallet, setShowWallet] = useState(false);
   const [showTaskCenter, setShowTaskCenter] = useState(false);
+  const [selectedGame, setSelectedGame] = useState(null);
+  const [viewMode, setViewMode] = useState('grid');
 
   const handlePlayClick = (game) => {
+     if (game.title === "Ludo Master") {
+         setSelectedGame(game);
+         return;
+     }
+
      const players = [
         { id: 99, name: t.you, isHost: false, status: 'ready', avatar: 'Me', hasPaid: true },
         { id: 2, name: 'Player_2', isHost: false, status: 'ready', avatar: 'P2', hasPaid: true },
@@ -804,43 +987,69 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
       return games.sort((a, b) => (a.category === 'hot' ? -1 : 1));
   }, [sortBy]);
 
+  if (selectedGame) {
+      return <GameRoomList game={selectedGame} onClose={() => setSelectedGame(null)} t={t} onJoinRoom={onJoinRoom} />;
+  }
+
   if (showAllGames) {
       return (
           <div className="h-full bg-slate-950 flex flex-col text-white pb-20 relative animate-in slide-in-from-right">
-              <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+              <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0">
                   <div className="flex items-center gap-3">
                       <button onClick={() => setShowAllGames(false)}><ChevronLeft size={24} className="text-white"/></button>
-                      <h1 className="text-lg font-bold text-white">All Games</h1>
+                      <h1 className="text-lg font-bold text-white">{t.all_games}</h1>
                   </div>
-                  <div className="relative">
-                      <button onClick={() => setShowSortMenu(!showSortMenu)} className="p-2 bg-slate-800 rounded-full"><Filter size={16} className="text-white"/></button>
-                      {showSortMenu && (
-                          <div className="absolute right-0 top-full mt-2 bg-slate-800 rounded-xl border border-slate-700 p-2 w-32 z-50 shadow-xl">
-                              {['hot', 'recent', 'players'].map(s => (
-                                  <button key={s} onClick={() => { setSortBy(s); setShowSortMenu(false); }} className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold mb-1 last:mb-0 ${sortBy === s ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-700'}`}>
-                                      {s === 'hot' ? 'Popular' : s === 'recent' ? 'Newest' : 'Most Played'}
-                                  </button>
-                              ))}
-                          </div>
-                      )}
+                  <div className="flex items-center gap-2">
+                      <button onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')} className="p-2 bg-slate-800 rounded-full">
+                          {viewMode === 'grid' ? <LayoutGrid size={16} className="text-white"/> : <LayoutList size={16} className="text-white"/>}
+                      </button>
+                      <div className="relative">
+                          <button onClick={() => setShowSortMenu(!showSortMenu)} className="p-2 bg-slate-800 rounded-full"><Filter size={16} className="text-white"/></button>
+                          {showSortMenu && (
+                              <div className="absolute right-0 top-full mt-2 bg-slate-800 rounded-xl border border-slate-700 p-2 w-32 z-50 shadow-xl">
+                                  {['hot', 'recent', 'players'].map(s => (
+                                      <button key={s} onClick={() => { setSortBy(s); setShowSortMenu(false); }} className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold mb-1 last:mb-0 ${sortBy === s ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-700'}`}>
+                                          {s === 'hot' ? t.popular : s === 'recent' ? t.newest : t.most_played}
+                                      </button>
+                                  ))}
+                              </div>
+                          )}
+                      </div>
                   </div>
               </div>
-              <div className="p-4 grid grid-cols-2 gap-4 overflow-y-auto">
-                  {sortedGames.map(game => (
-                      <div key={game.id} onClick={() => handlePlayClick(game)} className="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 active:scale-95 transition-transform cursor-pointer group">
-                          <div className={`h-24 bg-gradient-to-br ${game.image} flex items-center justify-center relative overflow-hidden`}>
-                              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
-                              <span className="text-xl font-black text-white/20 uppercase tracking-widest group-hover:scale-110 transition-transform duration-500">Game</span>
-                          </div>
-                          <div className="p-3">
-                              <h3 className="font-bold text-sm truncate text-white">{game.title}</h3>
-                              <div className="flex justify-between items-center mt-2 text-[10px] text-slate-400">
-                                  <span>{game.type}</span>
-                                  <span className="flex items-center gap-1"><Users size={10}/> {game.players}</span>
+              <div className="flex-1 overflow-y-auto pb-24">
+                  <div className={`p-4 ${viewMode === 'grid' ? 'grid grid-cols-3 gap-4' : 'space-y-3'}`}>
+                      {sortedGames.map(game => (
+                          viewMode === 'grid' ? (
+                              <div key={game.id} onClick={() => handlePlayClick(game)} className="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 active:scale-95 transition-transform cursor-pointer group relative w-full aspect-square">
+                                  <div className={`absolute inset-0 bg-gradient-to-br ${game.image}`}></div>
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                                  <div className="absolute inset-0 flex flex-col justify-end p-2 text-center">
+                                      <h3 className="font-bold text-white text-[10px] leading-tight truncate drop-shadow-md mb-0.5">{game.title}</h3>
+                                      <div className="text-[8px] text-slate-300 drop-shadow-md flex items-center justify-center gap-1">
+                                          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                                          {game.players}
+                                      </div>
+                                  </div>
                               </div>
-                          </div>
-                      </div>
-                  ))}
+                          ) : (
+                              <div key={game.id} onClick={() => handlePlayClick(game)} className="bg-slate-900 p-3 rounded-xl border border-slate-800 flex items-center gap-3 active:scale-95 transition-transform cursor-pointer">
+                                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${game.image} flex-shrink-0`}></div>
+                                  <div className="flex-1 min-w-0">
+                                      <h3 className="font-bold text-white text-sm truncate">{game.title}</h3>
+                                      <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
+                                          <span className="bg-slate-800 px-1.5 py-0.5 rounded text-[10px]">{game.type}</span>
+                                          <span className="flex items-center gap-1 text-[10px] text-green-400">
+                                              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                                              {game.players} Online
+                                          </span>
+                                      </div>
+                                  </div>
+                                  <button className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold">Play</button>
+                              </div>
+                          )
+                      ))}
+                  </div>
               </div>
           </div>
       );
@@ -869,8 +1078,8 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
         {/* Top Half: Games List */}
         <div>
             <div className="flex justify-between items-center mb-3">
-                <h2 className="text-lg font-bold text-white">Hot Games</h2>
-                <button onClick={() => setShowAllGames(true)} className="text-xs text-blue-400 font-bold flex items-center gap-1">More <ChevronRight size={12}/></button>
+                <h2 className="text-lg font-bold text-white">{t.hot_games}</h2>
+                <button onClick={() => setShowAllGames(true)} className="text-xs text-blue-400 font-bold flex items-center gap-1">{t.more} <ChevronRight size={12}/></button>
             </div>
             
             <div className="space-y-4">
@@ -881,7 +1090,7 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
                             <div className={`absolute inset-0 bg-gradient-to-br ${game.image} opacity-60 group-hover:opacity-80 transition-opacity`}></div>
                             <div className="absolute inset-0 flex flex-col justify-end p-3 bg-gradient-to-t from-black/80 via-transparent to-transparent">
                                 <h3 className="font-bold text-white text-lg leading-tight mb-1">{game.title}</h3>
-                                <span className="text-[10px] text-slate-300 bg-white/10 px-2 py-1 rounded-full w-fit backdrop-blur-sm border border-white/10">{game.players} Playing</span>
+                                <span className="text-[10px] text-slate-300 bg-white/10 px-2 py-1 rounded-full w-fit backdrop-blur-sm border border-white/10">{game.players} {t.playing}</span>
                             </div>
                         </div>
                     ))}
@@ -899,12 +1108,12 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
                             
                             {/* Content */}
                             <div className="absolute inset-0 flex flex-col justify-end p-2 text-center">
-                                <h3 className="font-bold text-white text-[10px] leading-tight truncate drop-shadow-md">{game.title}</h3>
+                                <h3 className="font-bold text-white text-[10px] leading-tight truncate drop-shadow-md mb-0.5">{game.title}</h3>
                                 <div className="text-[8px] text-slate-300 drop-shadow-md">{game.players}</div>
                             </div>
                             
                             {/* Center Letter (Optional fallback) */}
-                            <div className="absolute inset-0 flex items-center justify-center pb-4 opacity-30 text-2xl font-black text-white pointer-events-none mix-blend-overlay">
+                            <div className="absolute inset-0 flex items-center justify-center pb-6 opacity-30 text-2xl font-black text-white pointer-events-none mix-blend-overlay">
                                 {game.title[0]}
                             </div>
                         </div>
@@ -917,8 +1126,8 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
         <div onClick={() => setShowTaskCenter(true)} className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-4 flex justify-between items-center shadow-lg relative overflow-hidden group cursor-pointer active:scale-95 transition-transform">
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
             <div className="relative z-10">
-                <h3 className="font-bold text-white text-lg flex items-center gap-2"><Trophy size={18} className="text-yellow-300"/> Level Up Tasks</h3>
-                <p className="text-indigo-200 text-xs mt-1">Complete daily missions to earn EXP & Beans!</p>
+                <h3 className="font-bold text-white text-lg flex items-center gap-2"><Trophy size={18} className="text-yellow-300"/> {t.level_up_tasks}</h3>
+                <p className="text-indigo-200 text-xs mt-1">{t.level_up_desc}</p>
             </div>
             <div className="relative z-10 bg-white/20 p-2 rounded-full backdrop-blur-sm">
                 <ChevronRight size={20} className="text-white"/>
@@ -928,8 +1137,8 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
         {/* Bottom Half: Group Recommendations */}
         <div>
             <div className="flex justify-between items-center mb-3">
-                <h2 className="text-lg font-bold text-white">Recommended Groups</h2>
-                <button onClick={() => setShowAllGroups(true)} className="text-xs text-blue-400 font-bold flex items-center gap-1">More <ChevronRight size={12}/></button>
+                <h2 className="text-lg font-bold text-white">{t.rec_groups}</h2>
+                <button onClick={() => setShowAllGroups(true)} className="text-xs text-blue-400 font-bold flex items-center gap-1">{t.more} <ChevronRight size={12}/></button>
             </div>
             <div className="space-y-3">
                 {EXTENDED_GROUPS.slice(0, 5).map(group => (
@@ -944,7 +1153,7 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
                                 </div>
                             </div>
                         </div>
-                        <button onClick={() => onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: 'Welcome to the group!', time: 'Just now', unread: 0, type: 'group' })} className="bg-white/10 hover:bg-white/20 text-blue-400 px-3 py-1.5 rounded-full text-xs font-bold border border-blue-500/50">{t.join}</button>
+                        <button onClick={() => onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: t.welcome_group, time: 'Just now', unread: 0, type: 'group' })} className="bg-white/10 hover:bg-white/20 text-blue-400 px-3 py-1.5 rounded-full text-xs font-bold border border-blue-500/50">{t.join}</button>
                     </div>
                 ))}
             </div>
@@ -987,7 +1196,7 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
      
      // Start Game Logic
      const players = [
-        { id: 99, name: t.you, isHost: false, status: 'ready', avatar: 'Me', hasPaid: true },
+        { id: 99, name: t.you, isHost: false, status: 'ready', avatar: t.you, hasPaid: true },
         { id: 2, name: 'Player_2', isHost: false, status: 'ready', avatar: 'P2', hasPaid: true },
         { id: 3, name: 'Player_3', isHost: false, status: 'ready', avatar: 'P3', hasPaid: true },
         { id: 4, name: 'Player_4', isHost: false, status: 'ready', avatar: 'P4', hasPaid: true }
@@ -995,7 +1204,7 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
     const room = { id: 999, gameName: selectedInviteGame.title, mode: 'compete', entry: 100, capacity: 4, host: 'System', current: 4, isMyRoom: false };
     
     // Add "Playing" card to chat
-    setChatHistory(prev => [...prev, { id: Date.now(), sender: 'me', time: 'Just now', type: 'playing_card', game: selectedInviteGame }]);
+    setChatHistory(prev => [...prev, { id: Date.now(), sender: 'me', time: t.just_now, type: 'playing_card', game: selectedInviteGame }]);
     
     // Start Game
     onJoinRoom({ ...room, autoStart: true, players: players });
@@ -1007,13 +1216,13 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
       e.stopPropagation();
       if (!joinedGroups.includes(group.id)) {
           setJoinedGroups([...joinedGroups, group.id]);
-          showToast(`Joined ${group.name}!`);
+          showToast(`${t.joined_group_toast} ${group.name}!`);
       }
   };
 
   const handleGroupClick = (group) => {
       if (joinedGroups.includes(group.id)) {
-          openChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: "Welcome back!", time: "Now" });
+          openChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: t.welcome_back, time: t.just_now });
       } else {
           setSelectedGroupInfo(group);
       }
@@ -1034,14 +1243,14 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
            {chatHistory.map(msg => (
              <div key={msg.id} className={`flex gap-3 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
                <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white border border-slate-700 ${msg.sender === 'me' ? 'bg-slate-800' : 'bg-indigo-600'}`}>
-                  {msg.sender === 'me' ? 'Me' : activeChat.avatar}
+                  {msg.sender === 'me' ? t.you : activeChat.avatar}
                </div>
                <div className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}>
                {msg.type === 'playing_card' ? (
                  <div className="border p-3 rounded-2xl w-56 shadow-lg relative overflow-hidden bg-gradient-to-br from-blue-900 to-slate-900 border-blue-500/50">
                     <div className="text-[10px] font-bold mb-2 flex items-center gap-1 uppercase tracking-wider text-blue-300"><Gamepad2 size={12}/> {t.playing_now}</div>
                     <div className="flex items-center gap-3 mb-3"><div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center"><Gamepad2 size={20} className="text-white"/></div><div><div className="font-bold text-white text-sm">{msg.game.title}</div><div className="text-[10px] text-slate-400">{msg.game.type}</div></div></div>
-                    <button className="w-full py-2 rounded-lg text-xs font-bold text-white transition-colors bg-blue-600 hover:bg-blue-500">Play Also</button>
+                    <button className="w-full py-2 rounded-lg text-xs font-bold text-white transition-colors bg-blue-600 hover:bg-blue-500">{t.play_also}</button>
                  </div>
                ) : msg.type === 'invite' ? (
                  // Hidden invite card logic (kept for compatibility but not used)
@@ -1088,8 +1297,8 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
                       <span className="flex items-center gap-1"><MapPin size={12}/> {selectedGroupInfo.dist}km</span>
                       <span className="flex items-center gap-1"><Users size={12}/> {selectedGroupInfo.members}</span>
                   </div>
-                  <p className="text-sm text-slate-300 mb-6">Join this group to connect with players nearby, organize matches, and share your gaming moments!</p>
-                  <button onClick={(e) => { handleJoinGroup(e, selectedGroupInfo); setSelectedGroupInfo(null); }} className="w-full py-3 bg-blue-600 rounded-xl font-bold text-white shadow-lg">Join Group</button>
+                  <p className="text-sm text-slate-300 mb-6">{t.join_group_desc}</p>
+                  <button onClick={(e) => { handleJoinGroup(e, selectedGroupInfo); setSelectedGroupInfo(null); }} className="w-full py-3 bg-blue-600 rounded-xl font-bold text-white shadow-lg">{t.join_group_modal_title}</button>
               </div>
           </div>
       )}
@@ -1164,7 +1373,7 @@ const ActiveGameSession = ({ room, players, onGameOver, t }) => {
           <div className="relative z-10 text-center p-8 bg-black/50 backdrop-blur-sm rounded-3xl border border-white/10">
              <Gamepad2 size={64} className="text-white/50 mx-auto mb-4 animate-bounce"/>
              <h3 className="text-2xl font-black text-white uppercase tracking-widest mb-2">{room.gameName}</h3>
-             <p className="text-white/50 text-sm">Tap anywhere to play (Simulated)</p>
+             <p className="text-white/50 text-sm">{t.tap_to_play}</p>
           </div>
           
           {/* Interactive Click Area for "Playing" */}
@@ -1213,7 +1422,7 @@ const GameResultModal = ({ result, onClose, t }) => {
                    <div key={p.id} className={`p-3 rounded-xl flex items-center justify-between ${p.id === 99 ? 'bg-blue-600/20 border border-blue-500' : 'bg-slate-800 border border-slate-700'}`}>
                       <div className="flex items-center gap-3">
                          <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${i===0 ? 'bg-yellow-500 text-black' : i===1 ? 'bg-gray-300 text-black' : i===2 ? 'bg-orange-700 text-white' : 'bg-slate-700 text-slate-400'}`}>{i+1}</div>
-                         <div className="font-bold text-sm text-white">{p.name} {p.id === 99 && '(You)'}</div>
+                         <div className="font-bold text-sm text-white">{p.name} {p.id === 99 && t.you_brackets}</div>
                       </div>
                       <div className="text-right">
                          <div className="font-mono font-bold text-white">{p.score}</div>
@@ -1250,7 +1459,7 @@ const Toast = ({ message, onClose }) => {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
-  const [lang, setLang] = useState('zh');
+  const [lang, setLang] = useState('en');
   const [activeRoom, setActiveRoom] = useState(null); 
   const [createCooldown, setCreateCooldown] = useState(null); // Timestamp for cooldown
   const [activeGameSession, setActiveGameSession] = useState(null);
@@ -1276,7 +1485,7 @@ export default function App() {
           //     setIsLoadingGame(false);
           //     setActiveGameSession({ room: roomData, players: roomData.players });
           // }, 2000);
-          showToast("Game Started (Simulated)");
+          showToast(t.game_started);
       } else {
           setActiveRoom({ ...roomData, isMyRoom: roomData.host === 'Me' });
       }
@@ -1318,8 +1527,8 @@ export default function App() {
         {isLoadingGame && (
             <div className="absolute inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center animate-in fade-in">
                 <Loader2 size={64} className="text-blue-500 animate-spin mb-6" />
-                <h2 className="text-2xl font-bold text-white mb-2">Loading Game...</h2>
-                <p className="text-slate-400 text-sm">Preparing assets and connecting players</p>
+                <h2 className="text-2xl font-bold text-white mb-2">{t.loading_game}</h2>
+                <p className="text-slate-400 text-sm">{t.preparing_assets}</p>
             </div>
         )}
 
