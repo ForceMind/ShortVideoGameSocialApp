@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   Home, Gamepad2, PlusSquare, Plus, MessageCircle, User, Search, Heart, MessageSquare, Share2, MapPin, Coins, 
   Trophy, Clock, ChevronRight, ChevronLeft, Play, Pause, Users, Bell, Settings, X, Send, Mic, MoreHorizontal, 
   Wallet, CheckCircle2, Loader2, RefreshCw, TrendingUp, Calendar, Award, Gem, CircleDollarSign, Star, Zap, 
-  Target, Gift, Languages, Filter, Flame, UserPlus, ArrowRightLeft, Receipt, Sword, Crown, LayoutGrid, LayoutList, LogOut, Ban, AlertTriangle, Lock, HelpCircle
+  Target, Gift, Languages, Filter, Flame, UserPlus, ArrowRightLeft, Receipt, Sword, Crown, LayoutGrid, LayoutList, LogOut, Ban, AlertTriangle, Lock, HelpCircle, XCircle
 } from 'lucide-react';
 
 // --- Internationalization (i18n) ---
@@ -65,13 +65,15 @@ const TEXTS = {
     tap_to_play: "点击任意位置开始（模拟）", you_brackets: "（我）",
     fans: "粉丝", likes_count: "获赞", just_now: "刚刚", km: "公里",
     level: "等级", exp: "经验", favorite: "收藏", share: "分享",
-    rec_game: "推荐游戏", players_online: "在线玩家", play_now: "立即玩",
+    rec_game: "热门", players_online: "在线玩家", play_now: "立即玩",
     rec_room: "推荐房间", nearby: "附近", shorts: "短视频",
     comments: "评论", add_comment: "添加评论...", sample_comment: "这个视频太棒了！🔥",
     guest: "访客", game_room: "游戏房间", ready_excl: "已准备！",
     cancel_ready_first: "请先取消准备（长按准备按钮）", insufficient_balance: "余额不足！",
     ready_cancelled: "已取消准备", host_badge: "房主", cancel: "取消",
-    all: "全部", balance_label: "余额："
+    all: "全部", balance_label: "余额：",
+    sys_play: "我也玩", sys_join: "进入群聊", sys_watch: "进入短视频",
+    achievements: "成就", owned: "已拥有", trophy_room: "荣誉展厅", earned_on: "获得于"
   },
   en: {
     home: "Home", game: "Game", inbox: "Inbox", mine: "Mine",
@@ -129,13 +131,15 @@ const TEXTS = {
     tap_to_play: "Tap anywhere to play (Simulated)", you_brackets: "(You)",
     fans: "Fans", likes_count: "Likes", just_now: "Just now", km: "km",
     level: "Level", exp: "EXP", favorite: "Favorite", share: "Share",
-    rec_game: "Recommended Game", players_online: "Players Online", play_now: "Play Now",
+    rec_game: "Hot", players_online: "Players Online", play_now: "Play Now",
     rec_room: "Recommended Room", nearby: "Nearby", shorts: "Shorts",
     comments: "Comments", add_comment: "Add a comment...", sample_comment: "This is a great video! 🔥",
     guest: "Guest", game_room: "Game Room", ready_excl: "Ready!",
     cancel_ready_first: "Please cancel ready first (Long press Ready button)", insufficient_balance: "Insufficient balance!",
     ready_cancelled: "Ready Cancelled", host_badge: "HOST", cancel: "Cancel",
-    all: "All", balance_label: "Balance:"
+    all: "All", balance_label: "Balance:",
+    sys_play: "Play Also", sys_join: "Join Group", sys_watch: "Watch Video",
+    achievements: "Achievements", owned: "Owned", trophy_room: "Trophy Room", earned_on: "Earned on"
   }
 };
 
@@ -191,9 +195,9 @@ const VIDEOS = [
 ];
 
 const CHATS = [
-  { id: 1, name: "Maharashtra State Group", lastMsg: "System: Welcome!", time: "12:30", type: "State", unread: 5, avatar: "M" },
-  { id: 2, name: "Pune District Gamers", lastMsg: "Rohan: Anyone for Ludo?", time: "11:45", type: "District", unread: 2, avatar: "P" },
-  { id: 3, name: "Mumbai Elite Club", lastMsg: "Admin: Tournament starts at 8 PM", time: "10:20", type: "City", unread: 0, avatar: "E" },
+  { id: 1, name: "Maharashtra State Group", lastMsg: "System: Welcome!", time: "12:30", type: "State", unread: 5, avatar: "M", members: 12500 },
+  { id: 2, name: "Pune District Gamers", lastMsg: "Rohan: Anyone for Ludo?", time: "11:45", type: "District", unread: 2, avatar: "P", members: 3400 },
+  { id: 3, name: "Mumbai Elite Club", lastMsg: "Admin: Tournament starts at 8 PM", time: "10:20", type: "City", unread: 0, avatar: "E", members: 850 },
   { id: 4, name: "Ludo Champions", lastMsg: "Rahul: Good game!", time: "Yesterday", type: "Game", unread: 0, avatar: "L" },
   { id: 5, name: "Cricket Fans", lastMsg: "Match delayed due to rain", time: "Yesterday", type: "Interest", unread: 12, avatar: "C" },
 ];
@@ -218,6 +222,19 @@ const TRANSACTIONS = [
 const DAILY_TASKS = [
   { id: 1, title: "Play 3 Ludo Games", progress: 2, total: 3, reward: 50, type: "Beans" },
   { id: 2, title: "Win 1 Match", progress: 1, total: 1, reward: 10, type: "Exp", claimed: true },
+];
+
+const ACHIEVEMENTS = [
+  { id: 1, title: "Ludo Master", desc: "Play 50 Games", progress: 24, total: 50, badge: "🥉", color: "bg-orange-700" },
+  { id: 2, title: "Sharpshooter", desc: "Score 10,000 Points", progress: 12500, total: 10000, badge: "🥇", color: "bg-yellow-500", claimed: false },
+  { id: 3, title: "Social Butterfly", desc: "Join 5 Groups", progress: 2, total: 5, badge: "🥈", color: "bg-slate-400" },
+  { id: 4, title: "Winning Streak", desc: "Win 10 Games in a row", progress: 3, total: 10, badge: "🔥", color: "bg-red-600" },
+  { id: 5, title: "Big Spender", desc: "Spend 5000 Coins", progress: 1200, total: 5000, badge: "💎", color: "bg-blue-500" },
+  { id: 6, title: "Early Bird", desc: "Login before 8 AM", progress: 1, total: 1, badge: "🌅", color: "bg-sky-400", claimed: true },
+  { id: 7, title: "Night Owl", desc: "Play after midnight", progress: 5, total: 10, badge: "🦉", color: "bg-indigo-900" },
+  { id: 8, title: "Team Player", desc: "Play 20 Team Matches", progress: 15, total: 20, badge: "🤝", color: "bg-green-600" },
+  { id: 9, title: "Collector", desc: "Unlock 10 Avatars", progress: 4, total: 10, badge: "🎭", color: "bg-purple-600" },
+  { id: 10, title: "Veteran", desc: "Active for 30 Days", progress: 12, total: 30, badge: "🛡️", color: "bg-slate-600" },
 ];
 
 const GAME_SKILLS = [
@@ -262,7 +279,7 @@ const BottomNav = ({ activeTab, onTabChange, t }) => {
   );
 };
 
-const HomeTab = ({ t }) => {
+const HomeTab = ({ t, onTabChange, onJoinRoom, onCreateRoom }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [activeTab, setActiveTab] = useState('foryou');
   const [showComments, setShowComments] = useState(false);
@@ -323,14 +340,62 @@ const HomeTab = ({ t }) => {
           );
       } else if (currentItem.type === 'game_card') {
            return (
-              <div className="h-full w-full bg-slate-900 flex flex-col items-center justify-center p-8 relative">
-                  <div className="absolute top-4 right-4 text-slate-500 text-xs font-bold uppercase tracking-widest">{t.rec_game}</div>
-                  <div className={`w-full aspect-video rounded-3xl bg-gradient-to-br ${currentItem.data.image} flex items-center justify-center mb-6 shadow-2xl`}>
-                      <Gamepad2 size={64} className="text-white/50"/>
+              <div className="h-full w-full bg-slate-900 flex relative">
+                  {/* Full Screen Game Background */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${currentItem.data.image} opacity-80`}></div>
+                  <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
+
+                  {/* Center: Game Icon & Title */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center z-0 pointer-events-none">
+                      <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-yellow-400 to-orange-600 flex items-center justify-center shadow-[0_0_50px_rgba(234,179,8,0.5)] mb-6 animate-in zoom-in duration-500 border-4 border-white/20">
+                          <Gamepad2 size={64} className="text-white drop-shadow-lg" />
+                      </div>
+                      <h2 className="text-4xl font-black text-white uppercase tracking-widest drop-shadow-2xl text-center px-4">{currentItem.data.title}</h2>
+                      <div className="mt-4 flex items-center gap-2 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
+                          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                          <span className="text-sm font-bold text-white">{currentItem.data.players} {t.players_online}</span>
+                      </div>
                   </div>
-                  <h2 className="text-2xl font-black text-white mb-2">{currentItem.data.title}</h2>
-                  <p className="text-slate-400 mb-8">{currentItem.data.players} {t.players_online}</p>
-                  <button className="w-full py-4 bg-yellow-500 text-black rounded-2xl font-bold text-lg shadow-lg">{t.play_now}</button>
+
+                  {/* Bottom Interaction Zone */}
+                  <div className="absolute bottom-16 left-0 right-0 h-32 z-20 flex">
+                      {/* Left: Not Interested */}
+                      <div 
+                        className="w-1/3 h-full flex items-center justify-center cursor-pointer active:bg-white/5 transition-colors border-t border-r border-white/10 bg-black/20 backdrop-blur-sm hover:bg-black/40"
+                        onClick={handleNext}
+                      >
+                          <div className="flex flex-col items-center gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                              <XCircle size={28} className="text-white" />
+                              <span className="text-white text-[10px] font-bold uppercase tracking-wider">{t.not_interested}</span>
+                          </div>
+                      </div>
+
+                      {/* Right: Enter Game */}
+                      <div 
+                        className="w-2/3 h-full flex items-center justify-center cursor-pointer active:bg-white/5 transition-colors border-t border-white/10 bg-blue-600/20 backdrop-blur-sm hover:bg-blue-600/40"
+                        onClick={() => {
+                            const game = currentItem.data;
+                            if (game.title === "Ludo Master") {
+                                const roomConfig = { gameName: game.title, mode: 'compete', entry: 100, capacity: 4 };
+                                onCreateRoom(roomConfig);
+                            } else {
+                                const players = [
+                                    { id: 99, name: t.you, isHost: false, status: 'ready', avatar: 'Me', hasPaid: true },
+                                    { id: 2, name: 'Player_2', isHost: false, status: 'ready', avatar: 'P2', hasPaid: true }
+                                ];
+                                const room = { id: 999, gameName: game.title, mode: 'compete', entry: 100, capacity: 2, host: 'System', current: 2, isMyRoom: false, players: players };
+                                onJoinRoom(room);
+                            }
+                        }} 
+                      >
+                          <div className="flex items-center gap-3 hover:scale-105 transition-transform">
+                              <div className="w-12 h-12 rounded-full bg-white text-blue-600 flex items-center justify-center shadow-lg">
+                                  <Play size={24} fill="currentColor" className="ml-1" />
+                              </div>
+                              <span className="text-white font-black text-xl uppercase tracking-widest drop-shadow-lg">{t.play_now}</span>
+                          </div>
+                      </div>
+                  </div>
               </div>
            );
       } else { // room_card
@@ -666,7 +731,14 @@ const WalletPage = ({ onClose, t, showToast }) => {
 const MineTab = ({ lang, setLang, t, showToast }) => {
   const [activeModal, setActiveModal] = useState(null); 
   const [activeSubTab, setActiveSubTab] = useState('works');
+  const [showVideoPlayer, setShowVideoPlayer] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState(null);
   const totalEarnings = GAME_HISTORY.reduce((acc, curr) => curr.amount > 0 ? acc + curr.amount : acc, 0);
+
+  const handleVideoClick = (video) => {
+      setSelectedVideo(video);
+      setShowVideoPlayer(true);
+  };
 
   const DetailModal = ({ title, icon: Icon, color, children }) => (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in"><div className="bg-slate-900 w-full max-w-sm rounded-3xl border border-slate-700 overflow-hidden flex flex-col max-h-[80vh] animate-slide-up"><div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950"><h2 className={`text-lg font-bold flex items-center gap-2 ${color}`}><Icon size={20}/> {title}</h2><button onClick={() => setActiveModal(null)} className="bg-slate-800 p-2 rounded-full"><X size={16}/></button></div><div className="p-4 overflow-y-auto flex-1 space-y-4">{children}</div></div></div>
@@ -674,6 +746,27 @@ const MineTab = ({ lang, setLang, t, showToast }) => {
 
   return (
     <div className="h-full bg-slate-950 text-white flex flex-col relative">
+      {showVideoPlayer && (
+          <div className="fixed inset-0 z-[100] bg-black flex flex-col animate-in slide-in-from-bottom">
+              <div className="absolute top-4 left-4 z-20">
+                  <button onClick={() => setShowVideoPlayer(false)} className="bg-black/20 p-2 rounded-full text-white backdrop-blur-sm"><ChevronLeft size={24}/></button>
+              </div>
+              <div className="flex-1 relative bg-slate-900 flex items-center justify-center">
+                  {/* Mock Video Player */}
+                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-50"></div>
+                  <Play size={64} className="text-white/50 relative z-10"/>
+                  <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent z-10">
+                      <h2 className="text-xl font-bold text-white mb-2">Amazing Ludo Comeback! 🔥</h2>
+                      <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1"><Heart size={24} className="text-red-500" fill="currentColor"/> 12.5k</div>
+                          <div className="flex items-center gap-1"><MessageCircle size={24}/> 342</div>
+                          <div className="flex items-center gap-1"><Share2 size={24}/> Share</div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      )}
+
       {activeModal === 'wallet' && <WalletPage onClose={() => setActiveModal(null)} t={t} showToast={showToast} />}
       {activeModal === 'tasks' && (<DetailModal title={t.tasks} icon={Target} color="text-red-400">{DAILY_TASKS.map(task => (<div key={task.id} className="bg-slate-800 p-4 rounded-xl flex justify-between items-center"><div><div className="font-bold text-sm mb-1">{task.title}</div><div className="text-xs text-slate-500">{task.progress}/{task.total}</div></div><button className={`px-3 py-1.5 rounded-lg text-xs font-bold ${task.claimed ? 'bg-slate-700 text-slate-500' : 'bg-yellow-500 text-black'}`}>{task.claimed ? t.claimed : t.claim}</button></div>))}</DetailModal>)}
       {activeModal === 'skills' && (<DetailModal title={t.skills} icon={Star} color="text-purple-400"><div className="grid grid-cols-1 gap-3">{GAME_SKILLS.map(skill => (<div key={skill.id} className="bg-slate-800 p-4 rounded-xl flex items-center gap-4"><div className={`w-12 h-12 rounded-full flex items-center justify-center ${skill.bg}`}><Trophy size={20} className={skill.color} /></div><div className="flex-1"><div className="flex justify-between mb-1"><span className="font-bold">{skill.name}</span><span className={`font-black ${skill.color}`}>{skill.title}</span></div><div className="w-full h-1.5 bg-slate-700 rounded-full"><div className={`h-full ${skill.color.replace('text', 'bg')}`} style={{width: '60%'}}></div></div><div className="text-[10px] text-slate-500 mt-1">Lv.{skill.level}</div></div></div>))}</div></DetailModal>)}
@@ -686,7 +779,7 @@ const MineTab = ({ lang, setLang, t, showToast }) => {
       <div className="flex justify-around text-center mb-6 px-4"><div><div className="font-bold text-lg">12.5k</div><div className="text-xs text-slate-500">{t.fans}</div></div><div><div className="font-bold text-lg">452</div><div className="text-xs text-slate-500">{t.following}</div></div><div><div className="font-bold text-lg">1.2M</div><div className="text-xs text-slate-500">{t.likes_count}</div></div></div>
       <div className="flex-1 bg-slate-900 rounded-t-3xl border-t border-slate-800 p-4 overflow-y-auto">
          <div className="flex border-b border-slate-800 mb-4">{['works', 'likes', 'games'].map(tab => (<button key={tab} onClick={() => setActiveSubTab(tab)} className={`flex-1 pb-3 text-sm font-bold transition-colors ${activeSubTab === tab ? 'text-white border-b-2 border-white' : 'text-slate-500'}`}>{tab === 'works' ? t.works : tab === 'likes' ? t.likes : t.history}</button>))}</div>
-         {activeSubTab === 'works' && (<div className="grid grid-cols-3 gap-1">{MY_WORKS.map(i => (<div key={i.id} className="aspect-[3/4] bg-slate-800 rounded-lg relative"><div className="absolute bottom-1 left-1 text-[10px] flex items-center gap-1"><Play size={8} fill="white"/> {i.views}</div></div>))}</div>)}
+         {activeSubTab === 'works' && (<div className="grid grid-cols-3 gap-1">{MY_WORKS.map(i => (<div key={i.id} onClick={() => handleVideoClick(i)} className="aspect-[3/4] bg-slate-800 rounded-lg relative cursor-pointer"><div className="absolute bottom-1 left-1 text-[10px] flex items-center gap-1"><Play size={8} fill="white"/> {i.views}</div></div>))}</div>)}
          {activeSubTab === 'likes' && (<div className="py-12 text-center text-slate-500 text-sm">{t.no_likes}</div>)}
          {activeSubTab === 'games' && (<div className="space-y-3"><div className="bg-slate-800 p-4 rounded-xl flex justify-between items-center"><span className="text-slate-400 text-sm">{t.total_won}</span><span className="text-yellow-400 font-bold text-xl">+{totalEarnings}</span></div>{GAME_HISTORY.map(g => (<div key={g.id} className="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center"><div className="flex items-center gap-3"><div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center"><Gamepad2 size={24} className="text-white"/></div><div><div className="font-bold text-sm text-white">{g.game}</div><div className="text-[10px] text-slate-400 flex items-center gap-2 mt-1"><span className="flex items-center gap-0.5"><Users size={10}/> {g.players} {t.players}</span><span className="flex items-center gap-0.5"><Clock size={10}/> {g.time}</span></div><div className="flex -space-x-1.5 mt-1.5">{g.avatars.map((a, i) => (<div key={i} className="w-4 h-4 rounded-full bg-slate-700 border border-slate-900 text-[6px] flex items-center justify-center text-white font-bold">{a}</div>))}</div></div></div><div className="text-right"><div className={`font-black text-lg ${g.amount > 0 ? 'text-green-400' : 'text-slate-500'}`}>{g.amount > 0 ? '+' : ''}{g.amount}</div><div className="text-[10px] text-slate-500">{t.entry_fee}: {g.entry}</div></div></div>))}</div>)}
       </div>
@@ -719,6 +812,8 @@ const GroupFinder = ({ onClose, t, onOpenChat }) => {
 
 const TaskCenter = ({ onClose, t, showToast }) => {
   const [tasks, setTasks] = useState(DAILY_TASKS);
+  const [achievements, setAchievements] = useState(ACHIEVEMENTS);
+  const [activeTab, setActiveTab] = useState('daily');
   const [level, setLevel] = useState(5);
   const [exp, setExp] = useState(350);
   const maxExp = 500;
@@ -731,6 +826,16 @@ const TaskCenter = ({ onClose, t, showToast }) => {
               return { ...task, claimed: true };
           }
           return task;
+      }));
+  };
+
+  const handleClaimAchievement = (achId) => {
+      setAchievements(prev => prev.map(ach => {
+          if (ach.id === achId) {
+              showToast(`Achievement Unlocked: ${ach.title}!`);
+              return { ...ach, claimed: true };
+          }
+          return ach;
       }));
   };
 
@@ -766,43 +871,118 @@ const TaskCenter = ({ onClose, t, showToast }) => {
            </div>
        </div>
 
+       {/* Tabs */}
+       <div className="px-4 mt-4">
+           <div className="bg-slate-900 p-1 rounded-xl flex border border-slate-800">
+               <button onClick={() => setActiveTab('daily')} className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'daily' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>{t.daily_missions}</button>
+               <button onClick={() => setActiveTab('achievements')} className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'achievements' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>{t.achievements}</button>
+           </div>
+       </div>
+
        {/* Task List */}
        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-           <div className="flex items-center gap-2 mb-2">
-               <Target size={18} className="text-yellow-400"/>
-               <h2 className="font-bold text-white">{t.daily_missions}</h2>
-           </div>
-           
-           {tasks.map(task => (
-               <div key={task.id} className="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center gap-4">
-                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${task.claimed ? 'bg-slate-800 text-slate-600' : 'bg-indigo-500/20 text-indigo-400'}`}>
-                       {task.claimed ? <CheckCircle2 size={24}/> : <Star size={24}/>}
+           {activeTab === 'daily' ? (
+               <>
+                   <div className="flex items-center gap-2 mb-2">
+                       <Target size={18} className="text-yellow-400"/>
+                       <h2 className="font-bold text-white">{t.daily_missions}</h2>
                    </div>
-                   <div className="flex-1">
-                       <h3 className={`font-bold text-sm ${task.claimed ? 'text-slate-500' : 'text-white'}`}>{task.title}</h3>
-                       <div className="flex items-center gap-2 mt-1">
-                           <div className="w-24 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                               <div className={`h-full ${task.claimed ? 'bg-slate-600' : 'bg-yellow-500'}`} style={{width: `${(task.progress/task.total)*100}%`}}></div>
+                   
+                   {tasks.map(task => (
+                       <div key={task.id} className="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center gap-4">
+                           <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${task.claimed ? 'bg-slate-800 text-slate-600' : 'bg-indigo-500/20 text-indigo-400'}`}>
+                               {task.claimed ? <CheckCircle2 size={24}/> : <Star size={24}/>}
                            </div>
-                           <span className="text-[10px] text-slate-500">{task.progress}/{task.total}</span>
+                           <div className="flex-1">
+                               <h3 className={`font-bold text-sm ${task.claimed ? 'text-slate-500' : 'text-white'}`}>{task.title}</h3>
+                               <div className="flex items-center gap-2 mt-1">
+                                   <div className="w-24 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                       <div className={`h-full ${task.claimed ? 'bg-slate-600' : 'bg-yellow-500'}`} style={{width: `${(task.progress/task.total)*100}%`}}></div>
+                                   </div>
+                                   <span className="text-[10px] text-slate-500">{task.progress}/{task.total}</span>
+                               </div>
+                           </div>
+                           <button 
+                               disabled={task.claimed || task.progress < task.total}
+                               onClick={() => handleClaim(task.id)}
+                               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                                   task.claimed 
+                                       ? 'bg-slate-800 text-slate-500 cursor-default' 
+                                       : task.progress >= task.total 
+                                           ? 'bg-yellow-500 text-black hover:bg-yellow-400 shadow-lg shadow-yellow-500/20 animate-pulse' 
+                                           : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                               }`}
+                           >
+                               {task.claimed ? t.claimed : t.claim}
+                           </button>
                        </div>
+                   ))}
+               </>
+           ) : (
+               <>
+                   <div className="flex items-center gap-2 mb-2">
+                       <Trophy size={18} className="text-yellow-400"/>
+                       <h2 className="font-bold text-white">{t.achievements}</h2>
                    </div>
-                   <button 
-                       disabled={task.claimed || task.progress < task.total}
-                       onClick={() => handleClaim(task.id)}
-                       className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                           task.claimed 
-                               ? 'bg-slate-800 text-slate-500 cursor-default' 
-                               : task.progress >= task.total 
-                                   ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20 active:scale-95' 
-                                   : 'bg-slate-800 text-slate-400 cursor-not-allowed'
-                       }`}
-                   >
-                       {task.claimed ? t.claimed : t.claim}
-                   </button>
-               </div>
-           ))}
+                   {[...achievements].sort((a, b) => (a.claimed === b.claimed ? 0 : a.claimed ? 1 : -1)).map(ach => (
+                       <div key={ach.id} className="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center gap-4">
+                           <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-lg ${ach.color} text-white`}>
+                               {ach.badge}
+                           </div>
+                           <div className="flex-1">
+                               <h3 className="font-bold text-sm text-white">{ach.title}</h3>
+                               <div className="text-[10px] text-slate-400 mb-1">{ach.desc}</div>
+                               <div className="flex items-center gap-2">
+                                   <div className="w-24 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                       <div className="h-full bg-yellow-500" style={{width: `${Math.min(100, (ach.progress/ach.total)*100)}%`}}></div>
+                                   </div>
+                                   <span className="text-[10px] text-slate-500">{ach.progress}/{ach.total}</span>
+                               </div>
+                           </div>
+                           <button 
+                               disabled={ach.claimed || ach.progress < ach.total}
+                               onClick={() => handleClaimAchievement(ach.id)}
+                               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                                   ach.claimed 
+                                       ? 'bg-slate-800 text-slate-500 cursor-default' 
+                                       : ach.progress >= ach.total 
+                                           ? 'bg-yellow-500 text-black hover:bg-yellow-400 shadow-lg shadow-yellow-500/20 animate-pulse' 
+                                           : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                               }`}
+                           >
+                               {ach.claimed ? t.claimed : t.claim}
+                           </button>
+                       </div>
+                   ))}
+                   <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 mt-4 flex justify-between items-center">
+                        <span className="text-slate-400 text-xs">{t.achievements}</span>
+                        <span className="text-yellow-400 font-bold">{achievements.filter(a => a.claimed).length}/{achievements.length} {t.owned}</span>
+                   </div>
 
+                   {achievements.some(a => a.claimed) && (
+                       <div className="mt-8">
+                           <div className="flex items-center gap-2 mb-4">
+                               <div className="w-1 h-4 bg-yellow-500 rounded-full"></div>
+                               <h2 className="font-bold text-white text-lg">{t.trophy_room}</h2>
+                           </div>
+                           <div className="grid grid-cols-2 gap-3">
+                               {achievements.filter(a => a.claimed).map(ach => (
+                                   <div key={ach.id} className="bg-slate-900/50 border border-slate-800 p-3 rounded-xl flex flex-col items-center text-center relative overflow-hidden group">
+                                       <div className="absolute inset-0 bg-gradient-to-b from-yellow-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                       <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-lg ${ach.color} text-white mb-3 ring-4 ring-slate-900`}>
+                                           {ach.badge}
+                                       </div>
+                                       <h3 className="font-bold text-white text-xs mb-1">{ach.title}</h3>
+                                       <p className="text-[10px] text-slate-500">{t.earned_on} 2023/10/24</p>
+                                   </div>
+                               ))}
+                           </div>
+                       </div>
+                   )}
+               </>
+           )}
+
+           {activeTab === 'daily' && (
            <div className="bg-gradient-to-r from-pink-600/20 to-purple-600/20 border border-pink-500/30 rounded-2xl p-4 mt-6">
                <div className="flex items-center gap-3 mb-3">
                    <div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white"><Gift size={20}/></div>
@@ -816,6 +996,7 @@ const TaskCenter = ({ onClose, t, showToast }) => {
                </div>
                <div className="text-right text-[10px] text-pink-300 mt-1">10/15 Completed</div>
            </div>
+           )}
        </div>
     </div>
   );
@@ -947,7 +1128,44 @@ const GameRoomList = ({ game, onClose, t, onJoinRoom }) => {
     )
 };
 
-const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
+const SystemBanner = ({ t, onAction }) => {
+    const [msgIndex, setMsgIndex] = useState(0);
+    const messages = [
+        { text: "🔥 User_99 won 500 Beans in Ludo Master!", type: 'game', target: 'Ludo Master', labelKey: 'sys_play' },
+        { text: "🏆 Player_X reached Rank #1 in Cricket Clash!", type: 'game', target: 'Cricket Clash', labelKey: 'sys_play' },
+        { text: "🎉 New Group 'Mumbai Gamers' is trending!", type: 'group', target: 'Mumbai Gamers', labelKey: 'sys_join' },
+        { text: "🎥 Viral: Top 10 Ludo Moments!", type: 'video', target: 'video_1', labelKey: 'sys_watch' },
+        { text: "💎 User_A just exchanged 1000 Coins!", type: 'none' }
+    ];
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setMsgIndex(prev => (prev + 1) % messages.length);
+        }, 3000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const current = messages[msgIndex];
+
+    return (
+        <div className="bg-slate-900/80 backdrop-blur-sm border-b border-slate-800 py-2 px-4 flex items-center gap-2 overflow-hidden">
+            <div className="bg-red-500/20 text-red-400 p-1 rounded text-[10px] font-bold uppercase tracking-wider shrink-0">System</div>
+            <div className="text-xs text-slate-300 flex-1 flex items-center justify-between overflow-hidden animate-in slide-in-from-bottom-2 fade-in duration-500 key={msgIndex}">
+                <span className="truncate mr-2">{current.text}</span>
+                {current.type !== 'none' && (
+                    <button 
+                        onClick={() => onAction && onAction(current)}
+                        className="bg-blue-600 hover:bg-blue-500 text-white px-2 py-0.5 rounded text-[10px] font-bold whitespace-nowrap transition-colors"
+                    >
+                        {t[current.labelKey]}
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+};
+
+const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSystemAction }) => {
   const [showAllGames, setShowAllGames] = useState(false);
   const [showAllGroups, setShowAllGroups] = useState(false);
   const [sortBy, setSortBy] = useState('hot');
@@ -956,6 +1174,7 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
   const [showTaskCenter, setShowTaskCenter] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
+  const [groupTab, setGroupTab] = useState('my_groups'); // nearby, trending, my_groups
 
   const handlePlayClick = (game) => {
      if (game.title === "Ludo Master") {
@@ -1065,14 +1284,21 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
       {showTaskCenter && <TaskCenter onClose={() => setShowTaskCenter(false)} t={t} showToast={showToast} />}
       <div className="px-4 pt-12 pb-4 bg-gradient-to-b from-slate-900 to-slate-950 border-b border-slate-800 flex justify-between items-center sticky top-0 z-10">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent italic">WinGaming</h1>
-        <div className="flex items-center gap-2 bg-slate-800 rounded-full pl-3 pr-1 py-1 border border-slate-700">
-            <Coins className="text-yellow-400" size={16} fill="currentColor" />
-            <span className="font-bold text-yellow-100 text-sm mr-1">12,450</span>
-            <button onClick={() => setShowWallet(true)} className="bg-yellow-500 hover:bg-yellow-400 text-black rounded-full w-5 h-5 flex items-center justify-center transition-colors">
-                <Plus size={12} strokeWidth={4} />
+        <div className="flex items-center gap-2">
+            <button onClick={onShowHourlyRush} className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors shadow-lg shadow-indigo-500/30">
+                <TrendingUp size={16} />
             </button>
+            <div className="flex items-center gap-2 bg-slate-800 rounded-full pl-3 pr-1 py-1 border border-slate-700">
+                <Coins className="text-yellow-400" size={16} fill="currentColor" />
+                <span className="font-bold text-yellow-100 text-sm mr-1">12,450</span>
+                <button onClick={() => setShowWallet(true)} className="bg-yellow-500 hover:bg-yellow-400 text-black rounded-full w-5 h-5 flex items-center justify-center transition-colors">
+                    <Plus size={12} strokeWidth={4} />
+                </button>
+            </div>
         </div>
       </div>
+
+      <SystemBanner t={t} onAction={onSystemAction} />
 
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
         {/* Top Half: Games List */}
@@ -1137,23 +1363,50 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
         {/* Bottom Half: Group Recommendations */}
         <div>
             <div className="flex justify-between items-center mb-3">
-                <h2 className="text-lg font-bold text-white">{t.rec_groups}</h2>
+                <div className="flex gap-4">
+                    <button 
+                        onClick={() => setGroupTab('my_groups')}
+                        className={`text-base font-bold transition-colors ${groupTab === 'my_groups' ? 'text-white border-b-2 border-blue-500 pb-1' : 'text-slate-500 pb-1'}`}
+                    >
+                        {t.room_gp}
+                    </button>
+                    <button 
+                        onClick={() => setGroupTab('nearby')}
+                        className={`text-base font-bold transition-colors ${groupTab === 'nearby' ? 'text-white border-b-2 border-blue-500 pb-1' : 'text-slate-500 pb-1'}`}
+                    >
+                        {t.nearby}
+                    </button>
+                    <button 
+                        onClick={() => setGroupTab('trending')}
+                        className={`text-base font-bold transition-colors ${groupTab === 'trending' ? 'text-white border-b-2 border-blue-500 pb-1' : 'text-slate-500 pb-1'}`}
+                    >
+                        {t.sort_pop}
+                    </button>
+                </div>
                 <button onClick={() => setShowAllGroups(true)} className="text-xs text-blue-400 font-bold flex items-center gap-1">{t.more} <ChevronRight size={12}/></button>
             </div>
             <div className="space-y-3">
-                {EXTENDED_GROUPS.slice(0, 5).map(group => (
-                    <div key={group.id} className="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
+                {(groupTab === 'my_groups' ? EXTENDED_GROUPS.slice(0, 2) : (groupTab === 'trending' ? [...EXTENDED_GROUPS].sort((a, b) => parseInt(b.activity) - parseInt(a.activity)) : EXTENDED_GROUPS)).slice(0, 5).map(group => (
+                    <div key={group.id} onClick={() => groupTab === 'my_groups' && onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: t.welcome_group, time: 'Just now', unread: 0, type: 'group' })} className={`bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center ${groupTab === 'my_groups' ? 'cursor-pointer active:scale-95 transition-transform' : ''}`}>
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-bold text-white">{group.name[0]}</div>
                             <div>
                                 <h3 className="font-bold text-white text-sm">{group.name}</h3>
                                 <div className="flex items-center gap-3 text-[10px] text-slate-400 mt-0.5">
-                                    <span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span>
-                                    <span className="flex items-center gap-0.5 text-green-400"><Flame size={10}/> {group.activity}</span>
+                                    {groupTab === 'my_groups' ? (
+                                        <span className="text-slate-300 truncate max-w-[150px] flex items-center gap-1">
+                                            <span className="text-blue-400 font-bold">User1:</span> Anyone for Ludo? 🎲
+                                        </span>
+                                    ) : (
+                                        <>
+                                            <span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span>
+                                            <span className="flex items-center gap-0.5 text-green-400"><Flame size={10}/> {group.activity}</span>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>
-                        <button onClick={() => onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: t.welcome_group, time: 'Just now', unread: 0, type: 'group' })} className="bg-white/10 hover:bg-white/20 text-blue-400 px-3 py-1.5 rounded-full text-xs font-bold border border-blue-500/50">{t.join}</button>
+                        {groupTab !== 'my_groups' && <button onClick={() => onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: t.welcome_group, time: 'Just now', unread: 0, type: 'group' })} className="bg-white/10 hover:bg-white/20 text-blue-400 px-3 py-1.5 rounded-full text-xs font-bold border border-blue-500/50">{t.join}</button>}
                     </div>
                 ))}
             </div>
@@ -1163,7 +1416,7 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat }) => {
   );
 };
 
-const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, showToast, activeChat, setActiveChat }) => {
+const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, showToast, activeChat, setActiveChat, onSystemAction }) => {
   // const [activeChat, setActiveChat] = useState(null); // Lifted to App
   const [chatHistory, setChatHistory] = useState([]);
   const [inputMsg, setInputMsg] = useState('');
@@ -1175,6 +1428,17 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
   const [showFinder, setShowFinder] = useState(false);
   const [joinedGroups, setJoinedGroups] = useState([]);
   const [selectedGroupInfo, setSelectedGroupInfo] = useState(null);
+  const [showRecBubble, setShowRecBubble] = useState(false);
+
+  useEffect(() => {
+    if (activeChat) {
+        setShowRecBubble(false);
+        const timer = setTimeout(() => {
+            setShowRecBubble(true);
+        }, 5000);
+        return () => clearTimeout(timer);
+    }
+  }, [activeChat]);
 
   const openChat = (chat) => {
     setActiveChat(chat);
@@ -1235,11 +1499,27 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
       <div className="flex flex-col h-full bg-slate-950 z-50 animate-in slide-in-from-right absolute inset-0">
         <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0"><div className="flex items-center gap-3"><button onClick={() => setActiveChat(null)} className="text-slate-400 hover:text-white"><ChevronLeft size={24} /></button><div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold">{activeChat.avatar}</div><div className="font-bold text-white text-sm">{activeChat.name}</div></div><MoreHorizontal className="text-slate-400" /></div>
         
-        
-        {/* Sticky Room Header Removed */}
-
+        <SystemBanner t={t} onAction={onSystemAction} />
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4" onClick={() => setShowInviteMenu(false)}>
+           {/* Mock Video Card Message */}
+           <div className="flex gap-3 flex-row">
+               <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white border border-slate-700 bg-indigo-600">
+                  {activeChat.avatar}
+               </div>
+               <div className="flex flex-col items-start">
+                   <div className="border p-2 rounded-2xl w-48 shadow-lg relative overflow-hidden bg-slate-900 border-slate-700">
+                        <div className="aspect-[9/16] bg-slate-800 rounded-xl mb-2 relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
+                            <Play size={24} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/80"/>
+                            <div className="absolute bottom-2 left-2 text-white text-xs font-bold">New Video! 🔥</div>
+                        </div>
+                        <div className="text-xs text-slate-300 line-clamp-2 mb-2">Check out this amazing gameplay moment!</div>
+                        <button className="w-full py-1.5 rounded-lg text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-600">Watch</button>
+                   </div>
+               </div>
+           </div>
+
            {chatHistory.map(msg => (
              <div key={msg.id} className={`flex gap-3 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
                <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white border border-slate-700 ${msg.sender === 'me' ? 'bg-slate-800' : 'bg-indigo-600'}`}>
@@ -1265,12 +1545,40 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
         </div>
         {showGameSelector && (
            <div className="absolute bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-700 rounded-t-3xl p-4 z-50 animate-slide-up">
-              <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white">{t.select_game}</h3><button onClick={() => setShowGameSelector(false)} className="bg-slate-800 p-1 rounded-full"><X size={16}/></button></div>
-              <div className="flex gap-3 overflow-x-auto pb-4 mb-2 no-scrollbar">{GAMES.map(g => (<div key={g.id} onClick={() => setSelectedInviteGame(g)} className={`flex-shrink-0 w-24 p-2 rounded-xl border cursor-pointer transition-all ${selectedInviteGame.id === g.id ? 'bg-blue-600/20 border-blue-500' : 'bg-slate-800 border-slate-700'}`}><div className={`w-full h-16 rounded-lg bg-gradient-to-br ${g.image} mb-2`}></div><div className="text-[10px] text-center font-bold truncate">{g.title}</div></div>))}</div>
+              <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white">{t.select_game}</h3><button onClick={() => setShowGameSelector(false)} className="bg-slate-800 p-1 rounded-full"><X size={16} className="text-white"/></button></div>
+              <div className="flex gap-3 overflow-x-auto pb-4 mb-2 no-scrollbar">{GAMES.map(g => (<div key={g.id} onClick={() => setSelectedInviteGame(g)} className={`flex-shrink-0 w-24 p-2 rounded-xl border cursor-pointer transition-all ${selectedInviteGame.id === g.id ? 'bg-blue-600/20 border-blue-500' : 'bg-slate-800 border-slate-700'}`}><div className={`w-full h-16 rounded-lg bg-gradient-to-br ${g.image} mb-2`}></div><div className="text-[10px] text-center font-bold truncate text-white">{g.title}</div></div>))}</div>
               
               <button onClick={handleSendInvite} className="w-full bg-blue-600 py-3 rounded-xl font-bold text-white mt-4">{t.start}</button>
            </div>
         )}
+
+        {/* Recommended Game Bubble (Chat Only) */}
+        {showRecBubble && (
+        <div onClick={() => {
+            const ludoGame = GAMES.find(g => g.title === 'Ludo Master') || GAMES[0];
+            const players = [
+                { id: 99, name: t.you, isHost: false, status: 'ready', avatar: t.you, hasPaid: true },
+                { id: 2, name: 'Player_2', isHost: false, status: 'ready', avatar: 'P2', hasPaid: true },
+                { id: 3, name: 'Player_3', isHost: false, status: 'ready', avatar: 'P3', hasPaid: true },
+                { id: 4, name: 'Player_4', isHost: false, status: 'ready', avatar: 'P4', hasPaid: true }
+            ];
+            const room = { id: 999, gameName: ludoGame.title, mode: 'compete', entry: 100, capacity: 4, host: 'System', current: 4, isMyRoom: false };
+            onJoinRoom({ ...room, autoStart: true, players: players });
+            setShowRecBubble(false);
+        }} className="absolute bottom-20 left-4 z-40 animate-in slide-in-from-bottom-10 fade-in duration-700 pointer-events-auto cursor-pointer active:scale-95 transition-transform">
+            <div className="bg-slate-900/90 backdrop-blur-md border border-slate-700 p-3 rounded-2xl shadow-2xl flex items-center gap-3 max-w-[200px] relative">
+                <div className="absolute -bottom-2 left-4 w-4 h-4 bg-slate-900 border-r border-b border-slate-700 transform rotate-45"></div>
+                <button onClick={(e) => { e.stopPropagation(); setShowRecBubble(false); }} className="absolute -top-2 -right-2 bg-slate-800 rounded-full p-0.5 border border-slate-600 text-slate-400 hover:text-white"><X size={12}/></button>
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-600 flex-shrink-0"></div>
+                <div className="flex-1 min-w-0">
+                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">{t.rec_game}</div>
+                    <div className="font-bold text-white text-xs truncate">Ludo Master</div>
+                    <div className="text-[10px] text-green-400">{activeChat.members ? Math.floor(activeChat.members * 0.42) : 124} {t.playing}</div>
+                </div>
+            </div>
+        </div>
+        )}
+
         <div className="p-3 bg-slate-900 border-t border-slate-800 shrink-0 relative flex items-center gap-2">
            {showInviteMenu && (<div className="absolute bottom-16 left-3 bg-slate-800 border border-slate-700 rounded-xl p-2 shadow-xl flex flex-col gap-2 w-36 animate-in fade-in slide-in-from-bottom-2 z-40"><button className="flex items-center gap-3 text-xs text-white p-3 hover:bg-slate-700 rounded-lg transition-colors"><div className="w-6 h-6 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-500"><Gift size={14}/></div>{t.gift}</button></div>)}
            <button onClick={() => setShowGameSelector(true)} className="p-2 rounded-full transition-colors text-slate-400 hover:text-white"><Gamepad2 size={24} /></button>
@@ -1304,6 +1612,9 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
       )}
 
       <div className="p-4 pt-12 border-b border-slate-800 flex justify-between items-center sticky top-0 bg-slate-950/90 backdrop-blur z-10"><h1 className="text-xl font-bold">{t.inbox}</h1><div className="flex gap-4 text-slate-400"><div className="flex items-center gap-1 text-xs bg-slate-800 px-2 py-1 rounded-lg"><MapPin size={12} /> Pune</div><Bell size={20} /></div></div>
+      
+      <SystemBanner t={t} onAction={onSystemAction} />
+
       <div className="flex-1 overflow-y-auto">
         <div className="p-2">{CHATS.map(chat => (<div key={chat.id} onClick={() => openChat(chat)} className="flex items-center gap-3 p-3 hover:bg-slate-900 rounded-xl transition-colors cursor-pointer active:bg-slate-800"><div className="relative"><div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center font-bold">{chat.avatar}</div>{chat.unread > 0 && <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-slate-950"></div>}</div><div className="flex-1"><div className="flex justify-between items-center"><h4 className="font-bold text-sm text-white">{chat.name}</h4><span className="text-[10px] text-slate-500">{chat.time}</span></div><div className="text-xs text-slate-400 truncate">{chat.lastMsg}</div></div></div>))}</div>
       </div>
@@ -1311,15 +1622,97 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
   );
 };
 
-const ActiveGameSession = ({ room, players, onGameOver, t }) => {
-  const [timeLeft, setTimeLeft] = useState(180); // 3 minutes
+const FloatingHourlyRush = ({ t, onClick, isGameOver, myRank, myScore, hasClaimableReward }) => {
+    const [expanded, setExpanded] = useState(false);
+
+    // Auto-expand on Game Over
+    useEffect(() => {
+        if (isGameOver) {
+            setExpanded(true);
+        }
+    }, [isGameOver]);
+
+    if (expanded) {
+        return (
+            <div className="absolute bottom-24 right-4 z-40 w-56 bg-slate-900/95 backdrop-blur-md border border-indigo-500/50 rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 origin-bottom-right">
+                <div className={`${isGameOver ? 'bg-gradient-to-r from-yellow-600 to-orange-600' : 'bg-gradient-to-r from-indigo-600 to-purple-600'} p-2 flex justify-between items-center`}>
+                    <span className="text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1">
+                        {isGameOver ? <Trophy size={12} className="text-white"/> : <TrendingUp size={12}/>}
+                        {isGameOver ? 'Game Finished' : 'Hourly Rush'}
+                    </span>
+                    <button onClick={(e) => { e.stopPropagation(); setExpanded(false); }}><X size={14} className="text-white/80 hover:text-white"/></button>
+                </div>
+                <div className="p-3 space-y-3">
+                    {isGameOver ? (
+                        <div className="text-center">
+                            <div className="text-xs text-slate-300 mb-1">Your Final Rank</div>
+                            <div className="text-3xl font-black text-white mb-1">#{myRank}</div>
+                            <div className="text-xs text-yellow-400 font-bold mb-2">Score: {myScore}</div>
+                            <div className="text-[10px] text-slate-400">Top 10% players get rewards!</div>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="flex items-center justify-between text-xs text-slate-300">
+                                <span>My Rank</span>
+                                <span className="text-white font-bold">#{myRank || 142}</span>
+                            </div>
+                            <div className="h-px bg-white/10"></div>
+                            <div className="space-y-1">
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className="flex justify-between items-center text-[10px]">
+                                        <span className="text-slate-400 flex items-center gap-1"><span className={`w-3 h-3 rounded-full flex items-center justify-center text-[8px] ${i===1?'bg-yellow-500 text-black':i===2?'bg-gray-300 text-black':'bg-orange-700 text-white'}`}>{i}</span> Player_{i}</span>
+                                        <span className="text-yellow-500 font-mono">{1000 - i*100}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    )}
+                    <button onClick={onClick} className={`w-full mt-1 text-[10px] py-2 rounded-lg font-bold transition-colors ${isGameOver ? 'bg-yellow-500 hover:bg-yellow-400 text-black' : 'bg-indigo-600/50 hover:bg-indigo-600 text-indigo-200 hover:text-white'}`}>
+                        {isGameOver ? 'View Details & Claim' : 'View Full Board'}
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div onClick={() => setExpanded(true)} className={`absolute bottom-24 right-4 z-40 flex items-center gap-2 backdrop-blur-md border rounded-full pl-1 pr-3 py-1 cursor-pointer transition-colors animate-in slide-in-from-right ${isGameOver ? 'bg-yellow-900/40 border-yellow-500/30 hover:bg-yellow-900/60' : 'bg-black/40 border-indigo-500/30 hover:bg-black/60'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-lg relative ${isGameOver ? 'bg-gradient-to-br from-yellow-500 to-orange-600' : 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-indigo-500/20'}`}>
+                {isGameOver ? <Trophy size={14} className="text-white" /> : <TrendingUp size={14} className="text-white" />}
+                {hasClaimableReward && (
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-black animate-pulse"></span>
+                )}
+            </div>
+            <div className="flex flex-col leading-none">
+                <span className={`text-[8px] font-bold uppercase ${isGameOver ? 'text-yellow-300' : 'text-indigo-300'}`}>{isGameOver ? 'Finished' : 'Hourly Rush'}</span>
+                <span className="text-xs font-bold text-white flex items-center gap-1">
+                    #{myRank || 142}
+                    {hasClaimableReward && <span className="text-[8px] bg-yellow-500 text-black px-1 rounded">Claim</span>}
+                </span>
+            </div>
+        </div>
+    );
+};
+
+const ActiveGameSession = ({ room, players, onGameOver, t, onShowHourlyRush }) => {
+  const [timeLeft, setTimeLeft] = useState(10); // Reduced to 10s for demo
   const [liveScores, setLiveScores] = useState(players.map(p => ({ ...p, score: 0 })));
+  const [isGameOver, setIsGameOver] = useState(false);
+
+  // Only show hourly rush for non-Ludo games
+  const showHourlyRush = room.gameName !== 'Ludo Master';
+  
+  const myScore = liveScores.find(p => p.id === 99)?.score || 0;
+  const myRank = liveScores.sort((a, b) => b.score - a.score).findIndex(p => p.id === 99) + 1;
 
   useEffect(() => {
+    if (isGameOver) return;
+
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 0) {
           clearInterval(timer);
+          setIsGameOver(true); // Set local game over state
           return 0;
         }
         return prev - 1;
@@ -1327,19 +1720,13 @@ const ActiveGameSession = ({ room, players, onGameOver, t }) => {
 
       setLiveScores(prev => prev.map(p => ({
         ...p,
-        score: p.score + Math.floor(Math.random() * 50) // Random score increment
+        score: p.score + Math.floor(Math.random() * 50)
       })).sort((a, b) => b.score - a.score));
 
-    }, 50); // 20x speed
+    }, 1000); // Normal speed for demo
 
     return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-      if (timeLeft === 0) {
-          onGameOver(liveScores);
-      }
-  }, [timeLeft, liveScores, onGameOver]);
+  }, [isGameOver]);
 
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
@@ -1349,47 +1736,159 @@ const ActiveGameSession = ({ room, players, onGameOver, t }) => {
 
   return (
     <div className="absolute inset-0 bg-slate-950 z-[80] flex flex-col animate-in fade-in">
-       {/* Top Bar: Scores & Time */}
-       <div className="pt-12 px-3 pb-3 bg-slate-900 border-b border-slate-800 flex items-center gap-3 shadow-xl z-20">
-          <div className="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar">
-            {liveScores.map((p, i) => (
-               <div key={p.id} className={`flex-shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 ${p.id === 99 ? 'bg-blue-900/40 border-blue-500 shadow-blue-900/20 shadow-lg' : 'bg-slate-800 border-slate-700'}`}>
-                  <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${i===0 ? 'bg-yellow-500 text-black' : 'bg-slate-600 text-white'}`}>{i+1}</div>
-                  <div className="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white">{p.avatar}</div>
-                  <div className="font-mono font-bold text-white text-xs">{p.score}</div>
-               </div>
-            ))}
-          </div>
-          <div className="flex-shrink-0 flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 shadow-lg">
-             <Clock size={14} className={timeLeft < 30 ? "text-red-500 animate-pulse" : "text-blue-500"} />
-             <span className={`font-mono font-bold text-sm ${timeLeft < 30 ? "text-red-500" : "text-white"}`}>{formatTime(timeLeft)}</span>
-          </div>
+       {showHourlyRush && <FloatingHourlyRush t={t} onClick={onShowHourlyRush} isGameOver={isGameOver} myRank={myRank} myScore={myScore} hasClaimableReward={isGameOver && myRank <= 3} />}
+       
+       {/* Floating Capsule Button (Share | Exit) */}
+       <div className="absolute top-12 right-4 z-50 flex items-center bg-black/40 backdrop-blur-md rounded-full border border-white/10 overflow-hidden h-9 shadow-lg">
+          <button onClick={() => { /* Share logic */ }} className="px-3 h-full hover:bg-white/10 active:bg-white/20 transition-colors border-r border-white/10 flex items-center justify-center">
+              <Share2 size={16} className="text-white" />
+          </button>
+          <button onClick={() => onGameOver('minimize')} className="px-3 h-full hover:bg-white/10 active:bg-white/20 transition-colors flex items-center justify-center group">
+              <div className="w-3 h-3 rounded-full border-2 border-white/80 group-hover:bg-white/80 transition-colors"></div>
+          </button>
        </div>
 
        {/* Game Area (H5 Placeholder) */}
        <div className="flex-1 bg-black relative flex items-center justify-center overflow-hidden">
           {/* Simulated Game Content */}
-          <div className="absolute inset-0 opacity-40 bg-[url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80')] bg-cover bg-center"></div>
-          <div className="relative z-10 text-center p-8 bg-black/50 backdrop-blur-sm rounded-3xl border border-white/10">
-             <Gamepad2 size={64} className="text-white/50 mx-auto mb-4 animate-bounce"/>
-             <h3 className="text-2xl font-black text-white uppercase tracking-widest mb-2">{room.gameName}</h3>
-             <p className="text-white/50 text-sm">{t.tap_to_play}</p>
-          </div>
+          <div className={`absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80')] bg-cover bg-center transition-opacity duration-1000 ${isGameOver ? 'opacity-20 grayscale' : 'opacity-40'}`}></div>
+          
+          {!isGameOver ? (
+              <div className="relative z-10 text-center p-8 bg-black/50 backdrop-blur-sm rounded-3xl border border-white/10">
+                 <Gamepad2 size={64} className="text-white/50 mx-auto mb-4 animate-bounce"/>
+                 <h3 className="text-2xl font-black text-white uppercase tracking-widest mb-2">{room.gameName}</h3>
+                 <p className="text-white/50 text-sm">{t.tap_to_play}</p>
+                 <div className="mt-4 text-4xl font-mono font-bold text-yellow-400">{formatTime(timeLeft)}</div>
+              </div>
+          ) : (
+              <div className="relative z-10 text-center p-8 animate-in zoom-in flex flex-col items-center gap-6">
+                  <div>
+                      <h2 className="text-4xl font-black text-white uppercase tracking-widest mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">Time's Up!</h2>
+                      <p className="text-slate-300">Game Finished</p>
+                  </div>
+              </div>
+          )}
           
           {/* Interactive Click Area for "Playing" */}
-          <button 
-            className="absolute inset-0 z-20 w-full h-full cursor-crosshair focus:outline-none"
-            onClick={() => {
-                // Simulate score increase for "Me"
-                setLiveScores(prev => prev.map(p => p.id === 99 ? { ...p, score: p.score + 100 } : p).sort((a, b) => b.score - a.score));
-            }}
-          ></button>
+          {!isGameOver && (
+              <button 
+                className="absolute inset-0 z-20 w-full h-full cursor-crosshair focus:outline-none"
+                onClick={() => {
+                    setLiveScores(prev => prev.map(p => p.id === 99 ? { ...p, score: p.score + 100 } : p).sort((a, b) => b.score - a.score));
+                }}
+              ></button>
+          )}
        </div>
     </div>
   );
 };
 
-const GameResultModal = ({ result, onClose, t }) => {
+const DraggableGameBubble = ({ onClick, activeGameSession, onDragStart, onDragEnd, onClose }) => {
+    const [position, setPosition] = useState({ x: 16, y: 128 }); // Initial: right 16px, bottom 128px
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+    const [hasMoved, setHasMoved] = useState(false);
+    const bubbleRef = useRef(null);
+
+    const handlePointerDown = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+        setHasMoved(false);
+        setDragStart({ x: e.clientX, y: e.clientY });
+        e.currentTarget.setPointerCapture(e.pointerId);
+        if (bubbleRef.current) bubbleRef.current.style.transition = 'none';
+        onDragStart && onDragStart();
+    };
+
+    const handlePointerMove = (e) => {
+        if (!isDragging) return;
+        const dx = dragStart.x - e.clientX;
+        const dy = dragStart.y - e.clientY;
+        
+        if (Math.abs(dx) > 2 || Math.abs(dy) > 2) setHasMoved(true);
+
+        setPosition(prev => ({
+            x: prev.x + dx,
+            y: prev.y + dy
+        }));
+        setDragStart({ x: e.clientX, y: e.clientY });
+    };
+
+    const handlePointerUp = (e) => {
+        setIsDragging(false);
+        e.currentTarget.releasePointerCapture(e.pointerId);
+        onDragEnd && onDragEnd();
+        
+        if (bubbleRef.current) {
+            bubbleRef.current.style.transition = 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            
+            // Check for Drop to Close (Bottom 100px)
+            if (position.y < 100) {
+                onClose && onClose();
+                return;
+            }
+
+            const parent = bubbleRef.current.offsetParent;
+            if (parent) {
+                const parentWidth = parent.clientWidth;
+                const parentHeight = parent.clientHeight;
+                const bubbleRect = bubbleRef.current.getBoundingClientRect();
+                const bubbleWidth = bubbleRect.width;
+
+                // Calculate center position relative to right edge
+                const centerXFromRight = position.x + (bubbleWidth / 2);
+                
+                // Snap X (Left or Right Edge)
+                let newX;
+                if (centerXFromRight < parentWidth / 2) {
+                    newX = 16; // Snap to Right
+                } else {
+                    newX = parentWidth - 16 - bubbleWidth; // Snap to Left
+                }
+
+                // Constrain Y (Vertical Bounds)
+                let newY = position.y;
+                const minBottom = 120; // Avoid bottom nav area (increased to avoid accidental close zone)
+                const maxBottom = parentHeight - 120; // Avoid top header area
+                
+                if (newY < minBottom) newY = minBottom;
+                if (newY > maxBottom) newY = maxBottom;
+
+                setPosition({ x: newX, y: newY });
+            }
+        }
+    };
+
+    const handleClick = (e) => {
+        if (!hasMoved) {
+            onClick();
+        }
+    };
+
+    return (
+        <div 
+            ref={bubbleRef}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onClick={handleClick}
+            style={{ right: `${position.x}px`, bottom: `${position.y}px`, touchAction: 'none' }}
+            className="absolute z-[90] cursor-pointer group animate-in slide-in-from-right"
+        >
+            <div className="relative">
+                <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-20"></div>
+                <div className="w-14 h-14 rounded-full bg-slate-900 border-2 border-green-500 flex items-center justify-center shadow-2xl relative overflow-hidden group-active:scale-95 transition-transform">
+                    <div className={`absolute inset-0 bg-gradient-to-br ${activeGameSession.room.gameName === 'Ludo Master' ? 'from-yellow-500 to-red-500' : 'from-blue-600 to-purple-600'} opacity-20`}></div>
+                    <Gamepad2 size={24} className="text-green-400 relative z-10 animate-pulse" />
+                    <div className="absolute bottom-1 text-[8px] font-bold text-white uppercase tracking-wider">Play</div>
+                </div>
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-[10px] font-bold text-white">1</div>
+            </div>
+        </div>
+    );
+};
+
+const GameResultModal = ({ result, onClose, t, onShowHourlyRush }) => {
   const { room, scores } = result;
   const myRank = scores.findIndex(p => p.id === 99) + 1;
   const totalPrize = room.mode === 'compete' ? (Number(room.entry) * room.capacity * 0.9) : 0; // 10% fee
@@ -1404,40 +1903,94 @@ const GameResultModal = ({ result, onClose, t }) => {
   };
 
   return (
-    <div className="absolute inset-0 bg-black/90 z-[90] flex items-center justify-center p-4 animate-in zoom-in-95">
-       <div className="bg-slate-900 w-full max-w-sm rounded-3xl border border-slate-700 overflow-hidden flex flex-col max-h-[90vh] relative">
-          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-blue-600/20 to-transparent pointer-events-none"></div>
-          <div className="p-8 text-center relative z-10">
-             <div className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-orange-500/20">
-                <Trophy size={48} className="text-white" />
-             </div>
-             <h2 className="text-2xl font-black text-white mb-1">{t.game_over}</h2>
-             <p className="text-slate-400 text-sm">{room.gameName}</p>
-          </div>
+      <div className="fixed inset-0 z-[90] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-gradient-to-b from-slate-900 to-slate-950 w-full max-w-sm rounded-3xl border border-slate-800 p-6 relative overflow-hidden shadow-2xl">
+              {/* Confetti / Rays Effect */}
+              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 animate-pulse"></div>
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-500/20 blur-[100px] rounded-full pointer-events-none"></div>
 
-          <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-3">
-             {scores.map((p, i) => {
-                const prize = getPrize(i+1);
-                return (
-                   <div key={p.id} className={`p-3 rounded-xl flex items-center justify-between ${p.id === 99 ? 'bg-blue-600/20 border border-blue-500' : 'bg-slate-800 border border-slate-700'}`}>
-                      <div className="flex items-center gap-3">
-                         <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${i===0 ? 'bg-yellow-500 text-black' : i===1 ? 'bg-gray-300 text-black' : i===2 ? 'bg-orange-700 text-white' : 'bg-slate-700 text-slate-400'}`}>{i+1}</div>
-                         <div className="font-bold text-sm text-white">{p.name} {p.id === 99 && t.you_brackets}</div>
+              <div className="relative z-10 text-center">
+                  <h2 className="text-3xl font-black italic text-white mb-1 drop-shadow-lg uppercase">{myRank === 1 ? t.victory : (myRank <= 3 ? 'TOP 3' : t.game_over)}</h2>
+                  <p className="text-slate-400 text-xs mb-6">{room.gameName} · {room.mode === 'compete' ? t.mode_compete : t.mode_friendly}</p>
+                  
+                  {/* Rank Display with Trophy */}
+                  <div className="flex justify-center items-end gap-4 mb-8 h-32">
+                      {/* 2nd Place */}
+                      {scores[1] && (
+                          <div className="flex flex-col items-center gap-2">
+                              <div className="w-12 h-12 rounded-full bg-slate-700 border-2 border-slate-600 flex items-center justify-center text-lg font-bold text-slate-300 relative">
+                                  {scores[1].avatar}
+                                  <div className="absolute -bottom-2 bg-slate-600 text-[10px] px-1.5 rounded text-white">2</div>
+                              </div>
+                              <div className="h-16 w-8 bg-slate-800 rounded-t-lg border-t border-x border-slate-700"></div>
+                          </div>
+                      )}
+                      
+                      {/* 1st Place */}
+                      <div className="flex flex-col items-center gap-2 -mt-4">
+                          <div className="relative">
+                              <Crown size={32} className="text-yellow-400 absolute -top-8 left-1/2 -translate-x-1/2 animate-bounce" fill="currentColor" />
+                              <div className="w-16 h-16 rounded-full bg-yellow-500/20 border-2 border-yellow-500 flex items-center justify-center text-2xl font-bold text-white shadow-[0_0_20px_rgba(234,179,8,0.5)]">
+                                  {scores[0].avatar}
+                              </div>
+                              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-yellow-500 text-black text-xs font-bold px-2 py-0.5 rounded-full">1</div>
+                          </div>
+                          <div className="h-24 w-10 bg-gradient-to-b from-yellow-600/50 to-slate-800 rounded-t-lg border-t border-x border-yellow-500/30"></div>
                       </div>
-                      <div className="text-right">
-                         <div className="font-mono font-bold text-white">{p.score}</div>
-                         {prize > 0 && <div className="text-xs font-bold text-yellow-400 flex items-center justify-end gap-1"><Coins size={10} fill="currentColor"/> +{prize}</div>}
-                      </div>
-                   </div>
-                );
-             })}
-          </div>
 
-          <div className="p-6 border-t border-slate-800 bg-slate-950">
-             <button onClick={onClose} className="w-full py-3.5 rounded-xl bg-blue-600 font-bold text-white shadow-lg active:scale-95 transition-transform">{t.back_home}</button>
+                      {/* 3rd Place */}
+                      {scores[2] && (
+                          <div className="flex flex-col items-center gap-2">
+                              <div className="w-12 h-12 rounded-full bg-orange-900/50 border-2 border-orange-700 flex items-center justify-center text-lg font-bold text-orange-200 relative">
+                                  {scores[2].avatar}
+                                  <div className="absolute -bottom-2 bg-orange-800 text-[10px] px-1.5 rounded text-white">3</div>
+                              </div>
+                              <div className="h-12 w-8 bg-slate-800 rounded-t-lg border-t border-x border-slate-700"></div>
+                          </div>
+                      )}
+                  </div>
+
+                  {/* My Result */}
+                  <div className="bg-slate-800/50 rounded-xl p-4 mb-6 border border-slate-700">
+                      <div className="flex justify-between items-center mb-2">
+                          <span className="text-slate-400 text-xs">{t.my_rank}</span>
+                          <span className="text-xl font-bold text-white">#{myRank}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                          <span className="text-slate-400 text-xs">{t.prize}</span>
+                          <div className="flex items-center gap-1 text-yellow-400 font-bold text-lg">
+                              <Coins size={16} fill="currentColor"/>
+                              +{getPrize(myRank)}
+                          </div>
+                      </div>
+                  </div>
+
+                  {/* Hourly Rush Board (New Feature) - Only for non-Ludo games */}
+                  {room.gameName !== 'Ludo Master' && (
+                      <div onClick={onShowHourlyRush} className="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 rounded-xl p-4 mb-6 border border-indigo-500/30 relative overflow-hidden cursor-pointer active:scale-95 transition-transform">
+                          <div className="absolute top-0 right-0 bg-indigo-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl-lg">1H RUSH</div>
+                          <div className="flex items-center gap-3 mb-3">
+                              <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
+                                  <TrendingUp size={20} />
+                              </div>
+                              <div className="text-left">
+                                  <div className="text-white font-bold text-sm">Hourly Ranking</div>
+                                  <div className="text-indigo-300 text-[10px]">Top 1% wins 500 Beans!</div>
+                              </div>
+                          </div>
+                          <div className="flex justify-between items-center text-xs bg-black/20 rounded-lg p-2">
+                              <div className="text-slate-300">Your Rank: <span className="text-white font-bold">#142</span> <span className="text-green-400 text-[10px]">(↑ 5)</span></div>
+                              <div className="text-slate-300">To #1: <span className="text-yellow-400 font-bold">240 pts</span></div>
+                          </div>
+                      </div>
+                  )}
+
+                  <button onClick={onClose} className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl font-bold text-white shadow-lg hover:scale-[1.02] active:scale-95 transition-all">
+                      {t.back_home}
+                  </button>
+              </div>
           </div>
-       </div>
-    </div>
+      </div>
   );
 };
 
@@ -1455,11 +2008,111 @@ const Toast = ({ message, onClose }) => {
   );
 };
 
+const HourlyRushModal = ({ onClose, t, inGame }) => {
+    const [selectedGameId, setSelectedGameId] = useState(GAMES[0].id);
+    const [timePeriod, setTimePeriod] = useState('current'); // 'current' or 'last'
+
+    // Mock data for different games/periods
+    const getRankings = () => {
+        // Just shuffle or change based on game/period for demo
+        const base = [1,2,3,4,5,6,7,8,9,10];
+        return base;
+    };
+
+    return (
+        <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+            <div className="bg-slate-900 w-full max-w-sm rounded-3xl border border-slate-800 flex flex-col max-h-[85vh] relative overflow-hidden shadow-2xl">
+                <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-indigo-600 to-transparent pointer-events-none"></div>
+                
+                <div className="p-6 pb-2 relative z-10 flex justify-between items-start">
+                    <div>
+                        <h2 className="text-2xl font-black text-white italic uppercase tracking-wider">Hourly Rush</h2>
+                        <p className="text-indigo-200 text-xs">Top 1% wins 500 Beans!</p>
+                    </div>
+                    <button onClick={onClose} className="bg-black/20 p-2 rounded-full text-white hover:bg-black/40"><X size={20}/></button>
+                </div>
+
+                {/* Game Selector */}
+                <div className="px-6 pb-4 relative z-10">
+                    <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                        {GAMES.map(game => (
+                            <div 
+                                key={game.id} 
+                                onClick={() => setSelectedGameId(game.id)}
+                                className={`flex-shrink-0 flex flex-col items-center gap-1 cursor-pointer transition-opacity ${selectedGameId === game.id ? 'opacity-100 scale-105' : 'opacity-50 hover:opacity-80'}`}
+                            >
+                                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${game.image} border-2 ${selectedGameId === game.id ? 'border-white shadow-lg' : 'border-transparent'}`}></div>
+                                <span className="text-[10px] font-bold text-white truncate w-14 text-center">{game.title}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Time Period Toggle */}
+                <div className="px-6 pb-4 relative z-10 flex justify-center">
+                    <div className="bg-black/30 p-1 rounded-full flex gap-1 border border-white/10">
+                        <button 
+                            onClick={() => setTimePeriod('last')}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${timePeriod === 'last' ? 'bg-white text-indigo-900 shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                        >
+                            Last Hour
+                        </button>
+                        <button 
+                            onClick={() => setTimePeriod('current')}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${timePeriod === 'current' ? 'bg-white text-indigo-900 shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                        >
+                            Current Hour
+                        </button>
+                    </div>
+                </div>
+
+                <div className="px-6 pb-4 relative z-10">
+                    <div className="bg-indigo-900/40 border border-indigo-500/30 rounded-xl p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-slate-700 border-2 border-white flex items-center justify-center font-bold text-white">Me</div>
+                            <div>
+                                <div className="text-white font-bold text-sm">My Rank</div>
+                                <div className="text-indigo-300 text-xs">#{timePeriod === 'last' ? '12' : '142'} <span className="text-green-400">(↑5)</span></div>
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-yellow-400 font-bold text-lg">{timePeriod === 'last' ? '4,500' : '1,250'}</div>
+                            <div className="text-slate-400 text-[10px]">Points</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2">
+                    {getRankings().map((rank) => (
+                        <div key={rank} className={`flex items-center justify-between p-3 rounded-xl ${rank <= 3 ? 'bg-slate-800/80 border border-yellow-500/20' : 'bg-slate-800/40 border border-slate-800'}`}>
+                            <div className="flex items-center gap-3">
+                                <div className={`w-6 h-6 flex items-center justify-center font-bold text-xs rounded ${rank === 1 ? 'bg-yellow-500 text-black' : rank === 2 ? 'bg-gray-300 text-black' : rank === 3 ? 'bg-orange-700 text-white' : 'text-slate-500'}`}>
+                                    {rank}
+                                </div>
+                                <div className="w-8 h-8 rounded-full bg-slate-700"></div>
+                                <div className="text-white font-bold text-sm">Player_{rank}</div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <div className="text-yellow-500 font-mono font-bold text-sm">{2000 - rank * 50}</div>
+                                {timePeriod === 'last' && rank <= 3 && (
+                                    <button className="bg-yellow-500 text-black text-[10px] font-bold px-2 py-1 rounded-full hover:bg-yellow-400 transition-colors animate-pulse">
+                                        Claim
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 // --- Main App ---
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
-  const [lang, setLang] = useState('en');
+  const [lang, setLang] = useState('zh'); // Default to Chinese
   const [activeRoom, setActiveRoom] = useState(null); 
   const [createCooldown, setCreateCooldown] = useState(null); // Timestamp for cooldown
   const [activeGameSession, setActiveGameSession] = useState(null);
@@ -1467,9 +2120,33 @@ export default function App() {
   const [isLoadingGame, setIsLoadingGame] = useState(false);
   const [toastMsg, setToastMsg] = useState(null);
   const [activeChat, setActiveChat] = useState(null); // Lifted state for chat
+  const [showHourlyRush, setShowHourlyRush] = useState(false);
+  const [hourlyRushContext, setHourlyRushContext] = useState('global'); // 'global' or 'game'
+  const [taskTab, setTaskTab] = useState('daily'); // 'daily' or 'achievements'
+  const [isGameMinimized, setIsGameMinimized] = useState(false);
+  const [isBubbleDragging, setIsBubbleDragging] = useState(false);
   const t = TEXTS[lang];
 
   const showToast = (msg) => setToastMsg(msg);
+
+  const handleSystemAction = (action) => {
+      if (action.type === 'game') {
+          const game = GAMES.find(g => g.title === action.target) || GAMES[0];
+          const players = [
+            { id: 99, name: t.you, isHost: false, status: 'ready', avatar: 'Me', hasPaid: true },
+            { id: 2, name: 'Player_2', isHost: false, status: 'ready', avatar: 'P2', hasPaid: true },
+            { id: 3, name: 'Player_3', isHost: false, status: 'ready', avatar: 'P3', hasPaid: true },
+            { id: 4, name: 'Player_4', isHost: false, status: 'ready', avatar: 'P4', hasPaid: true }
+          ];
+          const room = { id: 999, gameName: game.title, mode: 'compete', entry: 100, capacity: 4, host: 'System', current: 4, isMyRoom: false };
+          handleJoinRoom({ ...room, autoStart: true, players: players });
+      } else if (action.type === 'group') {
+          showToast(`${t.joined_group_toast} ${action.target}!`);
+          handleOpenChat({ id: 999, name: action.target, avatar: action.target[0], lastMsg: t.welcome_group, time: 'Just now', unread: 0, type: 'group' });
+      } else if (action.type === 'video') {
+          showToast("Opening Short Video Player...");
+      }
+  };
 
   useEffect(() => {
      if(createCooldown && Date.now() > createCooldown) {
@@ -1478,17 +2155,12 @@ export default function App() {
   }, [createCooldown, activeTab]);
 
   const handleJoinRoom = (roomData) => {
-      if (roomData.autoStart) {
-          // Quick match flow
-          // setIsLoadingGame(true);
-          // setTimeout(() => {
-          //     setIsLoadingGame(false);
-          //     setActiveGameSession({ room: roomData, players: roomData.players });
-          // }, 2000);
-          showToast(t.game_started);
-      } else {
-          setActiveRoom({ ...roomData, isMyRoom: roomData.host === 'Me' });
-      }
+      // Always use quick match flow, skipping room lobby
+      setIsLoadingGame(true);
+      setTimeout(() => {
+          setIsLoadingGame(false);
+          setActiveGameSession({ room: roomData, players: roomData.players });
+      }, 1500);
   };
   const handleCreateRoom = (roomConfig) => setActiveRoom({ id: Math.floor(Math.random()*10000), gameName: roomConfig.gameName, mode: roomConfig.mode, entry: roomConfig.entry, capacity: roomConfig.capacity, host: 'Me', current: 1, isMyRoom: true });
   const handleDisband = () => {
@@ -1506,14 +2178,22 @@ export default function App() {
       }, 2000);
   };
 
-  const handleGameOver = (finalScores) => {
-      setGameResult({ room: activeGameSession.room, scores: finalScores });
-      setActiveGameSession(null);
+  const handleExitGame = (result) => {
+      if (result === 'minimize') {
+          setIsGameMinimized(true);
+      } else {
+          setActiveGameSession(null);
+      }
   };
 
   const handleOpenChat = (chat) => {
       setActiveChat(chat);
       setActiveTab('inbox');
+  };
+
+  const handleShowHourlyRush = (context = 'global') => {
+      setHourlyRushContext(context);
+      setShowHourlyRush(true);
   };
 
   return (
@@ -1533,15 +2213,47 @@ export default function App() {
         )}
 
         <div className="h-full w-full">
-          {activeTab === 'home' && <HomeTab t={t} />}
-          {activeTab === 'game' && <GameTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} showToast={showToast} onOpenChat={handleOpenChat} />}
-          {activeTab === 'inbox' && <InboxTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} activeRoom={activeRoom} showToast={showToast} activeChat={activeChat} setActiveChat={setActiveChat} />}
+          {activeTab === 'home' && <HomeTab t={t} onTabChange={setActiveTab} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} />}
+          {activeTab === 'game' && <GameTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} showToast={showToast} onOpenChat={handleOpenChat} onShowHourlyRush={() => handleShowHourlyRush('global')} onSystemAction={handleSystemAction} />}
+          {activeTab === 'inbox' && <InboxTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} activeRoom={activeRoom} showToast={showToast} activeChat={activeChat} setActiveChat={setActiveChat} onSystemAction={handleSystemAction} />}
           {activeTab === 'mine' && <MineTab lang={lang} setLang={setLang} t={t} showToast={showToast} />}
           {activeTab === 'plus' && <div className="h-full flex items-center justify-center text-white"><button onClick={() => setActiveTab('home')}>Close Camera</button></div>}
         </div>
         {activeRoom && <RoomLobby room={activeRoom} onClose={() => setActiveRoom(null)} t={t} onDisband={handleDisband} onStartGame={handleGameStart} showToast={showToast} />}
-        {activeGameSession && <ActiveGameSession room={activeGameSession.room} players={activeGameSession.players} onGameOver={handleGameOver} t={t} />}
-        {gameResult && <GameResultModal result={gameResult} onClose={() => setGameResult(null)} t={t} />}
+        
+        {activeGameSession && (
+            <div className={`absolute inset-0 z-[80] ${isGameMinimized ? 'hidden' : ''}`}>
+                <ActiveGameSession room={activeGameSession.room} players={activeGameSession.players} onGameOver={handleExitGame} t={t} onShowHourlyRush={() => handleShowHourlyRush('game')} />
+            </div>
+        )}
+        
+        {/* Global Return to Game Bubble */}
+        {activeGameSession && isGameMinimized && activeTab !== 'plus' && activeTab !== 'home' && (
+            <DraggableGameBubble 
+                onClick={() => setIsGameMinimized(false)} 
+                activeGameSession={activeGameSession} 
+                onDragStart={() => setIsBubbleDragging(true)}
+                onDragEnd={() => setIsBubbleDragging(false)}
+                onClose={() => {
+                    setIsGameMinimized(false);
+                    handleExitGame();
+                }}
+            />
+        )}
+
+        {/* Drag to Close Zone */}
+        {isBubbleDragging && (
+            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-red-900/80 to-transparent z-[85] flex items-center justify-center animate-in fade-in slide-in-from-bottom-4">
+                <div className="flex flex-col items-center gap-2 text-red-200 animate-pulse">
+                    <div className="w-12 h-12 rounded-full border-2 border-red-400 flex items-center justify-center bg-red-500/20">
+                        <X size={24} />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wider">Drag here to close</span>
+                </div>
+            </div>
+        )}
+        {gameResult && <GameResultModal result={gameResult} onClose={() => setGameResult(null)} t={t} onShowHourlyRush={() => handleShowHourlyRush('game')} />}
+        {showHourlyRush && <HourlyRushModal onClose={() => setShowHourlyRush(false)} t={t} inGame={hourlyRushContext === 'game'} />}
         {toastMsg && <Toast message={toastMsg} onClose={() => setToastMsg(null)} />}
         {activeTab !== 'plus' && <BottomNav activeTab={activeTab} onTabChange={setActiveTab} t={t} />}
         <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full z-50"></div>
