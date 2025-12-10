@@ -3,7 +3,7 @@ import {
   Home, Gamepad2, PlusSquare, Plus, MessageCircle, User, Search, Heart, MessageSquare, Share2, MapPin, Coins, 
   Trophy, Clock, ChevronRight, ChevronLeft, Play, Pause, Users, Bell, Settings, X, Send, Mic, MoreHorizontal, 
   Wallet, CheckCircle2, Loader2, RefreshCw, TrendingUp, Calendar, Award, Gem, CircleDollarSign, Star, Zap, 
-  Target, Gift, Languages, Filter, Flame, UserPlus, ArrowRightLeft, Receipt, Sword, Crown, LayoutGrid, LayoutList, LogOut, Ban, AlertTriangle, Lock, HelpCircle, XCircle
+  Target, Gift, Languages, Filter, Flame, UserPlus, ArrowRightLeft, Receipt, Sword, Crown, LayoutGrid, LayoutList, LogOut, Ban, AlertTriangle, Lock, HelpCircle, XCircle, ChevronDown
 } from 'lucide-react';
 
 // --- Internationalization (i18n) ---
@@ -73,7 +73,9 @@ const TEXTS = {
     ready_cancelled: "已取消准备", host_badge: "房主", cancel: "取消",
     all: "全部", balance_label: "余额：",
     sys_play: "我也玩", sys_join: "进入群聊", sys_watch: "进入短视频",
-    achievements: "成就", owned: "已拥有", trophy_room: "荣誉展厅", earned_on: "获得于"
+    achievements: "成就", owned: "已拥有", trophy_room: "荣誉展厅", earned_on: "获得于",
+    minimize_hint: "点击这里最小化游戏，边玩边逛！",
+    multiplayer: "多人游戏", singleplayer: "单人游戏"
   },
   en: {
     home: "Home", game: "Game", inbox: "Inbox", mine: "Mine",
@@ -98,6 +100,7 @@ const TEXTS = {
     recent_trans: "Recent Transactions", trans_reward: "Match Reward",
     view_all_trans: "View All Transactions", trans_history: "Transaction History",
     trans_type_game: "Game Match", trans_type_recharge: "Top Up", trans_type_gift: "Gift Sent",
+    minimize_hint: "Tap here to minimize & keep playing!",
     beans: "Beans", diamonds: "Diamonds", coins: "Coins",
     quick_match_title: "Quick Match", quick_match_sub: "Select tier, auto-match opponents",
     custom_rooms: "Custom Rooms", create_room_title: "Create Private Room",
@@ -139,7 +142,8 @@ const TEXTS = {
     ready_cancelled: "Ready Cancelled", host_badge: "HOST", cancel: "Cancel",
     all: "All", balance_label: "Balance:",
     sys_play: "Play Also", sys_join: "Join Group", sys_watch: "Watch Video",
-    achievements: "Achievements", owned: "Owned", trophy_room: "Trophy Room", earned_on: "Earned on"
+    achievements: "Achievements", owned: "Owned", trophy_room: "Trophy Room", earned_on: "Earned on",
+    multiplayer: "Multiplayer", singleplayer: "Singleplayer"
   }
 };
 
@@ -147,7 +151,7 @@ const TEXTS = {
 
 const GAMES = [
   { id: 1, title: "Ludo Master", image: "from-yellow-500 to-red-500", players: "2.5M", type: "Board", minEntry: 100, category: "hot" },
-  { id: 2, title: "Fruit Slicer", image: "from-green-400 to-lime-600", players: "1.8M", type: "Action", minEntry: 50, category: "recent" },
+  { id: 2, title: "Block Puzzle", image: "from-blue-500 to-cyan-400", players: "1.8M", type: "Puzzle", minEntry: 50, category: "recent" },
   { id: 3, title: "Cricket Clash", image: "from-blue-600 to-indigo-800", players: "5.0M", type: "Sports", minEntry: 200, category: "hot" },
   { id: 4, title: "Candy Match", image: "from-pink-400 to-purple-500", players: "3.2M", type: "Puzzle", minEntry: 50, category: "recent" },
   { id: 5, title: "Car Racing", image: "from-red-600 to-orange-600", players: "1.2M", type: "Racing", minEntry: 100, category: "all" },
@@ -186,11 +190,21 @@ const EXTENDED_GROUPS = [
   { id: 103, name: "Tech Park Ludo", dist: 1.2, members: 56, activity: 88, tags: ["Office"] },
   { id: 104, name: "Bangalore Techies", dist: 850, members: 2300, activity: 92, tags: ["Tech", "Gaming"] },
   { id: 105, name: "Delhi Daredevils", dist: 1200, members: 5600, activity: 99, tags: ["Cricket"] },
+  { id: 106, name: "Chennai Chess Club", dist: 1400, members: 1200, activity: 85, tags: ["Chess"] },
+  { id: 107, name: "Hyderabad Hunters", dist: 700, members: 3400, activity: 95, tags: ["Action"] },
+  { id: 108, name: "Kolkata Knights", dist: 1600, members: 2800, activity: 90, tags: ["Sports"] },
+  { id: 109, name: "Jaipur Jewels", dist: 1100, members: 900, activity: 75, tags: ["Casual"] },
+  { id: 110, name: "Goa Gamers", dist: 500, members: 1500, activity: 80, tags: ["Party"] },
+  { id: 111, name: "Ahmedabad Aces", dist: 900, members: 2100, activity: 88, tags: ["Cards"] },
+  { id: 112, name: "Lucknow Legends", dist: 1300, members: 1800, activity: 82, tags: ["Strategy"] },
+  { id: 113, name: "Surat Strikers", dist: 950, members: 1600, activity: 78, tags: ["Action"] },
+  { id: 114, name: "Nagpur Ninjas", dist: 800, members: 1300, activity: 76, tags: ["Arcade"] },
+  { id: 115, name: "Indore Indians", dist: 1000, members: 1100, activity: 74, tags: ["Puzzle"] },
 ];
 
 const VIDEOS = [
   { id: 1, user: "@Priya_Dance", desc: "Walking in Mumbai 🇮🇳 #Mumbai #Vlog", likes: 12500, comments: 342, location: "Mumbai, MH", color: "from-slate-700 to-slate-900" },
-  { id: 2, user: "@TechGuru_Ravi", desc: "New Gaming Setup! 🎮 #Gaming", likes: 8200, comments: 156, location: "Bangalore, KA", color: "from-indigo-900 to-purple-900" },
+  { id: 2, user: "@TechGuru_Ravi", desc: "New Gaming Setup! 🎮 #Gaming", likes: 8200, comments: 156, location: "Bangalore, KA", color: "from-indigo-900 to-purple-900", gameLink: { id: 1, name: "Ludo Master" } },
   { id: 3, user: "@Foodie_Amit", desc: "Best Curry in Town 🍛 #IndianFood", likes: 24000, comments: 890, location: "New Delhi, DL", color: "from-orange-800 to-red-900" },
 ];
 
@@ -261,16 +275,16 @@ const BottomNav = ({ activeTab, onTabChange, t }) => {
     { id: 'mine', icon: User, label: t.mine },
   ];
   return (
-    <div className="absolute bottom-0 w-full h-16 bg-black border-t border-gray-800 flex justify-around items-end pb-2 z-40">
+    <div className="absolute bottom-0 w-full h-16 bg-white border-t border-gray-200 flex justify-around items-end pb-2 z-40">
       {tabs.map(tab => (
         <button key={tab.id} onClick={() => onTabChange(tab.id)} className={`relative flex flex-col items-center gap-1 w-1/5 ${tab.isSpecial ? '-top-1' : ''} active:scale-90 transition-transform`}>
           {tab.isSpecial ? (
-            <div className="w-12 h-8 bg-gradient-to-r from-cyan-400 to-red-500 rounded-lg flex items-center justify-center shadow-[0_0_10px_rgba(0,255,255,0.5)]"><PlusSquare className="text-white fill-white" size={24} /></div>
+            <div className="w-10 h-8 bg-black rounded-xl flex items-center justify-center shadow-lg"><Plus className="text-white" size={20} strokeWidth={3} /></div>
           ) : (
             <>
-              <tab.icon size={24} className={activeTab === tab.id ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]' : 'text-gray-500'} fill={activeTab === tab.id && tab.id !== 'inbox' ? "currentColor" : "none"}/>
-              <span className={`text-[10px] font-medium ${activeTab === tab.id ? 'text-white' : 'text-gray-500'}`}>{tab.label}</span>
-              {tab.id === 'inbox' && <span className="absolute top-0 right-3 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-black animate-pulse"></span>}
+              <tab.icon size={24} className={activeTab === tab.id ? 'text-orange-500 fill-current' : 'text-gray-400'} strokeWidth={activeTab === tab.id ? 2.5 : 2}/>
+              <span className={`text-[10px] font-bold ${activeTab === tab.id ? 'text-orange-500' : 'text-gray-400'}`}>{tab.label}</span>
+              {tab.id === 'inbox' && <span className="absolute top-0 right-3 w-4 h-4 bg-red-500 rounded-full border-2 border-white text-[8px] text-white flex items-center justify-center font-bold">3</span>}
             </>
           )}
         </button>
@@ -313,6 +327,23 @@ const HomeTab = ({ t, onTabChange, onJoinRoom, onCreateRoom }) => {
 
                   {/* Bottom Left Info */}
                   <div className="absolute left-4 bottom-20 right-16 z-20 text-white flex flex-col items-start" onClick={(e) => e.stopPropagation()}>
+                      {currentItem.data.gameLink && (
+                          <div className="mb-4 animate-in slide-in-from-left duration-700">
+                              <div 
+                                  className="bg-black/40 backdrop-blur-md border border-white/20 rounded-full pl-1 pr-3 py-1 flex items-center gap-2 cursor-pointer active:scale-95 transition-transform hover:bg-black/60"
+                                  onClick={() => onCreateRoom({ gameName: currentItem.data.gameLink.name, mode: 'compete', entry: 100, capacity: 4 })}
+                              >
+                                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-600 flex items-center justify-center shadow-lg border border-white/20">
+                                      <Gamepad2 size={16} className="text-white" />
+                                  </div>
+                                  <div className="flex flex-col">
+                                      <span className="text-[8px] text-yellow-300 font-bold uppercase tracking-wider leading-none mb-0.5">{t.play_also}</span>
+                                      <span className="text-xs font-bold text-white leading-none">{currentItem.data.gameLink.name}</span>
+                                  </div>
+                                  <ChevronRight size={14} className="text-white/60 ml-1" />
+                              </div>
+                          </div>
+                      )}
                       <div className="flex items-center gap-3 mb-3">
                           <div className="w-12 h-12 rounded-full border-2 border-white overflow-hidden bg-gray-500 relative">
                               {/* Avatar Image Placeholder */}
@@ -327,11 +358,11 @@ const HomeTab = ({ t, onTabChange, onJoinRoom, onCreateRoom }) => {
           );
       } else if (currentItem.type === 'group_card') {
           return (
-              <div className="h-full w-full bg-slate-900 flex flex-col items-center justify-center p-8 relative">
-                  <div className="absolute top-4 right-4 text-slate-500 text-xs font-bold uppercase tracking-widest">{t.rec_groups}</div>
+              <div className="h-full w-full bg-white flex flex-col items-center justify-center p-8 relative">
+                  <div className="absolute top-4 right-4 text-gray-400 text-xs font-bold uppercase tracking-widest">{t.rec_groups}</div>
                   <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-4xl font-bold text-white mb-6 shadow-2xl shadow-indigo-500/20">{currentItem.data.name[0]}</div>
-                  <h2 className="text-2xl font-black text-white mb-2 text-center">{currentItem.data.name}</h2>
-                  <div className="flex gap-4 text-slate-400 text-sm mb-8">
+                  <h2 className="text-2xl font-black text-slate-900 mb-2 text-center">{currentItem.data.name}</h2>
+                  <div className="flex gap-4 text-gray-500 text-sm mb-8">
                       <span className="flex items-center gap-1"><Users size={16}/> {currentItem.data.members} {t.members}</span>
                       <span className="flex items-center gap-1"><MapPin size={16}/> {currentItem.data.dist}{t.km}</span>
                   </div>
@@ -340,39 +371,39 @@ const HomeTab = ({ t, onTabChange, onJoinRoom, onCreateRoom }) => {
           );
       } else if (currentItem.type === 'game_card') {
            return (
-              <div className="h-full w-full bg-slate-900 flex relative">
+              <div className="h-full w-full bg-white flex relative">
                   {/* Full Screen Game Background */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${currentItem.data.image} opacity-80`}></div>
-                  <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
-
+                  <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"></div>
+                  
                   {/* Center: Game Icon & Title */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center z-0 pointer-events-none">
-                      <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-yellow-400 to-orange-600 flex items-center justify-center shadow-[0_0_50px_rgba(234,179,8,0.5)] mb-6 animate-in zoom-in duration-500 border-4 border-white/20">
-                          <Gamepad2 size={64} className="text-white drop-shadow-lg" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none pb-20">
+                      <div className="relative mb-8">
+                          <div className="absolute inset-0 bg-white/20 rounded-[2rem] blur-xl animate-pulse"></div>
+                          <div className="w-32 h-32 rounded-[2rem] bg-gradient-to-br from-yellow-400 to-orange-600 flex items-center justify-center shadow-2xl border-[6px] border-white/20 relative z-10 animate-in zoom-in duration-500">
+                              <Gamepad2 size={64} className="text-white drop-shadow-lg" />
+                          </div>
+                          <div className="absolute -bottom-4 -right-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full border-2 border-white shadow-lg z-20">
+                              {['Board', 'Sports', 'Racing', 'Action'].includes(currentItem.data.type) ? t.multiplayer : t.singleplayer}
+                          </div>
                       </div>
-                      <h2 className="text-4xl font-black text-white uppercase tracking-widest drop-shadow-2xl text-center px-4">{currentItem.data.title}</h2>
-                      <div className="mt-4 flex items-center gap-2 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
-                          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                          <span className="text-sm font-bold text-white">{currentItem.data.players} {t.players_online}</span>
+                      
+                      <h2 className="text-5xl font-black text-white uppercase tracking-tighter drop-shadow-2xl text-center px-4 italic transform -skew-x-6 mb-2">
+                          {currentItem.data.title}
+                      </h2>
+                      
+                      <div className="flex items-center gap-4 mt-4">
+                          <div className="flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                              <span className="text-xs font-bold text-white">{currentItem.data.players}</span>
+                          </div>
                       </div>
                   </div>
 
                   {/* Bottom Interaction Zone */}
-                  <div className="absolute bottom-16 left-0 right-0 h-32 z-20 flex">
-                      {/* Left: Not Interested */}
-                      <div 
-                        className="w-1/3 h-full flex items-center justify-center cursor-pointer active:bg-white/5 transition-colors border-t border-r border-white/10 bg-black/20 backdrop-blur-sm hover:bg-black/40"
-                        onClick={handleNext}
-                      >
-                          <div className="flex flex-col items-center gap-1 opacity-60 hover:opacity-100 transition-opacity">
-                              <XCircle size={28} className="text-white" />
-                              <span className="text-white text-[10px] font-bold uppercase tracking-wider">{t.not_interested}</span>
-                          </div>
-                      </div>
-
-                      {/* Right: Enter Game */}
-                      <div 
-                        className="w-2/3 h-full flex items-center justify-center cursor-pointer active:bg-white/5 transition-colors border-t border-white/10 bg-blue-600/20 backdrop-blur-sm hover:bg-blue-600/40"
+                  <div className="absolute bottom-0 left-0 right-0 h-48 z-20 flex flex-col items-center justify-end pb-24 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+                      <button 
+                        className="group relative w-64 h-16 bg-white rounded-full flex items-center justify-center gap-3 shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95 transition-all duration-300"
                         onClick={() => {
                             const game = currentItem.data;
                             if (game.title === "Ludo Master") {
@@ -388,31 +419,41 @@ const HomeTab = ({ t, onTabChange, onJoinRoom, onCreateRoom }) => {
                             }
                         }} 
                       >
-                          <div className="flex items-center gap-3 hover:scale-105 transition-transform">
-                              <div className="w-12 h-12 rounded-full bg-white text-blue-600 flex items-center justify-center shadow-lg">
-                                  <Play size={24} fill="currentColor" className="ml-1" />
-                              </div>
-                              <span className="text-white font-black text-xl uppercase tracking-widest drop-shadow-lg">{t.play_now}</span>
+                          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                          <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-lg">
+                              <Play size={20} fill="currentColor" className="ml-1" />
                           </div>
-                      </div>
+                          <span className="text-slate-900 font-black text-xl uppercase tracking-widest">{t.play_now}</span>
+                          <div className="absolute -top-3 right-4 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-bounce">
+                              HOT
+                          </div>
+                      </button>
+                      
+                      <button 
+                          onClick={handleNext}
+                          className="mt-6 text-white/50 text-sm font-bold hover:text-white transition-colors flex items-center gap-2"
+                      >
+                          <span>{t.not_interested}</span>
+                          <ChevronDown size={16} />
+                      </button>
                   </div>
               </div>
            );
       } else { // room_card
            return (
-              <div className="h-full w-full bg-slate-900 flex flex-col items-center justify-center p-8 relative">
-                  <div className="absolute top-4 right-4 text-slate-500 text-xs font-bold uppercase tracking-widest">{t.rec_room}</div>
-                  <div className="bg-slate-800 p-6 rounded-3xl border border-slate-700 w-full mb-8">
+              <div className="h-full w-full bg-white flex flex-col items-center justify-center p-8 relative">
+                  <div className="absolute top-4 right-4 text-gray-400 text-xs font-bold uppercase tracking-widest">{t.rec_room}</div>
+                  <div className="bg-gray-50 p-6 rounded-3xl border border-gray-200 w-full mb-8 shadow-sm">
                       <div className="flex justify-between items-center mb-4">
-                          <span className="bg-red-500/20 text-red-400 px-2 py-1 rounded text-xs font-bold">{t.mode_compete}</span>
-                          <span className="text-yellow-400 font-bold flex items-center gap-1"><Coins size={14}/> {currentItem.data.entry}</span>
+                          <span className="bg-red-500/10 text-red-500 px-2 py-1 rounded text-xs font-bold">{t.mode_compete}</span>
+                          <span className="text-yellow-500 font-bold flex items-center gap-1"><Coins size={14}/> {currentItem.data.entry}</span>
                       </div>
-                      <h3 className="text-xl font-bold text-white mb-2">{currentItem.data.name}</h3>
-                      <div className="flex items-center gap-2 text-slate-400 text-sm">
+                      <h3 className="text-xl font-bold text-slate-900 mb-2">{currentItem.data.name}</h3>
+                      <div className="flex items-center gap-2 text-gray-500 text-sm">
                           <Users size={14}/> {currentItem.data.current}/{currentItem.data.capacity} {t.players}
                       </div>
                   </div>
-                  <button className="w-full py-4 bg-red-600 text-white rounded-2xl font-bold text-lg shadow-lg">{t.enter_room}</button>
+                  <button className="w-full py-4 bg-red-500 text-white rounded-2xl font-bold text-lg shadow-lg shadow-red-500/20">{t.enter_room}</button>
               </div>
            );
       }
@@ -436,15 +477,15 @@ const HomeTab = ({ t, onTabChange, onJoinRoom, onCreateRoom }) => {
       {/* Comments Modal */}
       {showComments && (
           <div className="absolute inset-0 z-40 bg-black/50 backdrop-blur-sm flex flex-col justify-end animate-in slide-in-from-bottom" onClick={(e) => e.stopPropagation()}>
-              <div className="bg-slate-900 rounded-t-3xl h-2/3 p-4 flex flex-col">
-                  <div className="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                      <h3 className="font-bold text-white">{t.comments} ({currentItem.data.comments || 0})</h3>
-                      <button onClick={() => setShowComments(false)}><X size={20} className="text-slate-400"/></button>
+              <div className="bg-white rounded-t-3xl h-2/3 p-4 flex flex-col">
+                  <div className="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
+                      <h3 className="font-bold text-slate-900">{t.comments} ({currentItem.data.comments || 0})</h3>
+                      <button onClick={() => setShowComments(false)}><X size={20} className="text-gray-400"/></button>
                   </div>
                   <div className="flex-1 overflow-y-auto space-y-4">
                       {[1,2,3,4,5].map(i => (
                           <div key={i} className="flex gap-3">
-                              <div className="w-8 h-8 rounded-full bg-slate-700 flex-shrink-0"></div>
+                              <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0"></div>
                               <div>
                                   <div className="text-xs font-bold text-slate-400 mb-0.5">User_{i}</div>
                                   <div className="text-sm text-white">{t.sample_comment}</div>
@@ -453,7 +494,7 @@ const HomeTab = ({ t, onTabChange, onJoinRoom, onCreateRoom }) => {
                       ))}
                   </div>
                   <div className="mt-4 flex gap-2">
-                      <input type="text" placeholder={t.add_comment} className="flex-1 bg-slate-800 rounded-full px-4 py-2 text-white text-sm focus:outline-none"/>
+                      <input type="text" placeholder={t.add_comment} className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-slate-900 text-sm focus:outline-none"/>
                       <button className="p-2 bg-blue-600 rounded-full text-white"><Send size={16}/></button>
                   </div>
               </div>
@@ -562,37 +603,37 @@ const RoomLobby = ({ room, onClose, t, onDisband, onStartGame, showToast }) => {
   const slots = Array(room.capacity).fill(null).map((_, i) => players[i] || null);
 
   return (
-    <div className="absolute inset-0 bg-slate-950 z-[60] flex flex-col animate-in zoom-in-95">
+    <div className="absolute inset-0 bg-gray-50 z-[60] flex flex-col animate-in zoom-in-95">
        {/* Disband Modal */}
        {showDisbandConfirm && (
-          <div className="absolute inset-0 z-[70] bg-black/80 flex items-center justify-center p-4">
-             <div className="bg-slate-900 border border-red-900/50 p-6 rounded-2xl w-full max-w-xs text-center animate-slide-up">
-                <div className="w-16 h-16 bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="absolute inset-0 z-[70] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+             <div className="bg-white border border-red-200 p-6 rounded-2xl w-full max-w-xs text-center animate-slide-up shadow-2xl">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                    <AlertTriangle size={32} className="text-red-500"/>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">{t.disband}</h3>
-                <p className="text-sm text-slate-400 mb-6 leading-relaxed">{t.disband_warn}</p>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">{t.disband}</h3>
+                <p className="text-sm text-gray-500 mb-6 leading-relaxed">{t.disband_warn}</p>
                 <div className="flex gap-3">
-                   <button onClick={() => setShowDisbandConfirm(false)} className="flex-1 py-3 rounded-xl bg-slate-800 text-slate-400 font-bold">{t.cancel}</button>
-                   <button onClick={confirmDisband} className="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold">{t.disband}</button>
+                   <button onClick={() => setShowDisbandConfirm(false)} className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-500 font-bold hover:bg-gray-200">{t.cancel}</button>
+                   <button onClick={confirmDisband} className="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700">{t.disband}</button>
                 </div>
              </div>
           </div>
        )}
 
-       <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
+       <div className="pt-12 px-4 pb-4 bg-white border-b border-gray-200 flex justify-between items-center">
           <div>
-             <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                {room.gameName || t.game_room} <span className={`text-[10px] px-2 py-0.5 rounded-full ${room.mode === 'friendly' ? 'bg-green-600' : 'bg-red-600'}`}>{room.mode === 'friendly' ? t.mode_friendly : t.mode_compete}</span>
+             <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                {room.gameName || t.game_room} <span className={`text-[10px] px-2 py-0.5 rounded-full ${room.mode === 'friendly' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{room.mode === 'friendly' ? t.mode_friendly : t.mode_compete}</span>
              </h2>
-             <div className="text-xs text-slate-400 flex items-center gap-2"><span>{t.room_id}: {room.id}</span><span className="text-slate-300 font-bold flex items-center gap-1"><Users size={12}/>{room.current}/{room.capacity}</span>{room.mode === 'compete' && <span className="text-yellow-400 font-bold">{t.entry_fee}: {room.entry}</span>}</div>
+             <div className="text-xs text-gray-500 flex items-center gap-2"><span>{t.room_id}: {room.id}</span><span className="text-gray-600 font-bold flex items-center gap-1"><Users size={12}/>{room.current}/{room.capacity}</span>{room.mode === 'compete' && <span className="text-yellow-600 font-bold">{t.entry_fee}: {room.entry}</span>}</div>
           </div>
           <div className="flex gap-2">
-             {isHost && <button onClick={handleShare} className="bg-blue-500/20 text-blue-500 p-2 rounded-full hover:bg-blue-500/30"><Share2 size={20}/></button>}
+             {isHost && <button onClick={handleShare} className="bg-blue-50 text-blue-600 p-2 rounded-full hover:bg-blue-100"><Share2 size={20}/></button>}
              <button 
                 onClick={handleExit} 
                 disabled={players.find(p => p.id === 99)?.status === 'ready'}
-                className={`p-2 rounded-full transition-colors ${players.find(p => p.id === 99)?.status === 'ready' ? 'bg-slate-800 text-slate-600 cursor-not-allowed' : 'bg-red-500/20 text-red-500 hover:bg-red-500/30'}`}
+                className={`p-2 rounded-full transition-colors ${players.find(p => p.id === 99)?.status === 'ready' ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-red-50 text-red-500 hover:bg-red-100'}`}
              >
                 <LogOut size={20}/>
              </button>
@@ -600,27 +641,27 @@ const RoomLobby = ({ room, onClose, t, onDisband, onStartGame, showToast }) => {
        </div>
        <div className="flex-1 p-6 grid grid-cols-2 gap-4 content-start overflow-y-auto">
           {slots.map((player, i) => (
-             <div key={i} className={`aspect-square rounded-2xl border-2 flex flex-col items-center justify-center relative ${player ? 'border-slate-700 bg-slate-900' : 'border-dashed border-slate-800 bg-slate-900/50'}`}>
+             <div key={i} className={`aspect-square rounded-2xl border-2 flex flex-col items-center justify-center relative ${player ? 'border-gray-200 bg-white' : 'border-dashed border-gray-300 bg-gray-50'}`}>
                 {player ? (
                    <>
                       {isHost && !player.isHost && (<button onClick={() => handleKick(player.id)} className="absolute top-2 right-2 text-red-500 hover:scale-110 transition-transform"><Ban size={16}/></button>)}
                       {player.isHost && (<div className="absolute top-2 left-2 bg-yellow-500 text-black text-[10px] font-bold px-1.5 rounded">{t.host_badge}</div>)}
                       <div className="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-2xl font-bold text-white mb-2 shadow-lg">{player.avatar}</div>
-                      <div className="font-bold text-white text-sm">{player.name}</div>
-                      <div className={`text-xs mt-1 font-bold ${player.status === 'ready' ? 'text-green-400' : 'text-slate-500'}`}>
+                      <div className="font-bold text-slate-900 text-sm">{player.name}</div>
+                      <div className={`text-xs mt-1 font-bold ${player.status === 'ready' ? 'text-green-600' : 'text-gray-400'}`}>
                          {player.status === 'ready' ? (isFriendly ? t.ready : "Ready") : '...'}
                       </div>
                    </>
                 ) : (
-                   <div className="flex flex-col items-center text-slate-600"><div className="w-12 h-12 rounded-full border-2 border-slate-700 flex items-center justify-center mb-2"><PlusSquare size={20}/></div><span className="text-xs">{t.waiting}</span></div>
+                   <div className="flex flex-col items-center text-gray-400"><div className="w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center mb-2"><PlusSquare size={20}/></div><span className="text-xs">{t.waiting}</span></div>
                 )}
              </div>
           ))}
        </div>
-       <div className="p-4 bg-slate-900 border-t border-slate-800 flex gap-3">
+       <div className="p-4 bg-white border-t border-gray-200 flex gap-3">
           {isHost ? (
              <>
-                <button onClick={handleDisbandRoom} className="px-4 bg-red-900/50 text-red-400 border border-red-900 rounded-xl font-bold text-xs flex flex-col items-center justify-center gap-1"><AlertTriangle size={16}/> {t.disband}</button>
+                <button onClick={handleDisbandRoom} className="px-4 bg-red-50 text-red-600 border border-red-200 rounded-xl font-bold text-xs flex flex-col items-center justify-center gap-1 hover:bg-red-100"><AlertTriangle size={16}/> {t.disband}</button>
                 <button onClick={handleStart} className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 py-3.5 rounded-xl font-black text-lg text-white shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform"><Play size={20} fill="currentColor"/> {t.start}</button>
              </>
           ) : (
@@ -655,61 +696,61 @@ const WalletPage = ({ onClose, t, showToast }) => {
 
   if (subPage === 'history') {
      return (
-        <div className="absolute inset-0 bg-slate-950 z-50 flex flex-col animate-in slide-in-from-right">
-           <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex items-center gap-3">
-             <button onClick={() => setSubPage('main')}><ChevronLeft size={24} className="text-white"/></button><h1 className="text-lg font-bold text-white">{t.trans_history}</h1>
+        <div className="absolute inset-0 bg-gray-50 z-50 flex flex-col animate-in slide-in-from-right">
+           <div className="pt-12 px-4 pb-4 bg-white border-b border-gray-200 flex items-center gap-3">
+             <button onClick={() => setSubPage('main')}><ChevronLeft size={24} className="text-slate-900"/></button><h1 className="text-lg font-bold text-slate-900">{t.trans_history}</h1>
            </div>
-           <div className="flex p-4 gap-2 overflow-x-auto">{['all', 'beans', 'diamonds', 'coins'].map(c => (<button key={c} className={`px-4 py-1.5 rounded-full text-xs font-bold capitalize ${c==='all' ? 'bg-white text-black' : 'bg-slate-800 text-slate-400'}`}>{t[c] || t.all}</button>))}</div>
-           <div className="flex-1 overflow-y-auto p-4 space-y-3">{TRANSACTIONS.map(tx => (<div key={tx.id} className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex justify-between items-center"><div className="flex items-center gap-3"><div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.amount > 0 ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>{tx.amount > 0 ? <TrendingUp size={18}/> : <ArrowRightLeft size={18}/>}</div><div><div className="font-bold text-sm text-white">{tx.title}</div><div className="text-[10px] text-slate-500">{tx.date}</div></div></div><div className={`font-mono font-bold flex items-center gap-1 ${tx.amount > 0 ? 'text-green-400' : 'text-white'}`}>{tx.amount > 0 ? '+' : ''}{tx.amount}<CurrencyIcon type={tx.currency} className={tx.currency === 'beans' ? 'text-yellow-400' : tx.currency === 'diamonds' ? 'text-pink-400' : 'text-blue-400'} /></div></div>))}</div>
+           <div className="flex p-4 gap-2 overflow-x-auto">{['all', 'beans', 'diamonds', 'coins'].map(c => (<button key={c} className={`px-4 py-1.5 rounded-full text-xs font-bold capitalize ${c==='all' ? 'bg-slate-800 text-white' : 'bg-gray-200 text-gray-600'}`}>{t[c] || t.all}</button>))}</div>
+           <div className="flex-1 overflow-y-auto p-4 space-y-3">{TRANSACTIONS.map(tx => (<div key={tx.id} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex justify-between items-center"><div className="flex items-center gap-3"><div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.amount > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>{tx.amount > 0 ? <TrendingUp size={18}/> : <ArrowRightLeft size={18}/>}</div><div><div className="font-bold text-sm text-slate-900">{tx.title}</div><div className="text-[10px] text-gray-500">{tx.date}</div></div></div><div className={`font-mono font-bold flex items-center gap-1 ${tx.amount > 0 ? 'text-green-600' : 'text-slate-900'}`}>{tx.amount > 0 ? '+' : ''}{tx.amount}<CurrencyIcon type={tx.currency} className={tx.currency === 'beans' ? 'text-yellow-500' : tx.currency === 'diamonds' ? 'text-pink-500' : 'text-blue-500'} /></div></div>))}</div>
         </div>
      )
   }
 
   return (
-    <div className="absolute inset-0 bg-slate-950 z-50 flex flex-col animate-in slide-in-from-bottom">
+    <div className="absolute inset-0 bg-gray-50 z-50 flex flex-col animate-in slide-in-from-bottom">
        {showExchange && (
-          <div className="absolute inset-0 z-[60] bg-black/80 flex items-center justify-center p-4">
-             <div className="bg-slate-900 border border-slate-700 p-6 rounded-2xl w-full max-w-xs animate-slide-up">
-                <div className="flex justify-between items-center mb-4"><h3 className="text-lg font-bold text-white">{t.exchange_title}</h3><button onClick={() => setShowExchange(false)}><X size={20} className="text-slate-400"/></button></div>
-                <div className="bg-slate-800 p-3 rounded-xl mb-4 text-center"><div className="text-xs text-slate-400 mb-1">{t.exchange_rate}</div></div>
+          <div className="absolute inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+             <div className="bg-white border border-gray-200 p-6 rounded-2xl w-full max-w-xs animate-slide-up shadow-xl">
+                <div className="flex justify-between items-center mb-4"><h3 className="text-lg font-bold text-slate-900">{t.exchange_title}</h3><button onClick={() => setShowExchange(false)}><X size={20} className="text-gray-400"/></button></div>
+                <div className="bg-gray-100 p-3 rounded-xl mb-4 text-center"><div className="text-xs text-gray-500 mb-1">{t.exchange_rate}</div></div>
                 
                 <div className="flex justify-between items-center mb-2 px-1">
-                    <span className="text-xs text-slate-400">{t.balance_label} <span className="text-yellow-400 font-bold">8,900</span></span>
+                    <span className="text-xs text-gray-500">{t.balance_label} <span className="text-yellow-500 font-bold">8,900</span></span>
                 </div>
                 <div className="flex gap-2 mb-4">
                     {[10, 50, 100, 500].map(amt => (
-                        <button key={amt} onClick={() => setExchangeAmount(amt)} className="flex-1 py-2 bg-slate-800 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-700 border border-slate-700">{amt}</button>
+                        <button key={amt} onClick={() => setExchangeAmount(amt)} className="flex-1 py-2 bg-gray-100 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-200 border border-gray-200">{amt}</button>
                     ))}
                 </div>
 
                 <div className="mb-4">
-                   <label className="text-xs text-slate-400 mb-1 block">{t.input_coins}</label>
-                   <input type="number" value={exchangeAmount} onChange={e => setExchangeAmount(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-bold focus:outline-none focus:border-yellow-500" placeholder="0"/>
+                   <label className="text-xs text-gray-500 mb-1 block">{t.input_coins}</label>
+                   <input type="number" value={exchangeAmount} onChange={e => setExchangeAmount(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-slate-900 font-bold focus:outline-none focus:border-yellow-500" placeholder="0"/>
                 </div>
                 <div className="flex justify-between items-center mb-6 px-2">
-                   <span className="text-xs text-slate-400">You get:</span>
-                   <span className="text-yellow-400 font-bold flex items-center gap-1"><Coins size={14} fill="currentColor"/> {exchangeAmount ? exchangeAmount * 100 : 0}</span>
+                   <span className="text-xs text-gray-500">You get:</span>
+                   <span className="text-yellow-500 font-bold flex items-center gap-1"><Coins size={14} fill="currentColor"/> {exchangeAmount ? exchangeAmount * 100 : 0}</span>
                 </div>
-                <button onClick={() => { showToast('Exchange Successful!'); setShowExchange(false); }} className="w-full bg-yellow-500 text-black font-bold py-3 rounded-xl">{t.confirm_exchange}</button>
+                <button onClick={() => { showToast('Exchange Successful!'); setShowExchange(false); }} className="w-full bg-yellow-400 text-black font-bold py-3 rounded-xl shadow-lg shadow-yellow-400/20">{t.confirm_exchange}</button>
              </div>
           </div>
        )}
 
-       <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center"><h2 className="text-xl font-bold flex items-center gap-2 text-white"><Wallet size={24} className="text-yellow-400"/> {t.wallet}</h2><button onClick={onClose} className="bg-slate-800 p-2 rounded-full"><X size={20} className="text-white"/></button></div>
+       <div className="pt-12 px-4 pb-4 bg-white border-b border-gray-200 flex justify-between items-center"><h2 className="text-xl font-bold flex items-center gap-2 text-slate-900"><Wallet size={24} className="text-yellow-500"/> {t.wallet}</h2><button onClick={onClose} className="bg-gray-100 p-2 rounded-full"><X size={20} className="text-gray-600"/></button></div>
        <div className="flex-1 overflow-y-auto p-6">
-          <div className="flex bg-slate-900 border border-slate-800 rounded-xl p-1 mb-6">
-             {[{id: 'coins', label: t.coins, icon: CircleDollarSign, color: 'text-blue-400'}, {id: 'beans', label: t.beans, icon: Coins, color: 'text-yellow-400'}, {id: 'diamonds', label: t.diamonds, icon: Gem, color: 'text-pink-400'}].map(c => (
-                <button key={c.id} onClick={() => setSelectedCurrency(c.id)} className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold transition-all ${selectedCurrency === c.id ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-500'}`}>
+          <div className="flex bg-gray-100 border border-gray-200 rounded-xl p-1 mb-6">
+             {[{id: 'coins', label: t.coins, icon: CircleDollarSign, color: 'text-blue-500'}, {id: 'beans', label: t.beans, icon: Coins, color: 'text-yellow-500'}, {id: 'diamonds', label: t.diamonds, icon: Gem, color: 'text-pink-500'}].map(c => (
+                <button key={c.id} onClick={() => setSelectedCurrency(c.id)} className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold transition-all ${selectedCurrency === c.id ? 'bg-white text-slate-900 shadow-sm' : 'text-gray-500'}`}>
                    <c.icon size={14} className={c.color} /> {c.label}
                 </button>
              ))}
           </div>
           
-          <div className={`p-8 rounded-3xl mb-8 text-center transition-colors shadow-2xl relative overflow-hidden ${selectedCurrency === 'beans' ? 'bg-gradient-to-br from-yellow-500 to-orange-600' : selectedCurrency === 'diamonds' ? 'bg-gradient-to-br from-pink-500 to-purple-600' : 'bg-gradient-to-br from-blue-500 to-cyan-600'}`}>
-             <div className="absolute top-0 right-0 p-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+          <div className={`p-8 rounded-3xl mb-8 text-center transition-colors shadow-xl relative overflow-hidden ${selectedCurrency === 'beans' ? 'bg-gradient-to-br from-yellow-400 to-orange-500' : selectedCurrency === 'diamonds' ? 'bg-gradient-to-br from-pink-400 to-purple-500' : 'bg-gradient-to-br from-blue-400 to-cyan-500'}`}>
+             <div className="absolute top-0 right-0 p-32 bg-white/20 rounded-full -mr-16 -mt-16 blur-2xl"></div>
              <div className="relative">
-                <div className="text-white/80 text-sm mb-2 uppercase tracking-widest font-bold">{t.balance}</div>
-                <div className="text-5xl font-black text-white flex items-center justify-center gap-3 drop-shadow-md">
+                <div className="text-white/90 text-sm mb-2 uppercase tracking-widest font-bold">{t.balance}</div>
+                <div className="text-5xl font-black text-white flex items-center justify-center gap-3 drop-shadow-sm">
                    {selectedCurrency === 'beans' ? <Coins size={40} fill="currentColor" /> : selectedCurrency === 'diamonds' ? <Gem size={40} fill="currentColor"/> : <CircleDollarSign size={40}/>} 
                    {selectedCurrency === 'beans' ? '12,450' : selectedCurrency === 'diamonds' ? '520' : '8,900'}
                 </div>
@@ -717,12 +758,12 @@ const WalletPage = ({ onClose, t, showToast }) => {
           </div>
 
           <div className="grid grid-cols-1 gap-4 mb-8">
-             {selectedCurrency === 'coins' && <button className="bg-white text-slate-950 py-4 rounded-2xl font-black text-lg shadow-lg hover:bg-gray-100 transition-colors">{t.recharge}</button>}
-             {selectedCurrency === 'beans' && <button onClick={() => setShowExchange(true)} className="bg-yellow-500 text-black py-4 rounded-2xl font-black text-lg shadow-lg hover:bg-yellow-400 transition-colors">{t.exchange}</button>}
-             {selectedCurrency === 'diamonds' && <button className="bg-slate-800 text-white py-4 rounded-2xl font-bold border border-slate-700">{t.withdraw}</button>}
+             {selectedCurrency === 'coins' && <button className="bg-blue-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg hover:bg-blue-500 transition-colors">{t.recharge}</button>}
+             {selectedCurrency === 'beans' && <button onClick={() => setShowExchange(true)} className="bg-yellow-400 text-black py-4 rounded-2xl font-black text-lg shadow-lg shadow-yellow-400/20 hover:bg-yellow-300 transition-colors">{t.exchange}</button>}
+             {selectedCurrency === 'diamonds' && <button className="bg-gray-100 text-slate-900 py-4 rounded-2xl font-bold border border-gray-200">{t.withdraw}</button>}
           </div>
 
-          <div><div className="flex justify-between items-center mb-4"><h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">{t.recent_trans}</h3><button onClick={() => setSubPage('history')} className="text-blue-400 text-xs font-bold flex items-center gap-1">{t.view_all_trans} <ChevronRight size={12}/></button></div><div className="space-y-3">{TRANSACTIONS.slice(0, 3).map(tx => (<div key={tx.id} className="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex justify-between items-center"><div className="flex items-center gap-3"><div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.amount > 0 ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>{tx.amount > 0 ? <TrendingUp size={18}/> : <ArrowRightLeft size={18}/>}</div><div><div className="font-bold text-sm text-white">{tx.title}</div><div className="text-[10px] text-slate-500">{tx.date}</div></div></div><div className={`font-mono font-bold flex items-center gap-1 ${tx.amount > 0 ? 'text-green-400' : 'text-white'}`}>{tx.amount > 0 ? '+' : ''}{tx.amount}<CurrencyIcon type={tx.currency} className={tx.currency === 'beans' ? 'text-yellow-400' : tx.currency === 'diamonds' ? 'text-pink-400' : 'text-blue-400'} /></div></div>))}</div></div>
+          <div><div className="flex justify-between items-center mb-4"><h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">{t.recent_trans}</h3><button onClick={() => setSubPage('history')} className="text-blue-500 text-xs font-bold flex items-center gap-1">{t.view_all_trans} <ChevronRight size={12}/></button></div><div className="space-y-3">{TRANSACTIONS.slice(0, 3).map(tx => (<div key={tx.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex justify-between items-center"><div className="flex items-center gap-3"><div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.amount > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>{tx.amount > 0 ? <TrendingUp size={18}/> : <ArrowRightLeft size={18}/>}</div><div><div className="font-bold text-sm text-slate-900">{tx.title}</div><div className="text-[10px] text-gray-500">{tx.date}</div></div></div><div className={`font-mono font-bold flex items-center gap-1 ${tx.amount > 0 ? 'text-green-600' : 'text-slate-900'}`}>{tx.amount > 0 ? '+' : ''}{tx.amount}<CurrencyIcon type={tx.currency} className={tx.currency === 'beans' ? 'text-yellow-500' : tx.currency === 'diamonds' ? 'text-pink-500' : 'text-blue-500'} /></div></div>))}</div></div>
        </div>
     </div>
   );
@@ -733,6 +774,9 @@ const MineTab = ({ lang, setLang, t, showToast }) => {
   const [activeSubTab, setActiveSubTab] = useState('works');
   const [showVideoPlayer, setShowVideoPlayer] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [showWallet, setShowWallet] = useState(false);
+  const [showTaskCenter, setShowTaskCenter] = useState(false);
+
   const totalEarnings = GAME_HISTORY.reduce((acc, curr) => curr.amount > 0 ? acc + curr.amount : acc, 0);
 
   const handleVideoClick = (video) => {
@@ -741,48 +785,109 @@ const MineTab = ({ lang, setLang, t, showToast }) => {
   };
 
   const DetailModal = ({ title, icon: Icon, color, children }) => (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in"><div className="bg-slate-900 w-full max-w-sm rounded-3xl border border-slate-700 overflow-hidden flex flex-col max-h-[80vh] animate-slide-up"><div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950"><h2 className={`text-lg font-bold flex items-center gap-2 ${color}`}><Icon size={20}/> {title}</h2><button onClick={() => setActiveModal(null)} className="bg-slate-800 p-2 rounded-full"><X size={16}/></button></div><div className="p-4 overflow-y-auto flex-1 space-y-4">{children}</div></div></div>
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in"><div className="bg-white w-full max-w-sm rounded-3xl border border-gray-200 overflow-hidden flex flex-col max-h-[80vh] animate-slide-up"><div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50"><h2 className={`text-lg font-bold flex items-center gap-2 ${color}`}><Icon size={20}/> {title}</h2><button onClick={() => setActiveModal(null)} className="bg-gray-200 p-2 rounded-full"><X size={16} className="text-gray-600"/></button></div><div className="p-4 overflow-y-auto flex-1 space-y-4">{children}</div></div></div>
   );
 
   return (
-    <div className="h-full bg-slate-950 text-white flex flex-col relative">
-      {showVideoPlayer && (
-          <div className="fixed inset-0 z-[100] bg-black flex flex-col animate-in slide-in-from-bottom">
-              <div className="absolute top-4 left-4 z-20">
-                  <button onClick={() => setShowVideoPlayer(false)} className="bg-black/20 p-2 rounded-full text-white backdrop-blur-sm"><ChevronLeft size={24}/></button>
-              </div>
-              <div className="flex-1 relative bg-slate-900 flex items-center justify-center">
-                  {/* Mock Video Player */}
-                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-50"></div>
-                  <Play size={64} className="text-white/50 relative z-10"/>
-                  <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent z-10">
-                      <h2 className="text-xl font-bold text-white mb-2">Amazing Ludo Comeback! 🔥</h2>
-                      <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-1"><Heart size={24} className="text-red-500" fill="currentColor"/> 12.5k</div>
-                          <div className="flex items-center gap-1"><MessageCircle size={24}/> 342</div>
-                          <div className="flex items-center gap-1"><Share2 size={24}/> Share</div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      )}
+    <div className="h-full bg-gray-50 text-slate-900 flex flex-col relative">
+       {showWallet && <WalletPage onClose={() => setShowWallet(false)} t={t} showToast={showToast} />}
+       {showTaskCenter && <TaskCenter onClose={() => setShowTaskCenter(false)} t={t} showToast={showToast} />}
 
-      {activeModal === 'wallet' && <WalletPage onClose={() => setActiveModal(null)} t={t} showToast={showToast} />}
-      {activeModal === 'tasks' && (<DetailModal title={t.tasks} icon={Target} color="text-red-400">{DAILY_TASKS.map(task => (<div key={task.id} className="bg-slate-800 p-4 rounded-xl flex justify-between items-center"><div><div className="font-bold text-sm mb-1">{task.title}</div><div className="text-xs text-slate-500">{task.progress}/{task.total}</div></div><button className={`px-3 py-1.5 rounded-lg text-xs font-bold ${task.claimed ? 'bg-slate-700 text-slate-500' : 'bg-yellow-500 text-black'}`}>{task.claimed ? t.claimed : t.claim}</button></div>))}</DetailModal>)}
-      {activeModal === 'skills' && (<DetailModal title={t.skills} icon={Star} color="text-purple-400"><div className="grid grid-cols-1 gap-3">{GAME_SKILLS.map(skill => (<div key={skill.id} className="bg-slate-800 p-4 rounded-xl flex items-center gap-4"><div className={`w-12 h-12 rounded-full flex items-center justify-center ${skill.bg}`}><Trophy size={20} className={skill.color} /></div><div className="flex-1"><div className="flex justify-between mb-1"><span className="font-bold">{skill.name}</span><span className={`font-black ${skill.color}`}>{skill.title}</span></div><div className="w-full h-1.5 bg-slate-700 rounded-full"><div className={`h-full ${skill.color.replace('text', 'bg')}`} style={{width: '60%'}}></div></div><div className="text-[10px] text-slate-500 mt-1">Lv.{skill.level}</div></div></div>))}</div></DetailModal>)}
+       {/* Header */}
+       <div className="pt-12 px-6 pb-6 bg-gradient-to-b from-blue-50 to-white">
+           <div className="flex justify-between items-start mb-6">
+               <div className="w-20 h-20 rounded-full border-4 border-white shadow-lg relative">
+                   <img src="https://github.com/shadcn.png" alt="User" className="w-full h-full rounded-full" />
+                   <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-white">Dawn</div>
+               </div>
+               <div className="flex gap-4">
+                   <button className="p-2 bg-white rounded-full shadow-sm"><LayoutGrid size={20} className="text-gray-600"/></button>
+                   <button className="p-2 bg-white rounded-full shadow-sm"><Settings size={20} className="text-gray-600"/></button>
+               </div>
+           </div>
+           
+           <div className="mb-6">
+               <h2 className="text-2xl font-black text-slate-900 flex items-center gap-2">Winner <Flame className="text-orange-500" fill="currentColor" size={24}/></h2>
+               <div className="text-sm text-gray-500 flex items-center gap-2">ID: 10135992 <div className="bg-gray-200 p-1 rounded"><ArrowRightLeft size={12}/></div></div>
+           </div>
 
-      <div className="pt-12 px-6 pb-6 bg-slate-950 flex justify-between items-start">
-         <div className="flex items-center gap-4"><div className="w-16 h-16 rounded-full bg-gray-700 border-2 border-white/20 flex items-center justify-center text-2xl font-bold text-slate-400">AK</div><div><h2 className="text-2xl font-bold flex items-center gap-2">Amit Kumar <CheckCircle2 size={16} className="text-blue-500" fill="white"/></h2><div className="text-xs text-slate-500">ID: 8839201 • Pune 🇮🇳</div></div></div>
-         <div className="flex flex-col items-end gap-2"><Settings className="text-slate-400" size={20} /></div>
-      </div>
-      <div className="px-4 mb-6"><div className="grid grid-cols-3 gap-3">{[{id: 'wallet', label: t.wallet, icon: Wallet, color: 'text-yellow-400', bg: 'bg-yellow-500/10'}, {id: 'tasks', label: t.tasks, icon: Target, color: 'text-red-400', bg: 'bg-red-500/10'}, {id: 'skills', label: t.skills, icon: Star, color: 'text-purple-400', bg: 'bg-purple-500/10'},].map(item => (<button key={item.id} onClick={() => setActiveModal(item.id)} className="bg-slate-900 border border-slate-800 hover:border-slate-600 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-95"><div className={`w-10 h-10 rounded-full ${item.bg} flex items-center justify-center`}><item.icon className={item.color} size={20} /></div><span className="text-xs font-bold text-slate-300">{item.label}</span></button>))}</div></div>
-      <div className="flex justify-around text-center mb-6 px-4"><div><div className="font-bold text-lg">12.5k</div><div className="text-xs text-slate-500">{t.fans}</div></div><div><div className="font-bold text-lg">452</div><div className="text-xs text-slate-500">{t.following}</div></div><div><div className="font-bold text-lg">1.2M</div><div className="text-xs text-slate-500">{t.likes_count}</div></div></div>
-      <div className="flex-1 bg-slate-900 rounded-t-3xl border-t border-slate-800 p-4 overflow-y-auto">
-         <div className="flex border-b border-slate-800 mb-4">{['works', 'likes', 'games'].map(tab => (<button key={tab} onClick={() => setActiveSubTab(tab)} className={`flex-1 pb-3 text-sm font-bold transition-colors ${activeSubTab === tab ? 'text-white border-b-2 border-white' : 'text-slate-500'}`}>{tab === 'works' ? t.works : tab === 'likes' ? t.likes : t.history}</button>))}</div>
-         {activeSubTab === 'works' && (<div className="grid grid-cols-3 gap-1">{MY_WORKS.map(i => (<div key={i.id} onClick={() => handleVideoClick(i)} className="aspect-[3/4] bg-slate-800 rounded-lg relative cursor-pointer"><div className="absolute bottom-1 left-1 text-[10px] flex items-center gap-1"><Play size={8} fill="white"/> {i.views}</div></div>))}</div>)}
-         {activeSubTab === 'likes' && (<div className="py-12 text-center text-slate-500 text-sm">{t.no_likes}</div>)}
-         {activeSubTab === 'games' && (<div className="space-y-3"><div className="bg-slate-800 p-4 rounded-xl flex justify-between items-center"><span className="text-slate-400 text-sm">{t.total_won}</span><span className="text-yellow-400 font-bold text-xl">+{totalEarnings}</span></div>{GAME_HISTORY.map(g => (<div key={g.id} className="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center"><div className="flex items-center gap-3"><div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center"><Gamepad2 size={24} className="text-white"/></div><div><div className="font-bold text-sm text-white">{g.game}</div><div className="text-[10px] text-slate-400 flex items-center gap-2 mt-1"><span className="flex items-center gap-0.5"><Users size={10}/> {g.players} {t.players}</span><span className="flex items-center gap-0.5"><Clock size={10}/> {g.time}</span></div><div className="flex -space-x-1.5 mt-1.5">{g.avatars.map((a, i) => (<div key={i} className="w-4 h-4 rounded-full bg-slate-700 border border-slate-900 text-[6px] flex items-center justify-center text-white font-bold">{a}</div>))}</div></div></div><div className="text-right"><div className={`font-black text-lg ${g.amount > 0 ? 'text-green-400' : 'text-slate-500'}`}>{g.amount > 0 ? '+' : ''}{g.amount}</div><div className="text-[10px] text-slate-500">{t.entry_fee}: {g.entry}</div></div></div>))}</div>)}
-      </div>
+           <div className="flex justify-start gap-8 text-center mb-6">
+               <div><div className="font-black text-xl text-slate-900">1.2k</div><div className="text-xs text-gray-500">Followers</div></div>
+               <div><div className="font-black text-xl text-slate-900">245</div><div className="text-xs text-gray-500">Following</div></div>
+               <div><div className="font-black text-xl text-slate-900">12.5k</div><div className="text-xs text-gray-500">Likes</div></div>
+               <button className="ml-auto bg-gray-200 px-6 py-1.5 rounded-lg text-sm font-bold text-gray-700">Edit</button>
+           </div>
+       </div>
+
+       {/* Feature Grid */}
+       <div className="px-4 grid grid-cols-3 gap-3 mb-4">
+           <div onClick={() => setShowWallet(true)} className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center gap-1 active:scale-95 transition-transform">
+               <Wallet className="text-blue-500" size={24}/>
+               <span className="text-xs font-bold text-slate-700">{t.wallet}</span>
+           </div>
+           <div onClick={() => setShowTaskCenter(true)} className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center gap-1 active:scale-95 transition-transform">
+               <Target className="text-orange-500" size={24}/>
+               <span className="text-xs font-bold text-slate-700">{t.task_center}</span>
+           </div>
+           <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center gap-1 active:scale-95 transition-transform">
+               <Trophy className="text-yellow-500" size={24}/>
+               <span className="text-xs font-bold text-slate-700">Rank</span>
+           </div>
+       </div>
+
+       {/* Content Tabs */}
+       <div className="flex-1 bg-white mt-2 rounded-t-3xl shadow-[0_-4px_20px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden">
+           <div className="flex border-b border-gray-100">
+               {['works', 'likes', 'history'].map(tab => (
+                   <button 
+                       key={tab} 
+                       onClick={() => setActiveSubTab(tab)}
+                       className={`flex-1 py-4 text-sm font-bold relative ${activeSubTab === tab ? 'text-slate-900' : 'text-gray-400'}`}
+                   >
+                       {tab === 'works' ? 'Works' : tab === 'likes' ? 'Likes' : 'History'}
+                       {activeSubTab === tab && <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-1 bg-slate-900 rounded-full"></div>}
+                   </button>
+               ))}
+           </div>
+           
+           <div className="flex-1 overflow-y-auto p-1">
+               {activeSubTab === 'works' && (
+                   <div className="grid grid-cols-3 gap-1">
+                       {MY_WORKS.map(work => (
+                           <div key={work.id} className="aspect-[3/4] bg-gray-200 relative">
+                               <div className="absolute bottom-1 left-1 text-white text-[10px] font-bold flex items-center gap-1"><Play size={8} fill="currentColor"/> {work.views}</div>
+                           </div>
+                       ))}
+                   </div>
+               )}
+               {activeSubTab === 'likes' && (
+                   <div className="flex flex-col items-center justify-center h-40 text-gray-400">
+                       <Heart size={32} className="mb-2 opacity-50"/>
+                       <span className="text-xs">No liked videos yet</span>
+                   </div>
+               )}
+               {activeSubTab === 'history' && (
+                   <div className="p-3 space-y-3">
+                       {GAME_HISTORY.map(h => (
+                           <div key={h.id} className="flex items-center justify-between bg-gray-50 p-3 rounded-xl border border-gray-100">
+                               <div className="flex items-center gap-3">
+                                   <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                                       {h.game[0]}
+                                   </div>
+                                   <div>
+                                       <div className="font-bold text-slate-900 text-sm">{h.game}</div>
+                                       <div className={`text-xs font-bold ${h.amount > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                           {h.amount > 0 ? 'Victory' : 'Defeat'} ({h.amount > 0 ? '+' : ''}{h.amount})
+                                       </div>
+                                   </div>
+                               </div>
+                               <button onClick={() => showToast("Starting Game...")} className="px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg">Play Again</button>
+                           </div>
+                       ))}
+                   </div>
+               )}
+           </div>
+       </div>
     </div>
   );
 };
@@ -790,6 +895,8 @@ const MineTab = ({ lang, setLang, t, showToast }) => {
 const GroupFinder = ({ onClose, t, onOpenChat }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("dist");
+  const [showSearchOverlay, setShowSearchOverlay] = useState(false);
+
   const filteredGroups = useMemo(() => {
     let result = EXTENDED_GROUPS.filter(g => g.name.toLowerCase().includes(searchTerm.toLowerCase()) || g.id.toString().includes(searchTerm));
     if (sortBy === 'dist') result.sort((a, b) => a.dist - b.dist);
@@ -799,12 +906,62 @@ const GroupFinder = ({ onClose, t, onOpenChat }) => {
   }, [searchTerm, sortBy]);
 
   return (
-    <div className="absolute inset-0 bg-slate-950 z-50 flex flex-col animate-in slide-in-from-right">
-       <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex items-center gap-3"><button onClick={onClose}><ChevronLeft size={24} className="text-white"/></button><h1 className="text-lg font-bold text-white">{t.find_groups}</h1></div>
-       <div className="p-4 space-y-4">
-         <div className="relative"><Search className="absolute left-3 top-2.5 text-slate-500" size={18} /><input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t.search_placeholder} className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white text-sm focus:border-blue-500 focus:outline-none"/></div>
-         <div className="flex gap-2">{[{id: 'dist', label: t.sort_dist, icon: MapPin}, {id: 'pop', label: t.sort_pop, icon: Flame}, {id: 'mem', label: t.sort_mem, icon: Users}].map(opt => (<button key={opt.id} onClick={() => setSortBy(opt.id)} className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-bold transition-all ${sortBy === opt.id ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-400'}`}><opt.icon size={12}/> {opt.label}</button>))}</div>
-         <div className="space-y-3 pb-20 overflow-y-auto">{filteredGroups.map(group => (<div key={group.id} className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex justify-between items-center"><div className="flex items-center gap-3"><div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-lg font-bold text-white">{group.name[0]}</div><div><h3 className="font-bold text-white text-sm">{group.name}</h3><div className="flex items-center gap-3 text-[10px] text-slate-400 mt-1"><span className="flex items-center gap-0.5"><MapPin size={10}/> {group.dist < 100 ? `${group.dist}${t.km}` : `100+${t.km}`}</span><span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span><span className="flex items-center gap-0.5 text-green-400"><Flame size={10}/> {group.activity}</span></div></div></div><button onClick={() => onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: t.welcome_group, time: t.just_now, unread: 0, type: 'group' })} className="bg-white/10 hover:bg-white/20 text-blue-400 px-4 py-1.5 rounded-full text-xs font-bold border border-blue-500/50">{t.join}</button></div>))}</div>
+    <div className="absolute inset-0 bg-gray-50 z-50 flex flex-col animate-in slide-in-from-right">
+       <div className="pt-12 px-4 pb-4 bg-white border-b border-gray-200 flex items-center justify-between">
+           <div className="flex items-center gap-3">
+               <button onClick={onClose}><ChevronLeft size={24} className="text-slate-900"/></button>
+               <h1 className="text-lg font-bold text-slate-900">{t.find_groups}</h1>
+           </div>
+           <button onClick={() => setShowSearchOverlay(true)} className="p-2 bg-gray-100 rounded-full"><Search size={20} className="text-slate-900"/></button>
+       </div>
+       
+       {showSearchOverlay && (
+           <div className="absolute inset-0 z-[60] bg-white flex flex-col animate-in fade-in">
+               <div className="pt-12 px-4 pb-4 border-b border-gray-200 flex items-center gap-3">
+                   <div className="relative flex-1">
+                       <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                       <input autoFocus type="text" placeholder="Search groups, messages..." className="w-full bg-gray-100 border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-slate-900 text-sm focus:border-blue-500 focus:outline-none"/>
+                   </div>
+                   <button onClick={() => setShowSearchOverlay(false)} className="text-slate-900 font-bold text-sm">Cancel</button>
+               </div>
+               <div className="p-4">
+                   <div className="text-xs font-bold text-gray-400 uppercase mb-3">History</div>
+                   <div className="flex flex-wrap gap-2">
+                       {['Ludo Group', 'Official', 'Anna'].map(k => (
+                           <span key={k} className="px-3 py-1 bg-gray-100 rounded-full text-xs text-gray-600">{k}</span>
+                       ))}
+                   </div>
+               </div>
+           </div>
+       )}
+
+       <div className="p-4 space-y-4 flex-1 overflow-y-auto">
+         <div className="flex gap-2 bg-gray-100 p-1 rounded-xl">
+             {[{id: 'dist', label: t.sort_dist, icon: MapPin}, {id: 'pop', label: t.sort_pop, icon: Flame}, {id: 'mem', label: t.sort_mem, icon: Users}].map(opt => (
+                 <button key={opt.id} onClick={() => setSortBy(opt.id)} className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-bold transition-all ${sortBy === opt.id ? 'bg-white text-slate-900 shadow-sm' : 'text-gray-500 hover:text-slate-900'}`}>
+                     <opt.icon size={12}/> {opt.label}
+                 </button>
+             ))}
+         </div>
+         
+         <div className="space-y-3 pb-20">
+             {filteredGroups.map(group => (
+                 <div key={group.id} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex justify-between items-center">
+                     <div className="flex items-center gap-3">
+                         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-lg font-bold text-white">{group.name[0]}</div>
+                         <div>
+                             <h3 className="font-bold text-slate-900 text-sm">{group.name}</h3>
+                             <div className="flex items-center gap-3 text-[10px] text-gray-500 mt-1">
+                                 <span className="flex items-center gap-0.5"><MapPin size={10}/> {group.dist < 100 ? `${group.dist}${t.km}` : `100+${t.km}`}</span>
+                                 <span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span>
+                                 <span className="flex items-center gap-0.5 text-green-500"><Flame size={10}/> {group.activity}</span>
+                             </div>
+                         </div>
+                     </div>
+                     <button onClick={() => onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: t.welcome_group, time: t.just_now, unread: 0, type: 'group' })} className="bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-1.5 rounded-full text-xs font-bold border border-blue-200">{t.join}</button>
+                 </div>
+             ))}
+         </div>
        </div>
     </div>
   );
@@ -840,42 +997,42 @@ const TaskCenter = ({ onClose, t, showToast }) => {
   };
 
   return (
-    <div className="absolute inset-0 bg-slate-950 z-50 flex flex-col animate-in slide-in-from-right">
+    <div className="absolute inset-0 bg-gray-50 z-50 flex flex-col animate-in slide-in-from-right">
        {/* Header */}
-       <div className="pt-12 px-4 pb-6 bg-gradient-to-b from-indigo-900 to-slate-900 border-b border-slate-800 relative overflow-hidden">
-           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+       <div className="pt-12 px-4 pb-6 bg-gradient-to-b from-blue-50 to-white border-b border-gray-200 relative overflow-hidden">
+           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
            <div className="relative z-10 flex items-center justify-between mb-6">
-               <button onClick={onClose} className="bg-slate-800/50 p-2 rounded-full backdrop-blur-sm"><ChevronLeft size={24} className="text-white"/></button>
-               <h1 className="text-lg font-bold text-white">{t.task_center}</h1>
-               <button className="bg-slate-800/50 p-2 rounded-full backdrop-blur-sm"><HelpCircle size={20} className="text-slate-400"/></button>
+               <button onClick={onClose} className="bg-white/50 p-2 rounded-full backdrop-blur-sm"><ChevronLeft size={24} className="text-slate-900"/></button>
+               <h1 className="text-lg font-bold text-slate-900">Level Up Center</h1>
+               <button className="bg-white/50 p-2 rounded-full backdrop-blur-sm"><HelpCircle size={20} className="text-gray-500"/></button>
            </div>
            
            {/* Level Card */}
            <div className="relative z-10 flex items-center gap-4">
                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 to-orange-600 p-1 shadow-lg shadow-orange-500/20">
-                   <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center flex-col">
-                       <span className="text-[10px] text-slate-400 font-bold uppercase">{t.level}</span>
-                       <span className="text-3xl font-black text-white">{level}</span>
+                   <div className="w-full h-full rounded-full bg-white flex items-center justify-center flex-col">
+                       <span className="text-[10px] text-gray-500 font-bold uppercase">{t.level}</span>
+                       <span className="text-3xl font-black text-slate-900">{level}</span>
                    </div>
                </div>
                <div className="flex-1">
                    <div className="flex justify-between items-end mb-2">
-                       <span className="text-white font-bold text-lg">{t.elite_gamer}</span>
-                       <span className="text-xs text-indigo-300 font-mono">{exp}/{maxExp} {t.exp}</span>
+                       <span className="text-slate-900 font-bold text-lg">{t.elite_gamer}</span>
+                       <span className="text-xs text-blue-600 font-mono">{exp}/{maxExp} {t.exp}</span>
                    </div>
-                   <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
-                       <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{width: `${(exp/maxExp)*100}%`}}></div>
+                   <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden border border-gray-100">
+                       <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-1000" style={{width: `${(exp/maxExp)*100}%`}}></div>
                    </div>
-                   <div className="text-[10px] text-slate-400 mt-2">{t.next_level}</div>
+                   <div className="text-[10px] text-gray-500 mt-2">{t.next_level}</div>
                </div>
            </div>
        </div>
 
        {/* Tabs */}
        <div className="px-4 mt-4">
-           <div className="bg-slate-900 p-1 rounded-xl flex border border-slate-800">
-               <button onClick={() => setActiveTab('daily')} className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'daily' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>{t.daily_missions}</button>
-               <button onClick={() => setActiveTab('achievements')} className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'achievements' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>{t.achievements}</button>
+           <div className="bg-gray-100 p-1 rounded-xl flex border border-gray-200">
+               <button onClick={() => setActiveTab('daily')} className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'daily' ? 'bg-white text-slate-900 shadow-sm' : 'text-gray-500 hover:text-slate-900'}`}>{t.daily_missions}</button>
+               <button onClick={() => setActiveTab('achievements')} className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'achievements' ? 'bg-white text-slate-900 shadow-sm' : 'text-gray-500 hover:text-slate-900'}`}>{t.achievements}</button>
            </div>
        </div>
 
@@ -883,23 +1040,81 @@ const TaskCenter = ({ onClose, t, showToast }) => {
        <div className="flex-1 overflow-y-auto p-4 space-y-4">
            {activeTab === 'daily' ? (
                <>
+                   {/* Check-in Section */}
+                   <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-4 text-white mb-4 shadow-lg shadow-blue-500/20">
+                       <div className="flex justify-between items-start mb-4">
+                           <div>
+                               <h3 className="font-bold text-lg">Daily Check-in</h3>
+                               <p className="text-xs text-blue-100">Get rewards every day!</p>
+                           </div>
+                           <button className="bg-white text-blue-600 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm active:scale-95 transition-transform">Check In</button>
+                       </div>
+                       <div className="flex justify-between gap-2">
+                           {[1,2,3,4,5,6,7].map(day => (
+                               <div key={day} className={`flex-1 flex flex-col items-center gap-1 p-2 rounded-lg ${day === 3 ? 'bg-white/20 ring-1 ring-white/50' : 'bg-white/10'}`}>
+                                   <span className="text-[10px] font-bold opacity-80">Day {day}</span>
+                                   {day === 3 ? <Gift size={14} className="animate-bounce"/> : <Coins size={12}/>}
+                               </div>
+                           ))}
+                       </div>
+                   </div>
+
                    <div className="flex items-center gap-2 mb-2">
-                       <Target size={18} className="text-yellow-400"/>
-                       <h2 className="font-bold text-white">{t.daily_missions}</h2>
+                       <Target size={18} className="text-yellow-500"/>
+                       <h2 className="font-bold text-slate-900">Earn EXP</h2>
+                   </div>
+                   
+                   {/* EXP Earning Behaviors */}
+                   <div className="space-y-3 mb-6">
+                       {[
+                           { title: "Watch 5 Videos", exp: 50, current: 2, target: 5, icon: Play },
+                           { title: "Play 3 Games", exp: 100, current: 1, target: 3, icon: Gamepad2 },
+                           { title: "Share to Friend", exp: 30, current: 0, target: 1, icon: Share2 },
+                           { title: "Join a Group", exp: 80, current: 1, target: 1, claimed: true, icon: Users }
+                       ].map((task, i) => (
+                           <div key={i} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3">
+                               <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${task.claimed ? 'bg-gray-100 text-gray-400' : 'bg-blue-50 text-blue-500'}`}>
+                                   <task.icon size={20}/>
+                               </div>
+                               <div className="flex-1">
+                                   <div className="flex justify-between items-center mb-1">
+                                       <h3 className={`font-bold text-sm ${task.claimed ? 'text-gray-400' : 'text-slate-900'}`}>{task.title}</h3>
+                                       <span className="text-xs font-bold text-orange-500">+{task.exp} EXP</span>
+                                   </div>
+                                   <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                       <div className={`h-full ${task.claimed ? 'bg-gray-300' : 'bg-blue-500'}`} style={{width: `${(task.current/task.target)*100}%`}}></div>
+                                   </div>
+                               </div>
+                               <button 
+                                   disabled={task.claimed || task.current < task.target}
+                                   className={`px-3 py-1.5 rounded-lg text-[10px] font-bold ${
+                                       task.claimed ? 'bg-gray-100 text-gray-400' : 
+                                       task.current >= task.target ? 'bg-orange-500 text-white animate-pulse' : 'bg-gray-100 text-gray-400'
+                                   }`}
+                               >
+                                   {task.claimed ? 'Done' : 'Go'}
+                               </button>
+                           </div>
+                       ))}
+                   </div>
+
+                   <div className="flex items-center gap-2 mb-2">
+                       <Target size={18} className="text-yellow-500"/>
+                       <h2 className="font-bold text-slate-900">{t.daily_missions}</h2>
                    </div>
                    
                    {tasks.map(task => (
-                       <div key={task.id} className="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center gap-4">
-                           <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${task.claimed ? 'bg-slate-800 text-slate-600' : 'bg-indigo-500/20 text-indigo-400'}`}>
+                       <div key={task.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                           <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${task.claimed ? 'bg-gray-100 text-gray-400' : 'bg-blue-50 text-blue-500'}`}>
                                {task.claimed ? <CheckCircle2 size={24}/> : <Star size={24}/>}
                            </div>
                            <div className="flex-1">
-                               <h3 className={`font-bold text-sm ${task.claimed ? 'text-slate-500' : 'text-white'}`}>{task.title}</h3>
+                               <h3 className={`font-bold text-sm ${task.claimed ? 'text-gray-400' : 'text-slate-900'}`}>{task.title}</h3>
                                <div className="flex items-center gap-2 mt-1">
-                                   <div className="w-24 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                                       <div className={`h-full ${task.claimed ? 'bg-slate-600' : 'bg-yellow-500'}`} style={{width: `${(task.progress/task.total)*100}%`}}></div>
+                                   <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                       <div className={`h-full ${task.claimed ? 'bg-gray-300' : 'bg-yellow-400'}`} style={{width: `${(task.progress/task.total)*100}%`}}></div>
                                    </div>
-                                   <span className="text-[10px] text-slate-500">{task.progress}/{task.total}</span>
+                                   <span className="text-[10px] text-gray-500">{task.progress}/{task.total}</span>
                                </div>
                            </div>
                            <button 
@@ -907,10 +1122,10 @@ const TaskCenter = ({ onClose, t, showToast }) => {
                                onClick={() => handleClaim(task.id)}
                                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                                    task.claimed 
-                                       ? 'bg-slate-800 text-slate-500 cursor-default' 
+                                       ? 'bg-gray-100 text-gray-400 cursor-default' 
                                        : task.progress >= task.total 
-                                           ? 'bg-yellow-500 text-black hover:bg-yellow-400 shadow-lg shadow-yellow-500/20 animate-pulse' 
-                                           : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                                           ? 'bg-yellow-400 text-black hover:bg-yellow-300 shadow-lg shadow-yellow-400/20 animate-pulse' 
+                                           : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                }`}
                            >
                                {task.claimed ? t.claimed : t.claim}
@@ -921,22 +1136,22 @@ const TaskCenter = ({ onClose, t, showToast }) => {
            ) : (
                <>
                    <div className="flex items-center gap-2 mb-2">
-                       <Trophy size={18} className="text-yellow-400"/>
-                       <h2 className="font-bold text-white">{t.achievements}</h2>
+                       <Trophy size={18} className="text-yellow-500"/>
+                       <h2 className="font-bold text-slate-900">{t.achievements}</h2>
                    </div>
                    {[...achievements].sort((a, b) => (a.claimed === b.claimed ? 0 : a.claimed ? 1 : -1)).map(ach => (
-                       <div key={ach.id} className="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center gap-4">
+                       <div key={ach.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-lg ${ach.color} text-white`}>
                                {ach.badge}
                            </div>
                            <div className="flex-1">
-                               <h3 className="font-bold text-sm text-white">{ach.title}</h3>
-                               <div className="text-[10px] text-slate-400 mb-1">{ach.desc}</div>
+                               <h3 className="font-bold text-sm text-slate-900">{ach.title}</h3>
+                               <div className="text-[10px] text-gray-500 mb-1">{ach.desc}</div>
                                <div className="flex items-center gap-2">
-                                   <div className="w-24 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                   <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                                        <div className="h-full bg-yellow-500" style={{width: `${Math.min(100, (ach.progress/ach.total)*100)}%`}}></div>
                                    </div>
-                                   <span className="text-[10px] text-slate-500">{ach.progress}/{ach.total}</span>
+                                   <span className="text-[10px] text-gray-500">{ach.progress}/{ach.total}</span>
                                </div>
                            </div>
                            <button 
@@ -944,36 +1159,36 @@ const TaskCenter = ({ onClose, t, showToast }) => {
                                onClick={() => handleClaimAchievement(ach.id)}
                                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                                    ach.claimed 
-                                       ? 'bg-slate-800 text-slate-500 cursor-default' 
+                                       ? 'bg-gray-100 text-gray-400 cursor-default' 
                                        : ach.progress >= ach.total 
-                                           ? 'bg-yellow-500 text-black hover:bg-yellow-400 shadow-lg shadow-yellow-500/20 animate-pulse' 
-                                           : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                                           ? 'bg-yellow-400 text-black hover:bg-yellow-300 shadow-lg shadow-yellow-400/20 animate-pulse' 
+                                           : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                }`}
                            >
                                {ach.claimed ? t.claimed : t.claim}
                            </button>
                        </div>
                    ))}
-                   <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 mt-4 flex justify-between items-center">
-                        <span className="text-slate-400 text-xs">{t.achievements}</span>
-                        <span className="text-yellow-400 font-bold">{achievements.filter(a => a.claimed).length}/{achievements.length} {t.owned}</span>
+                   <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mt-4 flex justify-between items-center">
+                        <span className="text-gray-500 text-xs">{t.achievements}</span>
+                        <span className="text-yellow-500 font-bold">{achievements.filter(a => a.claimed).length}/{achievements.length} {t.owned}</span>
                    </div>
 
                    {achievements.some(a => a.claimed) && (
                        <div className="mt-8">
                            <div className="flex items-center gap-2 mb-4">
                                <div className="w-1 h-4 bg-yellow-500 rounded-full"></div>
-                               <h2 className="font-bold text-white text-lg">{t.trophy_room}</h2>
+                               <h2 className="font-bold text-slate-900 text-lg">{t.trophy_room}</h2>
                            </div>
                            <div className="grid grid-cols-2 gap-3">
                                {achievements.filter(a => a.claimed).map(ach => (
-                                   <div key={ach.id} className="bg-slate-900/50 border border-slate-800 p-3 rounded-xl flex flex-col items-center text-center relative overflow-hidden group">
+                                   <div key={ach.id} className="bg-white border border-gray-100 shadow-sm p-3 rounded-xl flex flex-col items-center text-center relative overflow-hidden group">
                                        <div className="absolute inset-0 bg-gradient-to-b from-yellow-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                       <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-lg ${ach.color} text-white mb-3 ring-4 ring-slate-900`}>
+                                       <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-lg ${ach.color} text-white mb-3 ring-4 ring-gray-50`}>
                                            {ach.badge}
                                        </div>
-                                       <h3 className="font-bold text-white text-xs mb-1">{ach.title}</h3>
-                                       <p className="text-[10px] text-slate-500">{t.earned_on} 2023/10/24</p>
+                                       <h3 className="font-bold text-slate-900 text-xs mb-1">{ach.title}</h3>
+                                       <p className="text-[10px] text-gray-500">{t.earned_on} 2023/10/24</p>
                                    </div>
                                ))}
                            </div>
@@ -983,18 +1198,18 @@ const TaskCenter = ({ onClose, t, showToast }) => {
            )}
 
            {activeTab === 'daily' && (
-           <div className="bg-gradient-to-r from-pink-600/20 to-purple-600/20 border border-pink-500/30 rounded-2xl p-4 mt-6">
+           <div className="bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-100 rounded-2xl p-4 mt-6">
                <div className="flex items-center gap-3 mb-3">
                    <div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white"><Gift size={20}/></div>
                    <div>
-                       <h3 className="font-bold text-white text-sm">{t.weekly_chest}</h3>
-                       <p className="text-[10px] text-pink-200">{t.weekly_chest_desc}</p>
+                       <h3 className="font-bold text-slate-900 text-sm">{t.weekly_chest}</h3>
+                       <p className="text-[10px] text-pink-400">{t.weekly_chest_desc}</p>
                    </div>
                </div>
-               <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+               <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                    <div className="h-full bg-pink-500 w-2/3"></div>
                </div>
-               <div className="text-right text-[10px] text-pink-300 mt-1">10/15 Completed</div>
+               <div className="text-right text-[10px] text-pink-400 mt-1">10/15 Completed</div>
            </div>
            )}
        </div>
@@ -1007,14 +1222,14 @@ const GameRoomList = ({ game, onClose, t, onJoinRoom }) => {
     const [viewMode, setViewMode] = useState('list'); // 'list' or 'card'
     
     return (
-        <div className="h-full bg-slate-950 flex flex-col text-white pb-20 relative animate-in slide-in-from-right">
-            <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+        <div className="h-full bg-gray-50 flex flex-col text-slate-900 pb-20 relative animate-in slide-in-from-right">
+            <div className="pt-12 px-4 pb-4 bg-white border-b border-gray-200 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <button onClick={onClose}><ChevronLeft size={24} className="text-white"/></button>
-                    <h1 className="text-lg font-bold text-white">{game.title}</h1>
+                    <button onClick={onClose}><ChevronLeft size={24} className="text-slate-900"/></button>
+                    <h1 className="text-lg font-bold text-slate-900">{game.title}</h1>
                 </div>
-                <button onClick={() => setViewMode(viewMode === 'list' ? 'card' : 'list')} className="p-2 bg-slate-800 rounded-full border border-slate-700">
-                    {viewMode === 'list' ? <LayoutGrid size={18} className="text-white"/> : <LayoutList size={18} className="text-white"/>}
+                <button onClick={() => setViewMode(viewMode === 'list' ? 'card' : 'list')} className="p-2 bg-gray-100 rounded-full border border-gray-200">
+                    {viewMode === 'list' ? <LayoutGrid size={18} className="text-slate-900"/> : <LayoutList size={18} className="text-slate-900"/>}
                 </button>
             </div>
             
@@ -1052,26 +1267,26 @@ const GameRoomList = ({ game, onClose, t, onJoinRoom }) => {
 
                     if (viewMode === 'card') {
                         return (
-                            <div key={room.id} onClick={joinRoom} className="bg-slate-900 p-3 rounded-xl border border-slate-800 flex flex-col gap-2 active:scale-95 transition-transform cursor-pointer relative overflow-hidden">
+                            <div key={room.id} onClick={joinRoom} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex flex-col gap-2 active:scale-95 transition-transform cursor-pointer relative overflow-hidden">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white">
                                             {room.host[0]}
                                         </div>
-                                        <div className="font-bold text-white text-sm truncate max-w-[80px]">{room.host}</div>
+                                        <div className="font-bold text-slate-900 text-sm truncate max-w-[80px]">{room.host}</div>
                                     </div>
-                                    <div className="text-xs text-slate-400 flex items-center gap-1">
+                                    <div className="text-xs text-gray-500 flex items-center gap-1">
                                         <Users size={12}/> {room.current}/{room.capacity}
                                     </div>
                                 </div>
                                 
-                                <div className="flex items-center gap-2 text-xs text-yellow-400 font-bold">
+                                <div className="flex items-center gap-2 text-xs text-yellow-500 font-bold">
                                      <Coins size={12}/> {t.entry_fee}: {room.entry}
                                 </div>
 
                                 <div className="flex items-center h-8 pl-2 mt-1">
                                      {[...Array(room.current)].map((_, i) => (
-                                        <div key={i} style={{ marginLeft: i === 0 ? 0 : `${overlapPx}px`, zIndex: 10-i }} className="w-8 h-8 rounded-full border-2 border-slate-900 bg-slate-700 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
+                                        <div key={i} style={{ marginLeft: i === 0 ? 0 : `${overlapPx}px`, zIndex: 10-i }} className="w-8 h-8 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-[10px] font-bold text-slate-900 shadow-sm">
                                             {i === 0 ? room.host[0] : `P${i+1}`}
                                         </div>
                                     ))}
@@ -1085,25 +1300,25 @@ const GameRoomList = ({ game, onClose, t, onJoinRoom }) => {
                     }
 
                     return (
-                        <div key={room.id} className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex justify-between items-center">
+                        <div key={room.id} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex justify-between items-center">
                             <div className="flex items-center gap-3">
                                 <div className="flex items-center w-20 flex-shrink-0 relative">
                                     {[...Array(room.current)].map((_, i) => (
-                                        <div key={i} style={{ marginLeft: i === 0 ? 0 : `${listMarginLeft}px`, zIndex: 10-i }} className="w-10 h-10 rounded-full border-2 border-slate-900 flex items-center justify-center text-xs font-bold text-white shadow-sm bg-slate-700 relative">
+                                        <div key={i} style={{ marginLeft: i === 0 ? 0 : `${listMarginLeft}px`, zIndex: 10-i }} className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-slate-900 shadow-sm bg-gray-200 relative">
                                             {i === 0 ? room.host[0] : `P${i+1}`}
                                         </div>
                                     ))}
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <div className="font-bold text-white text-sm truncate">{room.host}</div>
-                                    <div className="text-xs text-yellow-400 font-bold flex items-center gap-1 mt-1">
+                                    <div className="font-bold text-slate-900 text-sm truncate">{room.host}</div>
+                                    <div className="text-xs text-yellow-500 font-bold flex items-center gap-1 mt-1">
                                         <Coins size={12}/> {t.entry_fee}: {room.entry}
                                     </div>
                                 </div>
                             </div>
                             
                             <div className="flex flex-col items-end gap-2">
-                                <div className="text-xs text-slate-400 flex items-center gap-1">
+                                <div className="text-xs text-gray-500 flex items-center gap-1">
                                     <Users size={12}/> {room.current}/{room.capacity}
                                 </div>
                                 <button onClick={joinRoom} className="bg-blue-600 px-4 py-1.5 rounded-lg text-xs font-bold text-white">
@@ -1115,12 +1330,12 @@ const GameRoomList = ({ game, onClose, t, onJoinRoom }) => {
                 })}
                 
                 {rooms.length === 0 && (
-                    <div className="text-center text-slate-500 mt-10">No rooms available. Create one!</div>
+                    <div className="text-center text-gray-500 mt-10">No rooms available. Create one!</div>
                 )}
             </div>
             
-             <div className="p-4 bg-slate-900 border-t border-slate-800">
-                <button className="w-full py-3 bg-yellow-500 text-black rounded-xl font-bold shadow-lg">
+             <div className="p-4 bg-white border-t border-gray-200">
+                <button className="w-full py-3 bg-yellow-400 text-black rounded-xl font-bold shadow-lg shadow-yellow-400/20">
                     {t.room_create}
                 </button>
             </div>
@@ -1128,7 +1343,7 @@ const GameRoomList = ({ game, onClose, t, onJoinRoom }) => {
     )
 };
 
-const SystemBanner = ({ t, onAction }) => {
+const SystemBanner = ({ t, onAction, activeGameSession, isGameMinimized, onMaximize, onCloseGame }) => {
     const [msgIndex, setMsgIndex] = useState(0);
     const messages = [
         { text: "🔥 User_99 won 500 Beans in Ludo Master!", type: 'game', target: 'Ludo Master', labelKey: 'sys_play' },
@@ -1145,12 +1360,40 @@ const SystemBanner = ({ t, onAction }) => {
         return () => clearInterval(timer);
     }, []);
 
+    if (activeGameSession && isGameMinimized) {
+        return (
+           <div className="bg-slate-900 text-white py-2 px-4 flex items-center justify-between border-b border-white/10 shadow-md animate-in slide-in-from-top-2">
+               <div className="flex items-center gap-3 overflow-hidden cursor-pointer flex-1" onClick={onMaximize}>
+                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/20">
+                       <Gamepad2 size={16} className="text-white" />
+                   </div>
+                   <div className="flex flex-col overflow-hidden">
+                        <div className="text-[10px] font-bold text-green-400 uppercase tracking-wider flex items-center gap-1.5">
+                           <span className="relative flex h-2 w-2">
+                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                           </span>
+                           Playing Now
+                       </div>
+                       <div className="text-xs font-bold truncate text-slate-200">{activeGameSession.room.gameName}</div>
+                   </div>
+               </div>
+               <button 
+                   onClick={(e) => { e.stopPropagation(); onCloseGame(); }}
+                   className="p-1.5 bg-white/10 rounded-full hover:bg-white/20 transition-colors shrink-0 ml-2 active:scale-95"
+               >
+                   <X size={14} className="text-white/80" />
+               </button>
+           </div>
+       );
+   }
+
     const current = messages[msgIndex];
 
     return (
-        <div className="bg-slate-900/80 backdrop-blur-sm border-b border-slate-800 py-2 px-4 flex items-center gap-2 overflow-hidden">
-            <div className="bg-red-500/20 text-red-400 p-1 rounded text-[10px] font-bold uppercase tracking-wider shrink-0">System</div>
-            <div className="text-xs text-slate-300 flex-1 flex items-center justify-between overflow-hidden animate-in slide-in-from-bottom-2 fade-in duration-500 key={msgIndex}">
+        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-2 px-4 flex items-center gap-2 overflow-hidden">
+            <div className="bg-red-100 text-red-600 p-1 rounded text-[10px] font-bold uppercase tracking-wider shrink-0">System</div>
+            <div className="text-xs text-slate-600 flex-1 flex items-center justify-between overflow-hidden animate-in slide-in-from-bottom-2 fade-in duration-500 key={msgIndex}">
                 <span className="truncate mr-2">{current.text}</span>
                 {current.type !== 'none' && (
                     <button 
@@ -1165,16 +1408,12 @@ const SystemBanner = ({ t, onAction }) => {
     );
 };
 
-const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSystemAction }) => {
-  const [showAllGames, setShowAllGames] = useState(false);
-  const [showAllGroups, setShowAllGroups] = useState(false);
-  const [sortBy, setSortBy] = useState('hot');
-  const [showSortMenu, setShowSortMenu] = useState(false);
+const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSystemAction, activeGameSession, isGameMinimized, onMaximize, onCloseGame }) => {
   const [showWallet, setShowWallet] = useState(false);
   const [showTaskCenter, setShowTaskCenter] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
-  const [viewMode, setViewMode] = useState('grid');
-  const [groupTab, setGroupTab] = useState('my_groups'); // nearby, trending, my_groups
+  const [showAllGames, setShowAllGames] = useState(false);
+  const [groupTab, setGroupTab] = useState('my_groups');
 
   const handlePlayClick = (game) => {
      if (game.title === "Ludo Master") {
@@ -1192,81 +1431,31 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSys
     onJoinRoom({ ...room, autoStart: true, players: players });
   };
 
-  const sortedGames = useMemo(() => {
-      let games = [...GAMES];
-      if (sortBy === 'players') {
-          return games.sort((a, b) => {
-              const parse = (s) => parseFloat(s.replace('M', '000000').replace('k', '000'));
-              return parse(b.players) - parse(a.players);
-          });
-      }
-      if (sortBy === 'recent') {
-           return games.sort((a, b) => (a.category === 'recent' ? -1 : 1));
-      }
-      return games.sort((a, b) => (a.category === 'hot' ? -1 : 1));
-  }, [sortBy]);
-
   if (selectedGame) {
       return <GameRoomList game={selectedGame} onClose={() => setSelectedGame(null)} t={t} onJoinRoom={onJoinRoom} />;
   }
 
   if (showAllGames) {
       return (
-          <div className="h-full bg-slate-950 flex flex-col text-white pb-20 relative animate-in slide-in-from-right">
-              <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0">
-                  <div className="flex items-center gap-3">
-                      <button onClick={() => setShowAllGames(false)}><ChevronLeft size={24} className="text-white"/></button>
-                      <h1 className="text-lg font-bold text-white">{t.all_games}</h1>
-                  </div>
-                  <div className="flex items-center gap-2">
-                      <button onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')} className="p-2 bg-slate-800 rounded-full">
-                          {viewMode === 'grid' ? <LayoutGrid size={16} className="text-white"/> : <LayoutList size={16} className="text-white"/>}
-                      </button>
-                      <div className="relative">
-                          <button onClick={() => setShowSortMenu(!showSortMenu)} className="p-2 bg-slate-800 rounded-full"><Filter size={16} className="text-white"/></button>
-                          {showSortMenu && (
-                              <div className="absolute right-0 top-full mt-2 bg-slate-800 rounded-xl border border-slate-700 p-2 w-32 z-50 shadow-xl">
-                                  {['hot', 'recent', 'players'].map(s => (
-                                      <button key={s} onClick={() => { setSortBy(s); setShowSortMenu(false); }} className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold mb-1 last:mb-0 ${sortBy === s ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-700'}`}>
-                                          {s === 'hot' ? t.popular : s === 'recent' ? t.newest : t.most_played}
-                                      </button>
-                                  ))}
-                              </div>
-                          )}
-                      </div>
-                  </div>
+          <div className="h-full bg-gray-50 flex flex-col text-slate-900 pb-20 relative animate-in slide-in-from-right">
+              <div className="pt-12 px-4 pb-4 bg-white border-b border-gray-200 flex items-center gap-3">
+                  <button onClick={() => setShowAllGames(false)}><ChevronLeft size={24} className="text-slate-900"/></button>
+                  <h1 className="text-lg font-bold text-slate-900">{t.all_games}</h1>
               </div>
-              <div className="flex-1 overflow-y-auto pb-24">
-                  <div className={`p-4 ${viewMode === 'grid' ? 'grid grid-cols-3 gap-4' : 'space-y-3'}`}>
-                      {sortedGames.map(game => (
-                          viewMode === 'grid' ? (
-                              <div key={game.id} onClick={() => handlePlayClick(game)} className="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 active:scale-95 transition-transform cursor-pointer group relative w-full aspect-square">
-                                  <div className={`absolute inset-0 bg-gradient-to-br ${game.image}`}></div>
-                                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                                  <div className="absolute inset-0 flex flex-col justify-end p-2 text-center">
-                                      <h3 className="font-bold text-white text-[10px] leading-tight truncate drop-shadow-md mb-0.5">{game.title}</h3>
-                                      <div className="text-[8px] text-slate-300 drop-shadow-md flex items-center justify-center gap-1">
-                                          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                                          {game.players}
-                                      </div>
+              <div className="flex-1 overflow-y-auto p-4">
+                  <div className="grid grid-cols-3 gap-4">
+                      {GAMES.map(game => (
+                          <div key={game.id} onClick={() => handlePlayClick(game)} className="bg-white rounded-xl overflow-hidden border border-gray-200 active:scale-95 transition-transform cursor-pointer group relative w-full aspect-square shadow-sm">
+                              <div className={`absolute inset-0 bg-gradient-to-br ${game.image}`}></div>
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                              <div className="absolute inset-0 flex flex-col justify-end p-2 text-center">
+                                  <h3 className="font-bold text-white text-[10px] leading-tight truncate drop-shadow-md mb-0.5">{game.title}</h3>
+                                  <div className="text-[8px] text-white/90 drop-shadow-md flex items-center justify-center gap-1">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></div>
+                                      {game.players}
                                   </div>
                               </div>
-                          ) : (
-                              <div key={game.id} onClick={() => handlePlayClick(game)} className="bg-slate-900 p-3 rounded-xl border border-slate-800 flex items-center gap-3 active:scale-95 transition-transform cursor-pointer">
-                                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${game.image} flex-shrink-0`}></div>
-                                  <div className="flex-1 min-w-0">
-                                      <h3 className="font-bold text-white text-sm truncate">{game.title}</h3>
-                                      <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
-                                          <span className="bg-slate-800 px-1.5 py-0.5 rounded text-[10px]">{game.type}</span>
-                                          <span className="flex items-center gap-1 text-[10px] text-green-400">
-                                              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                                              {game.players} Online
-                                          </span>
-                                      </div>
-                                  </div>
-                                  <button className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold">Play</button>
-                              </div>
-                          )
+                          </div>
                       ))}
                   </div>
               </div>
@@ -1274,171 +1463,166 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSys
       );
   }
 
-  if (showAllGroups) {
-      return <GroupFinder onClose={() => setShowAllGroups(false)} t={t} onOpenChat={onOpenChat} />;
-  }
-
   return (
-    <div className="h-full bg-slate-950 flex flex-col text-white pb-20 relative">
+    <div className="h-full bg-gray-50 flex flex-col text-slate-900 pb-20 relative">
       {showWallet && <WalletPage onClose={() => setShowWallet(false)} t={t} showToast={showToast} />}
       {showTaskCenter && <TaskCenter onClose={() => setShowTaskCenter(false)} t={t} showToast={showToast} />}
-      <div className="px-4 pt-12 pb-4 bg-gradient-to-b from-slate-900 to-slate-950 border-b border-slate-800 flex justify-between items-center sticky top-0 z-10">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent italic">WinGaming</h1>
-        <div className="flex items-center gap-2">
-            <button onClick={onShowHourlyRush} className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors shadow-lg shadow-indigo-500/30">
-                <TrendingUp size={16} />
-            </button>
-            <div className="flex items-center gap-2 bg-slate-800 rounded-full pl-3 pr-1 py-1 border border-slate-700">
-                <Coins className="text-yellow-400" size={16} fill="currentColor" />
-                <span className="font-bold text-yellow-100 text-sm mr-1">12,450</span>
-                <button onClick={() => setShowWallet(true)} className="bg-yellow-500 hover:bg-yellow-400 text-black rounded-full w-5 h-5 flex items-center justify-center transition-colors">
-                    <Plus size={12} strokeWidth={4} />
-                </button>
-            </div>
-        </div>
+      
+      {/* Header */}
+      <div className="px-4 pt-12 pb-2 bg-white flex justify-between items-center sticky top-0 z-10 shadow-sm">
+         <div className="flex items-center gap-3">
+             <div className="w-10 h-10 rounded-full bg-gray-200 border border-gray-300 overflow-hidden">
+                 <img src="https://github.com/shadcn.png" alt="User" className="w-full h-full object-cover" />
+             </div>
+             <div className="flex items-center gap-1 bg-yellow-100 px-3 py-1 rounded-full border border-yellow-200" onClick={() => setShowWallet(true)}>
+                 <Coins className="text-yellow-500" size={16} fill="currentColor" />
+                 <span className="font-bold text-yellow-700 text-sm">11.5K</span>
+                 <div className="w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs ml-1">+</div>
+             </div>
+         </div>
+         <div className="relative" onClick={() => setShowTaskCenter(true)}>
+             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 active:scale-95 transition-transform">
+                  <TrendingUp size={20} className="text-slate-900" />
+             </div>
+             <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+         </div>
       </div>
 
-      <SystemBanner t={t} onAction={onSystemAction} />
+      <SystemBanner t={t} onAction={onSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={onMaximize} onCloseGame={onCloseGame} />
 
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
-        {/* Top Half: Games List */}
-        <div>
-            <div className="flex justify-between items-center mb-3">
-                <h2 className="text-lg font-bold text-white">{t.hot_games}</h2>
-                <button onClick={() => setShowAllGames(true)} className="text-xs text-blue-400 font-bold flex items-center gap-1">{t.more} <ChevronRight size={12}/></button>
-            </div>
-            
-            <div className="space-y-4">
-                {/* Big Cards Grid (Top 2) */}
-                <div className="grid grid-cols-2 gap-3">
-                    {GAMES.slice(0, 2).map(game => (
-                        <div key={game.id} onClick={() => handlePlayClick(game)} className="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 active:scale-95 transition-transform cursor-pointer group relative aspect-square">
-                            <div className={`absolute inset-0 bg-gradient-to-br ${game.image} opacity-60 group-hover:opacity-80 transition-opacity`}></div>
-                            <div className="absolute inset-0 flex flex-col justify-end p-3 bg-gradient-to-t from-black/80 via-transparent to-transparent">
-                                <h3 className="font-bold text-white text-lg leading-tight mb-1">{game.title}</h3>
-                                <span className="text-[10px] text-slate-300 bg-white/10 px-2 py-1 rounded-full w-fit backdrop-blur-sm border border-white/10">{game.players} {t.playing}</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                
-                {/* Small List Items (Rest) - Horizontal Scroll */}
-                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide px-1">
-                    {GAMES.slice(2).map(game => (
-                        <div key={game.id} onClick={() => handlePlayClick(game)} className="flex-shrink-0 relative w-20 h-20 rounded-xl overflow-hidden active:scale-95 transition-transform cursor-pointer group shadow-lg">
-                            {/* Icon/Image Background */}
-                            <div className={`absolute inset-0 bg-gradient-to-br ${game.image}`}></div>
-                            
-                            {/* Overlay Gradient for Text Readability */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                            
-                            {/* Content */}
-                            <div className="absolute inset-0 flex flex-col justify-end p-2 text-center">
-                                <h3 className="font-bold text-white text-[10px] leading-tight truncate drop-shadow-md mb-0.5">{game.title}</h3>
-                                <div className="text-[8px] text-slate-300 drop-shadow-md">{game.players}</div>
-                            </div>
-                            
-                            {/* Center Letter (Optional fallback) */}
-                            <div className="absolute inset-0 flex items-center justify-center pb-6 opacity-30 text-2xl font-black text-white pointer-events-none mix-blend-overlay">
-                                {game.title[0]}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
+         {/* Game Cards Grid (Top Half - 2 Large Cards) */}
+         <div>
+             <div className="flex justify-between items-center mb-3">
+                 <h2 className="text-lg font-bold text-slate-900">{t.game}</h2>
+                 <button className="text-blue-600 text-xs font-bold flex items-center gap-1" onClick={() => setShowAllGames(true)}>
+                     {t.all_games} <ChevronRight size={14}/>
+                 </button>
+             </div>
+             <div className="grid grid-cols-2 gap-3">
+                 {GAMES.slice(0, 2).map(game => (
+                     <div key={game.id} onClick={() => handlePlayClick(game)} className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 relative overflow-hidden aspect-square flex flex-col items-center justify-end active:scale-95 transition-transform">
+                         <div className={`absolute inset-0 bg-gradient-to-br ${game.image} opacity-20`}></div>
+                         <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-2/3 w-20 h-20 rounded-2xl shadow-lg transform rotate-12 bg-gradient-to-br ${game.id === 1 ? 'from-orange-400 to-red-500' : 'from-blue-400 to-indigo-500'}`}></div>
+                         <div className="absolute top-2 right-2 bg-black/20 backdrop-blur-sm px-2 py-0.5 rounded-full flex items-center gap-1">
+                             <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></div>
+                             <span className="text-[10px] font-bold text-white">{game.players}</span>
+                         </div>
+                         <h3 className="font-black text-slate-800 text-lg relative z-10 mb-1">{game.title}</h3>
+                     </div>
+                 ))}
+             </div>
+         </div>
 
-        {/* Task Center Banner */}
-        <div onClick={() => setShowTaskCenter(true)} className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-4 flex justify-between items-center shadow-lg relative overflow-hidden group cursor-pointer active:scale-95 transition-transform">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-            <div className="relative z-10">
-                <h3 className="font-bold text-white text-lg flex items-center gap-2"><Trophy size={18} className="text-yellow-300"/> {t.level_up_tasks}</h3>
-                <p className="text-indigo-200 text-xs mt-1">{t.level_up_desc}</p>
-            </div>
-            <div className="relative z-10 bg-white/20 p-2 rounded-full backdrop-blur-sm">
-                <ChevronRight size={20} className="text-white"/>
-            </div>
-        </div>
+         {/* Horizontal Scroll Games */}
+         <div>
+             <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar snap-x">
+                 {GAMES.slice(2).map(game => (
+                     <div key={game.id} onClick={() => handlePlayClick(game)} className="flex flex-col items-center gap-1 cursor-pointer active:scale-95 transition-transform flex-shrink-0 w-[22%] snap-start">
+                         <div className={`w-full aspect-square rounded-2xl bg-gradient-to-br ${game.image} shadow-sm border border-gray-100 relative`}>
+                             <div className="absolute bottom-1 right-1 bg-black/20 backdrop-blur-sm px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                                 <div className="w-1 h-1 rounded-full bg-green-400"></div>
+                                 <span className="text-[8px] font-bold text-white">{game.players}</span>
+                             </div>
+                         </div>
+                         <span className="text-[10px] font-bold text-slate-700 text-center leading-tight truncate w-full">{game.title}</span>
+                     </div>
+                 ))}
+                 <div onClick={() => setShowAllGames(true)} className="flex flex-col items-center gap-1 cursor-pointer active:scale-95 transition-transform flex-shrink-0 w-[22%] snap-start">
+                     <div className="w-full aspect-square rounded-2xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400">
+                         <LayoutGrid size={24}/>
+                     </div>
+                     <span className="text-[10px] font-bold text-gray-500 text-center leading-tight">More</span>
+                 </div>
+             </div>
+         </div>
 
-        {/* Bottom Half: Group Recommendations */}
-        <div>
-            <div className="flex justify-between items-center mb-3">
-                <div className="flex gap-4">
-                    <button 
-                        onClick={() => setGroupTab('my_groups')}
-                        className={`text-base font-bold transition-colors ${groupTab === 'my_groups' ? 'text-white border-b-2 border-blue-500 pb-1' : 'text-slate-500 pb-1'}`}
-                    >
-                        {t.room_gp}
-                    </button>
-                    <button 
-                        onClick={() => setGroupTab('nearby')}
-                        className={`text-base font-bold transition-colors ${groupTab === 'nearby' ? 'text-white border-b-2 border-blue-500 pb-1' : 'text-slate-500 pb-1'}`}
-                    >
-                        {t.nearby}
-                    </button>
-                    <button 
-                        onClick={() => setGroupTab('trending')}
-                        className={`text-base font-bold transition-colors ${groupTab === 'trending' ? 'text-white border-b-2 border-blue-500 pb-1' : 'text-slate-500 pb-1'}`}
-                    >
-                        {t.sort_pop}
-                    </button>
-                </div>
-                <button onClick={() => setShowAllGroups(true)} className="text-xs text-blue-400 font-bold flex items-center gap-1">{t.more} <ChevronRight size={12}/></button>
-            </div>
-            <div className="space-y-3">
-                {(groupTab === 'my_groups' ? EXTENDED_GROUPS.slice(0, 2) : (groupTab === 'trending' ? [...EXTENDED_GROUPS].sort((a, b) => parseInt(b.activity) - parseInt(a.activity)) : EXTENDED_GROUPS)).slice(0, 5).map(group => (
-                    <div key={group.id} onClick={() => groupTab === 'my_groups' && onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: t.welcome_group, time: 'Just now', unread: 0, type: 'group' })} className={`bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center ${groupTab === 'my_groups' ? 'cursor-pointer active:scale-95 transition-transform' : ''}`}>
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-bold text-white">{group.name[0]}</div>
-                            <div>
-                                <h3 className="font-bold text-white text-sm">{group.name}</h3>
-                                <div className="flex items-center gap-3 text-[10px] text-slate-400 mt-0.5">
-                                    {groupTab === 'my_groups' ? (
-                                        <span className="text-slate-300 truncate max-w-[150px] flex items-center gap-1">
-                                            <span className="text-blue-400 font-bold">User1:</span> Anyone for Ludo? 🎲
-                                        </span>
-                                    ) : (
-                                        <>
-                                            <span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span>
-                                            <span className="flex items-center gap-0.5 text-green-400"><Flame size={10}/> {group.activity}</span>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                        {groupTab !== 'my_groups' && <button onClick={() => onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: t.welcome_group, time: 'Just now', unread: 0, type: 'group' })} className="bg-white/10 hover:bg-white/20 text-blue-400 px-3 py-1.5 rounded-full text-xs font-bold border border-blue-500/50">{t.join}</button>}
-                    </div>
-                ))}
-            </div>
-        </div>
-      </div>
+         {/* Group Chat Section */}
+         <div>
+             <div className="flex justify-between items-center mb-4 border-b border-gray-200">
+                 <div className="flex gap-4">
+                     {['my_groups', 'nearby', 'hot'].map(tab => (
+                         <button 
+                            key={tab} 
+                            onClick={() => setGroupTab(tab)}
+                            className={`pb-2 text-sm font-bold transition-colors relative ${groupTab === tab ? 'text-slate-900' : 'text-gray-400'}`}
+                         >
+                             {tab === 'my_groups' ? t.room_gp : tab === 'nearby' ? t.nearby : t.popular}
+                             {groupTab === tab && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-900 rounded-full"></div>}
+                         </button>
+                     ))}
+                 </div>
+                 <button onClick={() => onOpenChat({id: 'finder'})} className="text-blue-600 text-xs font-bold flex items-center gap-1 pb-2">
+                     {t.more} <ChevronRight size={14}/>
+                 </button>
+             </div>
+
+             <div className="space-y-3">
+                 {groupTab === 'my_groups' ? (
+                     EXTENDED_GROUPS.slice(0, 2).map(group => (
+                         <div key={group.id} onClick={() => onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: "Hey everyone! Who's up for a game?", time: "2m ago" })} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 active:bg-gray-50 transition-colors">
+                             <div className="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg relative">
+                                 {group.name[0]}
+                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                             </div>
+                             <div className="flex-1 min-w-0">
+                                 <div className="flex justify-between items-center mb-0.5">
+                                     <h3 className="font-bold text-slate-900 text-sm truncate">{group.name}</h3>
+                                     <span className="text-[10px] text-gray-400">2m ago</span>
+                                 </div>
+                                 <p className="text-xs text-gray-500 truncate">User_123: Anyone want to play Ludo?</p>
+                             </div>
+                         </div>
+                     ))
+                 ) : (
+                     EXTENDED_GROUPS.slice(2, 12).map(group => (
+                         <div key={group.id} onClick={() => onOpenChat({id: 'finder'})} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 active:bg-gray-50 transition-colors">
+                             <div className="w-12 h-12 rounded-xl bg-gray-100 text-gray-500 flex items-center justify-center font-bold text-lg">
+                                 {group.name[0]}
+                             </div>
+                             <div className="flex-1">
+                                 <h3 className="font-bold text-slate-900 text-sm">{group.name}</h3>
+                                 <div className="text-xs text-gray-500 flex items-center gap-2 mt-0.5">
+                                     <span className="flex items-center gap-1"><Users size={10}/> {group.members}</span>
+                                     <span className="flex items-center gap-1"><MapPin size={10}/> {group.dist}km</span>
+                                 </div>
+                             </div>
+                             <button className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-full text-xs font-bold">Join</button>
+                         </div>
+                     ))
+                 )}
+             </div>
+         </div>
+       </div>
     </div>
   );
 };
 
-const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, showToast, activeChat, setActiveChat, onSystemAction }) => {
-  // const [activeChat, setActiveChat] = useState(null); // Lifted to App
+const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, showToast, activeChat, setActiveChat, onSystemAction, activeGameSession, isGameMinimized, onMaximize, onCloseGame }) => {
   const [chatHistory, setChatHistory] = useState([]);
   const [inputMsg, setInputMsg] = useState('');
   const [showInviteMenu, setShowInviteMenu] = useState(false);
   const [showGameSelector, setShowGameSelector] = useState(false);
   const [selectedInviteGame, setSelectedInviteGame] = useState(GAMES[0]);
-  const [createMode, setCreateMode] = useState('compete');
-  const [inviteEntry, setInviteEntry] = useState(MATCH_TIERS[0]); // Default Tier
   const [showFinder, setShowFinder] = useState(false);
-  const [joinedGroups, setJoinedGroups] = useState([]);
-  const [selectedGroupInfo, setSelectedGroupInfo] = useState(null);
   const [showRecBubble, setShowRecBubble] = useState(false);
+  const [messageSearch, setMessageSearch] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     if (activeChat) {
-        setShowRecBubble(false);
-        const timer = setTimeout(() => {
-            setShowRecBubble(true);
-        }, 5000);
-        return () => clearTimeout(timer);
+        if (activeChat.id === 'finder') {
+            setShowFinder(true);
+            setActiveChat(null);
+        } else {
+            setShowRecBubble(false);
+            const timer = setTimeout(() => {
+                setShowRecBubble(true);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
     }
-  }, [activeChat]);
+  }, [activeChat, setActiveChat]);
 
   const openChat = (chat) => {
     setActiveChat(chat);
@@ -1452,13 +1636,10 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
   };
 
   const handleSendInvite = () => {
-     // This function is now repurposed for "Start Game" from chat
      if(createCooldown) {
         showToast(t.cooldown_msg);
         return;
      }
-     
-     // Start Game Logic
      const players = [
         { id: 99, name: t.you, isHost: false, status: 'ready', avatar: t.you, hasPaid: true },
         { id: 2, name: 'Player_2', isHost: false, status: 'ready', avatar: 'P2', hasPaid: true },
@@ -1466,93 +1647,77 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
         { id: 4, name: 'Player_4', isHost: false, status: 'ready', avatar: 'P4', hasPaid: true }
     ];
     const room = { id: 999, gameName: selectedInviteGame.title, mode: 'compete', entry: 100, capacity: 4, host: 'System', current: 4, isMyRoom: false };
-    
-    // Add "Playing" card to chat
     setChatHistory(prev => [...prev, { id: Date.now(), sender: 'me', time: t.just_now, type: 'playing_card', game: selectedInviteGame }]);
-    
-    // Start Game
     onJoinRoom({ ...room, autoStart: true, players: players });
     setShowGameSelector(false);
     setShowInviteMenu(false);
   };
 
-  const handleJoinGroup = (e, group) => {
-      e.stopPropagation();
-      if (!joinedGroups.includes(group.id)) {
-          setJoinedGroups([...joinedGroups, group.id]);
-          showToast(`${t.joined_group_toast} ${group.name}!`);
-      }
-  };
+  const filteredChats = useMemo(() => {
+      if (!messageSearch) return CHATS;
+      return CHATS.filter(chat => 
+          chat.lastMsg.toLowerCase().includes(messageSearch.toLowerCase()) || 
+          chat.name.toLowerCase().includes(messageSearch.toLowerCase())
+      );
+  }, [messageSearch]);
 
-  const handleGroupClick = (group) => {
-      if (joinedGroups.includes(group.id)) {
-          openChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: t.welcome_back, time: t.just_now });
-      } else {
-          setSelectedGroupInfo(group);
-      }
-  };
-
-  if (showFinder) return <GroupFinder onClose={() => setShowFinder(false)} t={t} />;
+  if (showFinder) return <GroupFinder onClose={() => setShowFinder(false)} t={t} onOpenChat={(chat) => { setShowFinder(false); setActiveChat(chat); }} />;
 
   if (activeChat) {
     return (
-      <div className="flex flex-col h-full bg-slate-950 z-50 animate-in slide-in-from-right absolute inset-0">
-        <div className="pt-12 px-4 pb-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0"><div className="flex items-center gap-3"><button onClick={() => setActiveChat(null)} className="text-slate-400 hover:text-white"><ChevronLeft size={24} /></button><div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold">{activeChat.avatar}</div><div className="font-bold text-white text-sm">{activeChat.name}</div></div><MoreHorizontal className="text-slate-400" /></div>
+      <div className="flex flex-col h-full bg-gray-50 z-50 animate-in slide-in-from-right absolute inset-0">
+        <div className="pt-12 px-4 pb-4 bg-white border-b border-gray-200 flex items-center justify-between shrink-0"><div className="flex items-center gap-3"><button onClick={() => setActiveChat(null)} className="text-slate-900 hover:text-gray-600"><ChevronLeft size={24} /></button><div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold text-white">{activeChat.avatar}</div><div className="font-bold text-slate-900 text-sm">{activeChat.name}</div></div><MoreHorizontal className="text-gray-500" /></div>
         
-        <SystemBanner t={t} onAction={onSystemAction} />
+        <SystemBanner t={t} onAction={onSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={onMaximize} onCloseGame={onCloseGame} />
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4" onClick={() => setShowInviteMenu(false)}>
-           {/* Mock Video Card Message */}
            <div className="flex gap-3 flex-row">
-               <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white border border-slate-700 bg-indigo-600">
+               <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white border border-gray-200 bg-indigo-600">
                   {activeChat.avatar}
                </div>
                <div className="flex flex-col items-start">
-                   <div className="border p-2 rounded-2xl w-48 shadow-lg relative overflow-hidden bg-slate-900 border-slate-700">
-                        <div className="aspect-[9/16] bg-slate-800 rounded-xl mb-2 relative overflow-hidden">
+                   <div className="border p-2 rounded-2xl w-48 shadow-lg relative overflow-hidden bg-white border-gray-200">
+                        <div className="aspect-[9/16] bg-gray-100 rounded-xl mb-2 relative overflow-hidden">
                             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
                             <Play size={24} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/80"/>
                             <div className="absolute bottom-2 left-2 text-white text-xs font-bold">New Video! 🔥</div>
                         </div>
-                        <div className="text-xs text-slate-300 line-clamp-2 mb-2">Check out this amazing gameplay moment!</div>
-                        <button className="w-full py-1.5 rounded-lg text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-600">Watch</button>
+                        <div className="text-xs text-gray-600 line-clamp-2 mb-2">Check out this amazing gameplay moment!</div>
+                        <button className="w-full py-1.5 rounded-lg text-xs font-bold text-slate-900 bg-gray-100 hover:bg-gray-200 border border-gray-300">Watch</button>
                    </div>
                </div>
            </div>
 
            {chatHistory.map(msg => (
              <div key={msg.id} className={`flex gap-3 ${msg.sender === 'me' ? 'flex-row-reverse' : 'flex-row'}`}>
-               <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white border border-slate-700 ${msg.sender === 'me' ? 'bg-slate-800' : 'bg-indigo-600'}`}>
+               <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white border border-gray-200 ${msg.sender === 'me' ? 'bg-slate-700' : 'bg-indigo-600'}`}>
                   {msg.sender === 'me' ? t.you : activeChat.avatar}
                </div>
                <div className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}>
                {msg.type === 'playing_card' ? (
-                 <div className="border p-3 rounded-2xl w-56 shadow-lg relative overflow-hidden bg-gradient-to-br from-blue-900 to-slate-900 border-blue-500/50">
-                    <div className="text-[10px] font-bold mb-2 flex items-center gap-1 uppercase tracking-wider text-blue-300"><Gamepad2 size={12}/> {t.playing_now}</div>
-                    <div className="flex items-center gap-3 mb-3"><div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center"><Gamepad2 size={20} className="text-white"/></div><div><div className="font-bold text-white text-sm">{msg.game.title}</div><div className="text-[10px] text-slate-400">{msg.game.type}</div></div></div>
+                 <div className="border p-3 rounded-2xl w-56 shadow-lg relative overflow-hidden bg-gradient-to-br from-blue-50 to-white border-blue-200">
+                    <div className="text-[10px] font-bold mb-2 flex items-center gap-1 uppercase tracking-wider text-blue-600"><Gamepad2 size={12}/> {t.playing_now}</div>
+                    <div className="flex items-center gap-3 mb-3"><div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center"><Gamepad2 size={20} className="text-slate-900"/></div><div><div className="font-bold text-slate-900 text-sm">{msg.game.title}</div><div className="text-[10px] text-gray-500">{msg.game.type}</div></div></div>
                     <button className="w-full py-2 rounded-lg text-xs font-bold text-white transition-colors bg-blue-600 hover:bg-blue-500">{t.play_also}</button>
                  </div>
                ) : msg.type === 'invite' ? (
-                 // Hidden invite card logic (kept for compatibility but not used)
                  null
                ) : (
-                 <div className={`max-w-[240px] p-3 rounded-2xl text-sm ${msg.sender === 'me' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-200 rounded-tl-none'}`}>{msg.text}</div>
+                 <div className={`max-w-[240px] p-3 rounded-2xl text-sm ${msg.sender === 'me' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white text-slate-900 border border-gray-200 rounded-tl-none shadow-sm'}`}>{msg.text}</div>
                )}
                </div>
              </div>
            ))}
-           {/* Simulate other invite removed */}
         </div>
         {showGameSelector && (
-           <div className="absolute bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-700 rounded-t-3xl p-4 z-50 animate-slide-up">
-              <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white">{t.select_game}</h3><button onClick={() => setShowGameSelector(false)} className="bg-slate-800 p-1 rounded-full"><X size={16} className="text-white"/></button></div>
-              <div className="flex gap-3 overflow-x-auto pb-4 mb-2 no-scrollbar">{GAMES.map(g => (<div key={g.id} onClick={() => setSelectedInviteGame(g)} className={`flex-shrink-0 w-24 p-2 rounded-xl border cursor-pointer transition-all ${selectedInviteGame.id === g.id ? 'bg-blue-600/20 border-blue-500' : 'bg-slate-800 border-slate-700'}`}><div className={`w-full h-16 rounded-lg bg-gradient-to-br ${g.image} mb-2`}></div><div className="text-[10px] text-center font-bold truncate text-white">{g.title}</div></div>))}</div>
+           <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 rounded-t-3xl p-4 z-50 animate-slide-up shadow-2xl">
+              <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-slate-900">{t.select_game}</h3><button onClick={() => setShowGameSelector(false)} className="bg-gray-100 p-1 rounded-full"><X size={16} className="text-gray-600"/></button></div>
+              <div className="flex gap-3 overflow-x-auto pb-4 mb-2 no-scrollbar">{GAMES.map(g => (<div key={g.id} onClick={() => setSelectedInviteGame(g)} className={`flex-shrink-0 w-24 p-2 rounded-xl border cursor-pointer transition-all ${selectedInviteGame.id === g.id ? 'bg-blue-50 border-blue-500' : 'bg-gray-50 border-gray-200'}`}><div className={`w-full h-16 rounded-lg bg-gradient-to-br ${g.image} mb-2`}></div><div className="text-[10px] text-center font-bold truncate text-slate-900">{g.title}</div></div>))}</div>
               
               <button onClick={handleSendInvite} className="w-full bg-blue-600 py-3 rounded-xl font-bold text-white mt-4">{t.start}</button>
            </div>
         )}
 
-        {/* Recommended Game Bubble (Chat Only) */}
         {showRecBubble && (
         <div onClick={() => {
             const ludoGame = GAMES.find(g => g.title === 'Ludo Master') || GAMES[0];
@@ -1566,58 +1731,85 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
             onJoinRoom({ ...room, autoStart: true, players: players });
             setShowRecBubble(false);
         }} className="absolute bottom-20 left-4 z-40 animate-in slide-in-from-bottom-10 fade-in duration-700 pointer-events-auto cursor-pointer active:scale-95 transition-transform">
-            <div className="bg-slate-900/90 backdrop-blur-md border border-slate-700 p-3 rounded-2xl shadow-2xl flex items-center gap-3 max-w-[200px] relative">
-                <div className="absolute -bottom-2 left-4 w-4 h-4 bg-slate-900 border-r border-b border-slate-700 transform rotate-45"></div>
-                <button onClick={(e) => { e.stopPropagation(); setShowRecBubble(false); }} className="absolute -top-2 -right-2 bg-slate-800 rounded-full p-0.5 border border-slate-600 text-slate-400 hover:text-white"><X size={12}/></button>
+            <div className="bg-white/90 backdrop-blur-md border border-gray-200 p-3 rounded-2xl shadow-2xl flex items-center gap-3 max-w-[200px] relative">
+                <div className="absolute -bottom-2 left-4 w-4 h-4 bg-white border-r border-b border-gray-200 transform rotate-45"></div>
+                <button onClick={(e) => { e.stopPropagation(); setShowRecBubble(false); }} className="absolute -top-2 -right-2 bg-gray-100 rounded-full p-0.5 border border-gray-300 text-gray-400 hover:text-slate-900"><X size={12}/></button>
                 <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-600 flex-shrink-0"></div>
                 <div className="flex-1 min-w-0">
-                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">{t.rec_game}</div>
-                    <div className="font-bold text-white text-xs truncate">Ludo Master</div>
-                    <div className="text-[10px] text-green-400">{activeChat.members ? Math.floor(activeChat.members * 0.42) : 124} {t.playing}</div>
+                    <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">{t.rec_game}</div>
+                    <div className="font-bold text-slate-900 text-xs truncate">Ludo Master</div>
+                    <div className="text-[10px] text-green-600">{activeChat.members ? Math.floor(activeChat.members * 0.42) : 124} {t.playing}</div>
                 </div>
             </div>
         </div>
         )}
 
-        <div className="p-3 bg-slate-900 border-t border-slate-800 shrink-0 relative flex items-center gap-2">
-           {showInviteMenu && (<div className="absolute bottom-16 left-3 bg-slate-800 border border-slate-700 rounded-xl p-2 shadow-xl flex flex-col gap-2 w-36 animate-in fade-in slide-in-from-bottom-2 z-40"><button className="flex items-center gap-3 text-xs text-white p-3 hover:bg-slate-700 rounded-lg transition-colors"><div className="w-6 h-6 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-500"><Gift size={14}/></div>{t.gift}</button></div>)}
-           <button onClick={() => setShowGameSelector(true)} className="p-2 rounded-full transition-colors text-slate-400 hover:text-white"><Gamepad2 size={24} /></button>
-           <input type="text" value={inputMsg} onChange={(e) => setInputMsg(e.target.value)} placeholder={t.chat_input} className="flex-1 bg-slate-950 border border-slate-700 rounded-full px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500" />
+        <div className="p-3 bg-white border-t border-gray-200 shrink-0 relative flex items-center gap-2">
+           {showInviteMenu && (<div className="absolute bottom-16 left-3 bg-white border border-gray-200 rounded-xl p-2 shadow-xl flex flex-col gap-2 w-36 animate-in fade-in slide-in-from-bottom-2 z-40"><button className="flex items-center gap-3 text-xs text-slate-900 p-3 hover:bg-gray-100 rounded-lg transition-colors"><div className="w-6 h-6 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-500"><Gift size={14}/></div>{t.gift}</button></div>)}
+           <button onClick={() => setShowGameSelector(true)} className="p-2 rounded-full transition-colors text-gray-400 hover:text-slate-900"><Gamepad2 size={24} /></button>
+           <input type="text" value={inputMsg} onChange={(e) => setInputMsg(e.target.value)} placeholder={t.chat_input} className="flex-1 bg-gray-100 border border-gray-200 rounded-full px-4 py-2 text-slate-900 text-sm focus:outline-none focus:border-blue-500" />
            <button onClick={sendMessage} className="p-2 bg-blue-600 rounded-full text-white"><Send size={18} /></button>
         </div>
       </div>
     );
   }
 
-  // Use EXTENDED_GROUPS for the list
-  const nearbyGroups = EXTENDED_GROUPS;
-
   return (
-    <div className="h-full bg-slate-950 text-white flex flex-col pb-20 relative">
-      {/* Group Info Modal */}
-      {selectedGroupInfo && (
-          <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center p-6 animate-in fade-in">
-              <div className="bg-slate-900 w-full rounded-2xl border border-slate-700 p-6 flex flex-col items-center text-center relative">
-                  <button onClick={() => setSelectedGroupInfo(null)} className="absolute top-4 right-4 text-slate-400"><X size={20}/></button>
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-lg">{selectedGroupInfo.name[0]}</div>
-                  <h2 className="text-xl font-bold text-white mb-1">{selectedGroupInfo.name}</h2>
-                  <div className="flex items-center gap-2 text-slate-400 text-xs mb-6">
-                      <span className="flex items-center gap-1"><MapPin size={12}/> {selectedGroupInfo.dist}km</span>
-                      <span className="flex items-center gap-1"><Users size={12}/> {selectedGroupInfo.members}</span>
-                  </div>
-                  <p className="text-sm text-slate-300 mb-6">{t.join_group_desc}</p>
-                  <button onClick={(e) => { handleJoinGroup(e, selectedGroupInfo); setSelectedGroupInfo(null); }} className="w-full py-3 bg-blue-600 rounded-xl font-bold text-white shadow-lg">{t.join_group_modal_title}</button>
-              </div>
-          </div>
-      )}
+    <div className="h-full bg-white text-slate-900 flex flex-col pb-20 relative">
+       {/* Header */}
+       <div className="pt-12 px-4 pb-2 bg-white flex items-center justify-between sticky top-0 z-10">
+           {isSearching ? (
+               <div className="flex-1 flex items-center gap-2 animate-in fade-in slide-in-from-right-4">
+                   <div className="relative flex-1">
+                       <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+                       <input 
+                           autoFocus
+                           type="text" 
+                           placeholder="Search messages..." 
+                           value={messageSearch}
+                           onChange={(e) => setMessageSearch(e.target.value)}
+                           className="w-full bg-gray-100 rounded-full pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                       />
+                   </div>
+                   <button onClick={() => { setIsSearching(false); setMessageSearch(""); }} className="text-sm font-bold text-gray-500 hover:text-slate-900">Cancel</button>
+               </div>
+           ) : (
+               <>
+                   <div className="flex gap-6 text-lg font-bold text-gray-400">
+                       <span className="text-black relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-1 after:bg-orange-500 after:rounded-full">Groups</span>
+                       <span>Official</span>
+                       <span className="relative">Message <div className="absolute top-0 -right-2 w-2 h-2 bg-red-500 rounded-full"></div></span>
+                   </div>
+                   <button onClick={() => setIsSearching(true)} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"><Search size={20} className="text-gray-600"/></button>
+               </>
+           )}
+       </div>
 
-      <div className="p-4 pt-12 border-b border-slate-800 flex justify-between items-center sticky top-0 bg-slate-950/90 backdrop-blur z-10"><h1 className="text-xl font-bold">{t.inbox}</h1><div className="flex gap-4 text-slate-400"><div className="flex items-center gap-1 text-xs bg-slate-800 px-2 py-1 rounded-lg"><MapPin size={12} /> Pune</div><Bell size={20} /></div></div>
-      
-      <SystemBanner t={t} onAction={onSystemAction} />
+       <SystemBanner t={t} onAction={onSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={onMaximize} onCloseGame={onCloseGame} />
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-2">{CHATS.map(chat => (<div key={chat.id} onClick={() => openChat(chat)} className="flex items-center gap-3 p-3 hover:bg-slate-900 rounded-xl transition-colors cursor-pointer active:bg-slate-800"><div className="relative"><div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center font-bold">{chat.avatar}</div>{chat.unread > 0 && <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-slate-950"></div>}</div><div className="flex-1"><div className="flex justify-between items-center"><h4 className="font-bold text-sm text-white">{chat.name}</h4><span className="text-[10px] text-slate-500">{chat.time}</span></div><div className="text-xs text-slate-400 truncate">{chat.lastMsg}</div></div></div>))}</div>
-      </div>
+       <div className="flex-1 overflow-y-auto">
+           {filteredChats.map(chat => (
+               <div key={chat.id} onClick={() => openChat(chat)} className="flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-50">
+                   <div className="relative">
+                       <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">{chat.avatar}</div>
+                       {chat.unread > 0 && <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white text-white text-[10px] flex items-center justify-center font-bold">{chat.unread}</div>}
+                   </div>
+                   <div className="flex-1">
+                       <div className="flex justify-between items-center mb-1">
+                           <h4 className="font-bold text-base text-slate-900">{chat.name}</h4>
+                           <span className={`text-xs ${chat.unread > 0 ? 'text-green-500 font-bold' : 'text-gray-400'}`}>{chat.time}</span>
+                       </div>
+                       <div className="flex justify-between items-center">
+                           <div className="text-sm text-gray-500 truncate max-w-[200px]">{chat.lastMsg}</div>
+                           {chat.id === 1 && <div className="bg-yellow-400 text-[10px] font-bold px-1.5 rounded text-black">OWNER</div>}
+                       </div>
+                   </div>
+               </div>
+           ))}
+           {filteredChats.length === 0 && (
+               <div className="p-8 text-center text-gray-400 text-sm">No messages found</div>
+           )}
+       </div>
     </div>
   );
 };
@@ -1634,10 +1826,10 @@ const FloatingHourlyRush = ({ t, onClick, isGameOver, myRank, myScore, hasClaima
 
     if (expanded) {
         return (
-            <div className="absolute bottom-24 right-4 z-40 w-56 bg-slate-900/95 backdrop-blur-md border border-indigo-500/50 rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 origin-bottom-right">
-                <div className={`${isGameOver ? 'bg-gradient-to-r from-yellow-600 to-orange-600' : 'bg-gradient-to-r from-indigo-600 to-purple-600'} p-2 flex justify-between items-center`}>
+            <div className="absolute bottom-24 right-4 z-40 w-56 bg-white/95 backdrop-blur-md border border-indigo-200 rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 origin-bottom-right">
+                <div className={`${isGameOver ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : 'bg-gradient-to-r from-indigo-500 to-purple-500'} p-2 flex justify-between items-center`}>
                     <span className="text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1">
-                        {isGameOver ? <Trophy size={12} className="text-white"/> : <TrendingUp size={12}/>}
+                        {isGameOver ? <Trophy size={12} className="text-white"/> : <TrendingUp size={12} className="text-white"/>}
                         {isGameOver ? 'Game Finished' : 'Hourly Rush'}
                     </span>
                     <button onClick={(e) => { e.stopPropagation(); setExpanded(false); }}><X size={14} className="text-white/80 hover:text-white"/></button>
@@ -1645,29 +1837,29 @@ const FloatingHourlyRush = ({ t, onClick, isGameOver, myRank, myScore, hasClaima
                 <div className="p-3 space-y-3">
                     {isGameOver ? (
                         <div className="text-center">
-                            <div className="text-xs text-slate-300 mb-1">Your Final Rank</div>
-                            <div className="text-3xl font-black text-white mb-1">#{myRank}</div>
-                            <div className="text-xs text-yellow-400 font-bold mb-2">Score: {myScore}</div>
-                            <div className="text-[10px] text-slate-400">Top 10% players get rewards!</div>
+                            <div className="text-xs text-gray-500 mb-1">Your Final Rank</div>
+                            <div className="text-3xl font-black text-slate-900 mb-1">#{myRank}</div>
+                            <div className="text-xs text-yellow-600 font-bold mb-2">Score: {myScore}</div>
+                            <div className="text-[10px] text-gray-400">Top 10% players get rewards!</div>
                         </div>
                     ) : (
                         <>
-                            <div className="flex items-center justify-between text-xs text-slate-300">
+                            <div className="flex items-center justify-between text-xs text-gray-500">
                                 <span>My Rank</span>
-                                <span className="text-white font-bold">#{myRank || 142}</span>
+                                <span className="text-slate-900 font-bold">#{myRank || 142}</span>
                             </div>
-                            <div className="h-px bg-white/10"></div>
+                            <div className="h-px bg-gray-200"></div>
                             <div className="space-y-1">
                                 {[1, 2, 3].map(i => (
                                     <div key={i} className="flex justify-between items-center text-[10px]">
-                                        <span className="text-slate-400 flex items-center gap-1"><span className={`w-3 h-3 rounded-full flex items-center justify-center text-[8px] ${i===1?'bg-yellow-500 text-black':i===2?'bg-gray-300 text-black':'bg-orange-700 text-white'}`}>{i}</span> Player_{i}</span>
-                                        <span className="text-yellow-500 font-mono">{1000 - i*100}</span>
+                                        <span className="text-gray-500 flex items-center gap-1"><span className={`w-3 h-3 rounded-full flex items-center justify-center text-[8px] ${i===1?'bg-yellow-500 text-black':i===2?'bg-gray-300 text-black':'bg-orange-700 text-white'}`}>{i}</span> Player_{i}</span>
+                                        <span className="text-yellow-600 font-mono">{1000 - i*100}</span>
                                     </div>
                                 ))}
                             </div>
                         </>
                     )}
-                    <button onClick={onClick} className={`w-full mt-1 text-[10px] py-2 rounded-lg font-bold transition-colors ${isGameOver ? 'bg-yellow-500 hover:bg-yellow-400 text-black' : 'bg-indigo-600/50 hover:bg-indigo-600 text-indigo-200 hover:text-white'}`}>
+                    <button onClick={onClick} className={`w-full mt-1 text-[10px] py-2 rounded-lg font-bold transition-colors ${isGameOver ? 'bg-yellow-500 hover:bg-yellow-400 text-black' : 'bg-indigo-100 hover:bg-indigo-200 text-indigo-700'}`}>
                         {isGameOver ? 'View Details & Claim' : 'View Full Board'}
                     </button>
                 </div>
@@ -1676,16 +1868,16 @@ const FloatingHourlyRush = ({ t, onClick, isGameOver, myRank, myScore, hasClaima
     }
 
     return (
-        <div onClick={() => setExpanded(true)} className={`absolute bottom-24 right-4 z-40 flex items-center gap-2 backdrop-blur-md border rounded-full pl-1 pr-3 py-1 cursor-pointer transition-colors animate-in slide-in-from-right ${isGameOver ? 'bg-yellow-900/40 border-yellow-500/30 hover:bg-yellow-900/60' : 'bg-black/40 border-indigo-500/30 hover:bg-black/60'}`}>
+        <div onClick={() => setExpanded(true)} className={`absolute bottom-24 right-4 z-40 flex items-center gap-2 backdrop-blur-md border rounded-full pl-1 pr-3 py-1 cursor-pointer transition-colors animate-in slide-in-from-right ${isGameOver ? 'bg-yellow-100/80 border-yellow-500/30 hover:bg-yellow-200/80' : 'bg-white/80 border-indigo-200 hover:bg-white/90'}`}>
             <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-lg relative ${isGameOver ? 'bg-gradient-to-br from-yellow-500 to-orange-600' : 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-indigo-500/20'}`}>
                 {isGameOver ? <Trophy size={14} className="text-white" /> : <TrendingUp size={14} className="text-white" />}
                 {hasClaimableReward && (
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-black animate-pulse"></span>
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
                 )}
             </div>
             <div className="flex flex-col leading-none">
-                <span className={`text-[8px] font-bold uppercase ${isGameOver ? 'text-yellow-300' : 'text-indigo-300'}`}>{isGameOver ? 'Finished' : 'Hourly Rush'}</span>
-                <span className="text-xs font-bold text-white flex items-center gap-1">
+                <span className={`text-[8px] font-bold uppercase ${isGameOver ? 'text-yellow-700' : 'text-indigo-600'}`}>{isGameOver ? 'Finished' : 'Hourly Rush'}</span>
+                <span className="text-xs font-bold text-slate-900 flex items-center gap-1">
                     #{myRank || 142}
                     {hasClaimableReward && <span className="text-[8px] bg-yellow-500 text-black px-1 rounded">Claim</span>}
                 </span>
@@ -1698,12 +1890,20 @@ const ActiveGameSession = ({ room, players, onGameOver, t, onShowHourlyRush }) =
   const [timeLeft, setTimeLeft] = useState(10); // Reduced to 10s for demo
   const [liveScores, setLiveScores] = useState(players.map(p => ({ ...p, score: 0 })));
   const [isGameOver, setIsGameOver] = useState(false);
+  const [showMinimizeHint, setShowMinimizeHint] = useState(true);
 
   // Only show hourly rush for non-Ludo games
   const showHourlyRush = room.gameName !== 'Ludo Master';
   
   const myScore = liveScores.find(p => p.id === 99)?.score || 0;
   const myRank = liveScores.sort((a, b) => b.score - a.score).findIndex(p => p.id === 99) + 1;
+
+  useEffect(() => {
+      const timer = setTimeout(() => {
+          setShowMinimizeHint(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (isGameOver) return;
@@ -1735,17 +1935,25 @@ const ActiveGameSession = ({ room, players, onGameOver, t, onShowHourlyRush }) =
   };
 
   return (
-    <div className="absolute inset-0 bg-slate-950 z-[80] flex flex-col animate-in fade-in">
-       {showHourlyRush && <FloatingHourlyRush t={t} onClick={onShowHourlyRush} isGameOver={isGameOver} myRank={myRank} myScore={myScore} hasClaimableReward={isGameOver && myRank <= 3} />}
+    <div className="absolute inset-0 bg-gray-900 z-[80] flex flex-col animate-in fade-in">
+       {showHourlyRush && !isGameOver && <FloatingHourlyRush t={t} onClick={onShowHourlyRush} isGameOver={isGameOver} myRank={myRank} myScore={myScore} hasClaimableReward={isGameOver && myRank <= 3} />}
        
        {/* Floating Capsule Button (Share | Exit) */}
-       <div className="absolute top-12 right-4 z-50 flex items-center bg-black/40 backdrop-blur-md rounded-full border border-white/10 overflow-hidden h-9 shadow-lg">
-          <button onClick={() => { /* Share logic */ }} className="px-3 h-full hover:bg-white/10 active:bg-white/20 transition-colors border-r border-white/10 flex items-center justify-center">
-              <Share2 size={16} className="text-white" />
-          </button>
-          <button onClick={() => onGameOver('minimize')} className="px-3 h-full hover:bg-white/10 active:bg-white/20 transition-colors flex items-center justify-center group">
-              <div className="w-3 h-3 rounded-full border-2 border-white/80 group-hover:bg-white/80 transition-colors"></div>
-          </button>
+       <div className="absolute top-12 right-4 z-50 flex flex-col items-end">
+          <div className="flex items-center bg-white/90 backdrop-blur-md rounded-full border border-gray-200 overflow-hidden h-9 shadow-lg">
+              <button onClick={() => { /* Share logic */ }} className="px-3 h-full hover:bg-gray-100 active:bg-gray-200 transition-colors border-r border-gray-200 flex items-center justify-center">
+                  <Share2 size={16} className="text-slate-900" />
+              </button>
+              <button onClick={() => { setShowMinimizeHint(false); onGameOver('minimize'); }} className="px-3 h-full hover:bg-gray-100 active:bg-gray-200 transition-colors flex items-center justify-center group">
+                  <div className="w-3 h-3 rounded-full border-2 border-slate-900 group-hover:bg-slate-900 transition-colors"></div>
+              </button>
+          </div>
+          {showMinimizeHint && (
+              <div className="bg-blue-600 text-white text-xs font-bold px-3 py-2 rounded-xl relative animate-bounce shadow-lg mt-2 mr-1 animate-in fade-in slide-in-from-top-2 pointer-events-none">
+                  {t.minimize_hint}
+                  <div className="absolute -top-1 right-4 w-2 h-2 bg-blue-600 rotate-45"></div>
+              </div>
+          )}
        </div>
 
        {/* Game Area (H5 Placeholder) */}
@@ -1754,17 +1962,17 @@ const ActiveGameSession = ({ room, players, onGameOver, t, onShowHourlyRush }) =
           <div className={`absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80')] bg-cover bg-center transition-opacity duration-1000 ${isGameOver ? 'opacity-20 grayscale' : 'opacity-40'}`}></div>
           
           {!isGameOver ? (
-              <div className="relative z-10 text-center p-8 bg-black/50 backdrop-blur-sm rounded-3xl border border-white/10">
-                 <Gamepad2 size={64} className="text-white/50 mx-auto mb-4 animate-bounce"/>
-                 <h3 className="text-2xl font-black text-white uppercase tracking-widest mb-2">{room.gameName}</h3>
-                 <p className="text-white/50 text-sm">{t.tap_to_play}</p>
-                 <div className="mt-4 text-4xl font-mono font-bold text-yellow-400">{formatTime(timeLeft)}</div>
+              <div className="relative z-10 text-center p-8 bg-white/90 backdrop-blur-sm rounded-3xl border border-gray-200 shadow-2xl">
+                 <Gamepad2 size={64} className="text-slate-900/50 mx-auto mb-4 animate-bounce"/>
+                 <h3 className="text-2xl font-black text-slate-900 uppercase tracking-widest mb-2">{room.gameName}</h3>
+                 <p className="text-gray-500 text-sm">{t.tap_to_play}</p>
+                 <div className="mt-4 text-4xl font-mono font-bold text-yellow-500">{formatTime(timeLeft)}</div>
               </div>
           ) : (
               <div className="relative z-10 text-center p-8 animate-in zoom-in flex flex-col items-center gap-6">
                   <div>
                       <h2 className="text-4xl font-black text-white uppercase tracking-widest mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">Time's Up!</h2>
-                      <p className="text-slate-300">Game Finished</p>
+                      <p className="text-gray-300">Game Finished</p>
                   </div>
               </div>
           )}
@@ -1783,106 +1991,37 @@ const ActiveGameSession = ({ room, players, onGameOver, t, onShowHourlyRush }) =
   );
 };
 
-const DraggableGameBubble = ({ onClick, activeGameSession, onDragStart, onDragEnd, onClose }) => {
-    const [position, setPosition] = useState({ x: 16, y: 128 }); // Initial: right 16px, bottom 128px
-    const [isDragging, setIsDragging] = useState(false);
-    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-    const [hasMoved, setHasMoved] = useState(false);
-    const bubbleRef = useRef(null);
-
-    const handlePointerDown = (e) => {
-        e.preventDefault();
-        setIsDragging(true);
-        setHasMoved(false);
-        setDragStart({ x: e.clientX, y: e.clientY });
-        e.currentTarget.setPointerCapture(e.pointerId);
-        if (bubbleRef.current) bubbleRef.current.style.transition = 'none';
-        onDragStart && onDragStart();
-    };
-
-    const handlePointerMove = (e) => {
-        if (!isDragging) return;
-        const dx = dragStart.x - e.clientX;
-        const dy = dragStart.y - e.clientY;
-        
-        if (Math.abs(dx) > 2 || Math.abs(dy) > 2) setHasMoved(true);
-
-        setPosition(prev => ({
-            x: prev.x + dx,
-            y: prev.y + dy
-        }));
-        setDragStart({ x: e.clientX, y: e.clientY });
-    };
-
-    const handlePointerUp = (e) => {
-        setIsDragging(false);
-        e.currentTarget.releasePointerCapture(e.pointerId);
-        onDragEnd && onDragEnd();
-        
-        if (bubbleRef.current) {
-            bubbleRef.current.style.transition = 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
-            
-            // Check for Drop to Close (Bottom 100px)
-            if (position.y < 100) {
-                onClose && onClose();
-                return;
-            }
-
-            const parent = bubbleRef.current.offsetParent;
-            if (parent) {
-                const parentWidth = parent.clientWidth;
-                const parentHeight = parent.clientHeight;
-                const bubbleRect = bubbleRef.current.getBoundingClientRect();
-                const bubbleWidth = bubbleRect.width;
-
-                // Calculate center position relative to right edge
-                const centerXFromRight = position.x + (bubbleWidth / 2);
-                
-                // Snap X (Left or Right Edge)
-                let newX;
-                if (centerXFromRight < parentWidth / 2) {
-                    newX = 16; // Snap to Right
-                } else {
-                    newX = parentWidth - 16 - bubbleWidth; // Snap to Left
-                }
-
-                // Constrain Y (Vertical Bounds)
-                let newY = position.y;
-                const minBottom = 120; // Avoid bottom nav area (increased to avoid accidental close zone)
-                const maxBottom = parentHeight - 120; // Avoid top header area
-                
-                if (newY < minBottom) newY = minBottom;
-                if (newY > maxBottom) newY = maxBottom;
-
-                setPosition({ x: newX, y: newY });
-            }
-        }
-    };
-
-    const handleClick = (e) => {
-        if (!hasMoved) {
-            onClick();
-        }
-    };
-
+const TopStatusBar = ({ activeGameSession, isGameMinimized, onMaximize, onCloseGame }) => {
     return (
-        <div 
-            ref={bubbleRef}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onClick={handleClick}
-            style={{ right: `${position.x}px`, bottom: `${position.y}px`, touchAction: 'none' }}
-            className="absolute z-[90] cursor-pointer group animate-in slide-in-from-right"
-        >
-            <div className="relative">
-                <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-20"></div>
-                <div className="w-14 h-14 rounded-full bg-slate-900 border-2 border-green-500 flex items-center justify-center shadow-2xl relative overflow-hidden group-active:scale-95 transition-transform">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${activeGameSession.room.gameName === 'Ludo Master' ? 'from-yellow-500 to-red-500' : 'from-blue-600 to-purple-600'} opacity-20`}></div>
-                    <Gamepad2 size={24} className="text-green-400 relative z-10 animate-pulse" />
-                    <div className="absolute bottom-1 text-[8px] font-bold text-white uppercase tracking-wider">Play</div>
-                </div>
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-[10px] font-bold text-white">1</div>
+        <div className="absolute top-0 w-full h-12 z-50 flex justify-between items-center px-6 text-slate-900 pointer-events-none">
+            <span className="text-xs font-bold w-12">9:41</span>
+            
+            {/* Center Area - The "Island" */}
+            <div className="flex-1 flex justify-center pointer-events-auto">
+                {activeGameSession && isGameMinimized && (
+                    <div 
+                        onClick={onMaximize}
+                        className="bg-white/90 backdrop-blur-md border border-gray-200 rounded-full h-8 pl-1 pr-3 flex items-center gap-2 shadow-lg cursor-pointer animate-in zoom-in-95 duration-300"
+                    >
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                            <Gamepad2 size={12} className="text-white" />
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-900 max-w-[100px] truncate">
+                            {activeGameSession.room.gameName}
+                        </span>
+                         <button 
+                            onClick={(e) => { e.stopPropagation(); onCloseGame(); }}
+                            className="ml-1 p-0.5 rounded-full hover:bg-gray-100 text-gray-400 hover:text-slate-900"
+                        >
+                            <X size={12} />
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            <div className="flex gap-1.5 w-12 justify-end">
+                <div className="w-3 h-3 bg-slate-900 rounded-full opacity-80"></div>
+                <div className="w-3 h-3 bg-slate-900 rounded-full opacity-80"></div>
             </div>
         </div>
     );
@@ -1903,62 +2042,62 @@ const GameResultModal = ({ result, onClose, t, onShowHourlyRush }) => {
   };
 
   return (
-      <div className="fixed inset-0 z-[90] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-gradient-to-b from-slate-900 to-slate-950 w-full max-w-sm rounded-3xl border border-slate-800 p-6 relative overflow-hidden shadow-2xl">
+      <div className="fixed inset-0 z-[90] bg-white/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-gradient-to-b from-white to-gray-50 w-full max-w-sm rounded-3xl border border-gray-200 p-6 relative overflow-hidden shadow-2xl">
               {/* Confetti / Rays Effect */}
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 animate-pulse"></div>
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none"></div>
 
               <div className="relative z-10 text-center">
-                  <h2 className="text-3xl font-black italic text-white mb-1 drop-shadow-lg uppercase">{myRank === 1 ? t.victory : (myRank <= 3 ? 'TOP 3' : t.game_over)}</h2>
-                  <p className="text-slate-400 text-xs mb-6">{room.gameName} · {room.mode === 'compete' ? t.mode_compete : t.mode_friendly}</p>
+                  <h2 className="text-3xl font-black italic text-slate-900 mb-1 drop-shadow-sm uppercase">{myRank === 1 ? t.victory : (myRank <= 3 ? 'TOP 3' : t.game_over)}</h2>
+                  <p className="text-gray-500 text-xs mb-6">{room.gameName} · {room.mode === 'compete' ? t.mode_compete : t.mode_friendly}</p>
                   
                   {/* Rank Display with Trophy */}
                   <div className="flex justify-center items-end gap-4 mb-8 h-32">
                       {/* 2nd Place */}
                       {scores[1] && (
                           <div className="flex flex-col items-center gap-2">
-                              <div className="w-12 h-12 rounded-full bg-slate-700 border-2 border-slate-600 flex items-center justify-center text-lg font-bold text-slate-300 relative">
+                              <div className="w-12 h-12 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center text-lg font-bold text-gray-600 relative">
                                   {scores[1].avatar}
-                                  <div className="absolute -bottom-2 bg-slate-600 text-[10px] px-1.5 rounded text-white">2</div>
+                                  <div className="absolute -bottom-2 bg-gray-400 text-[10px] px-1.5 rounded text-white">2</div>
                               </div>
-                              <div className="h-16 w-8 bg-slate-800 rounded-t-lg border-t border-x border-slate-700"></div>
+                              <div className="h-16 w-8 bg-gray-100 rounded-t-lg border-t border-x border-gray-200"></div>
                           </div>
                       )}
                       
                       {/* 1st Place */}
                       <div className="flex flex-col items-center gap-2 -mt-4">
                           <div className="relative">
-                              <Crown size={32} className="text-yellow-400 absolute -top-8 left-1/2 -translate-x-1/2 animate-bounce" fill="currentColor" />
-                              <div className="w-16 h-16 rounded-full bg-yellow-500/20 border-2 border-yellow-500 flex items-center justify-center text-2xl font-bold text-white shadow-[0_0_20px_rgba(234,179,8,0.5)]">
+                              <Crown size={32} className="text-yellow-500 absolute -top-8 left-1/2 -translate-x-1/2 animate-bounce" fill="currentColor" />
+                              <div className="w-16 h-16 rounded-full bg-yellow-100 border-2 border-yellow-500 flex items-center justify-center text-2xl font-bold text-slate-900 shadow-[0_0_20px_rgba(234,179,8,0.3)]">
                                   {scores[0].avatar}
                               </div>
                               <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-yellow-500 text-black text-xs font-bold px-2 py-0.5 rounded-full">1</div>
                           </div>
-                          <div className="h-24 w-10 bg-gradient-to-b from-yellow-600/50 to-slate-800 rounded-t-lg border-t border-x border-yellow-500/30"></div>
+                          <div className="h-24 w-10 bg-gradient-to-b from-yellow-100 to-gray-100 rounded-t-lg border-t border-x border-yellow-200"></div>
                       </div>
 
                       {/* 3rd Place */}
                       {scores[2] && (
                           <div className="flex flex-col items-center gap-2">
-                              <div className="w-12 h-12 rounded-full bg-orange-900/50 border-2 border-orange-700 flex items-center justify-center text-lg font-bold text-orange-200 relative">
+                              <div className="w-12 h-12 rounded-full bg-orange-100 border-2 border-orange-300 flex items-center justify-center text-lg font-bold text-orange-700 relative">
                                   {scores[2].avatar}
-                                  <div className="absolute -bottom-2 bg-orange-800 text-[10px] px-1.5 rounded text-white">3</div>
+                                  <div className="absolute -bottom-2 bg-orange-400 text-[10px] px-1.5 rounded text-white">3</div>
                               </div>
-                              <div className="h-12 w-8 bg-slate-800 rounded-t-lg border-t border-x border-slate-700"></div>
+                              <div className="h-12 w-8 bg-gray-100 rounded-t-lg border-t border-x border-gray-200"></div>
                           </div>
                       )}
                   </div>
 
                   {/* My Result */}
-                  <div className="bg-slate-800/50 rounded-xl p-4 mb-6 border border-slate-700">
+                  <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200">
                       <div className="flex justify-between items-center mb-2">
-                          <span className="text-slate-400 text-xs">{t.my_rank}</span>
-                          <span className="text-xl font-bold text-white">#{myRank}</span>
+                          <span className="text-gray-500 text-xs">{t.my_rank}</span>
+                          <span className="text-xl font-bold text-slate-900">#{myRank}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                          <span className="text-slate-400 text-xs">{t.prize}</span>
-                          <div className="flex items-center gap-1 text-yellow-400 font-bold text-lg">
+                          <span className="text-gray-500 text-xs">{t.prize}</span>
+                          <div className="flex items-center gap-1 text-yellow-600 font-bold text-lg">
                               <Coins size={16} fill="currentColor"/>
                               +{getPrize(myRank)}
                           </div>
@@ -1966,21 +2105,21 @@ const GameResultModal = ({ result, onClose, t, onShowHourlyRush }) => {
                   </div>
 
                   {/* Hourly Rush Board (New Feature) - Only for non-Ludo games */}
-                  {room.gameName !== 'Ludo Master' && (
-                      <div onClick={onShowHourlyRush} className="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 rounded-xl p-4 mb-6 border border-indigo-500/30 relative overflow-hidden cursor-pointer active:scale-95 transition-transform">
+                  {false && room.gameName !== 'Ludo Master' && (
+                      <div onClick={onShowHourlyRush} className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 mb-6 border border-indigo-200 relative overflow-hidden cursor-pointer active:scale-95 transition-transform">
                           <div className="absolute top-0 right-0 bg-indigo-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl-lg">1H RUSH</div>
                           <div className="flex items-center gap-3 mb-3">
                               <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
                                   <TrendingUp size={20} />
                               </div>
                               <div className="text-left">
-                                  <div className="text-white font-bold text-sm">Hourly Ranking</div>
-                                  <div className="text-indigo-300 text-[10px]">Top 1% wins 500 Beans!</div>
+                                  <div className="text-slate-900 font-bold text-sm">Hourly Ranking</div>
+                                  <div className="text-indigo-600 text-[10px]">Top 1% wins 500 Beans!</div>
                               </div>
                           </div>
-                          <div className="flex justify-between items-center text-xs bg-black/20 rounded-lg p-2">
-                              <div className="text-slate-300">Your Rank: <span className="text-white font-bold">#142</span> <span className="text-green-400 text-[10px]">(↑ 5)</span></div>
-                              <div className="text-slate-300">To #1: <span className="text-yellow-400 font-bold">240 pts</span></div>
+                          <div className="flex justify-between items-center text-xs bg-white/60 rounded-lg p-2">
+                              <div className="text-gray-600">Your Rank: <span className="text-slate-900 font-bold">#142</span> <span className="text-green-600 text-[10px]">(↑ 5)</span></div>
+                              <div className="text-gray-600">To #1: <span className="text-yellow-600 font-bold">240 pts</span></div>
                           </div>
                       </div>
                   )}
@@ -2008,6 +2147,137 @@ const Toast = ({ message, onClose }) => {
   );
 };
 
+const GlobalExpTicker = ({ onClick }) => {
+    const [exp, setExp] = useState(64);
+    const [flying, setFlying] = useState(false);
+    const [position, setPosition] = useState({ x: 16, y: 112 }); // Initial top-28 (112px), left-4 (16px)
+    const [isDragging, setIsDragging] = useState(false);
+    const dragStart = useRef({ x: 0, y: 0 });
+    const startPos = useRef({ x: 0, y: 0 });
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setFlying(true);
+            setTimeout(() => {
+                setFlying(false);
+                setExp(prev => prev + 50);
+            }, 1000); // Flight duration
+        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const handleTouchStart = (e) => {
+        // e.preventDefault(); // Don't prevent default here to allow click
+        setIsDragging(true);
+        const touch = e.touches[0];
+        dragStart.current = { x: touch.clientX, y: touch.clientY };
+        startPos.current = { ...position };
+    };
+
+    const handleTouchMove = (e) => {
+        if (!isDragging) return;
+        // e.preventDefault(); // Removed to fix passive event listener issue
+        const touch = e.touches[0];
+        const dx = touch.clientX - dragStart.current.x;
+        const dy = touch.clientY - dragStart.current.y;
+        setPosition({
+            x: startPos.current.x + dx,
+            y: startPos.current.y + dy
+        });
+    };
+
+    const handleTouchEnd = () => {
+        setIsDragging(false);
+        // Snap to edge logic
+        // Assuming container width is approx 448px (max-w-md)
+        // Center is roughly 224px
+        if (position.x < 200) {
+            setPosition(prev => ({ ...prev, x: 16 }));
+        } else {
+            setPosition(prev => ({ ...prev, x: 340 })); // Approx right edge
+        }
+    };
+
+    // Mouse events for desktop testing
+    const handleMouseDown = (e) => {
+        setIsDragging(true);
+        dragStart.current = { x: e.clientX, y: e.clientY };
+        startPos.current = { ...position };
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - dragStart.current.x;
+        const dy = e.clientY - dragStart.current.y;
+        setPosition({
+            x: startPos.current.x + dx,
+            y: startPos.current.y + dy
+        });
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+        if (position.x < 200) {
+            setPosition(prev => ({ ...prev, x: 16 }));
+        } else {
+            setPosition(prev => ({ ...prev, x: 340 }));
+        }
+    };
+
+    return (
+        <>
+            {/* Draggable Ticker */}
+            <div 
+                onClick={() => !isDragging && onClick && onClick()}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                style={{ top: `${position.y}px`, left: `${position.x}px`, cursor: isDragging ? 'grabbing' : 'grab', touchAction: 'none' }}
+                className="absolute z-40 bg-slate-900/90 backdrop-blur-md text-white rounded-full pl-1 pr-4 py-1 flex items-center gap-3 shadow-xl border border-white/10 transition-all duration-300 ease-out"
+            >
+                <div className="w-8 h-8 relative flex items-center justify-center pointer-events-none">
+                     <div className="absolute inset-0 bg-green-500 rotate-45 rounded-lg scale-75"></div>
+                     <div className="absolute inset-0 bg-green-400 rotate-12 rounded-lg scale-75 opacity-50"></div>
+                     <span className="relative z-10 font-black text-[10px] text-yellow-200 drop-shadow-md">XP</span>
+                </div>
+                <span key={exp} className="font-black text-lg animate-in slide-in-from-bottom-2 fade-in duration-300 pointer-events-none">{exp}</span>
+            </div>
+
+            {/* Flying Particle - Absolute relative to container */}
+            {flying && (
+                <div 
+                    className="absolute z-50 w-8 h-8 flex items-center justify-center pointer-events-none"
+                    style={{ 
+                        left: '16px', 
+                        bottom: '80px', // Start from bottom left (near nav)
+                        animation: 'flyIn 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards'
+                    }}
+                >
+                    <style>{`
+                        @keyframes flyIn {
+                            0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+                            20% { opacity: 1; }
+                            100% { transform: translate(${position.x - 16}px, ${position.y - (850 - 80)}px) scale(1); opacity: 0; } 
+                        }
+                    `}</style>
+                    {/* Note: The keyframe calculation above is tricky with dynamic end positions in CSS. 
+                        Ideally we use JS animation or a fixed start point relative to the ticker.
+                        Let's simplify: Fly from bottom center to the ticker's current position.
+                    */}
+                    <div className="w-full h-full relative flex items-center justify-center">
+                        <div className="absolute inset-0 bg-green-500 rotate-45 rounded-lg scale-75 shadow-[0_0_15px_rgba(34,197,94,0.8)]"></div>
+                        <span className="relative z-10 font-black text-[10px] text-yellow-200">XP</span>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+};
+
 const HourlyRushModal = ({ onClose, t, inGame }) => {
     const [selectedGameId, setSelectedGameId] = useState(GAMES[0].id);
     const [timePeriod, setTimePeriod] = useState('current'); // 'current' or 'last'
@@ -2020,16 +2290,16 @@ const HourlyRushModal = ({ onClose, t, inGame }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-            <div className="bg-slate-900 w-full max-w-sm rounded-3xl border border-slate-800 flex flex-col max-h-[85vh] relative overflow-hidden shadow-2xl">
-                <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-indigo-600 to-transparent pointer-events-none"></div>
+        <div className="fixed inset-0 z-[100] bg-white/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+            <div className="bg-white w-full max-w-sm rounded-3xl border border-gray-200 flex flex-col max-h-[85vh] relative overflow-hidden shadow-2xl">
+                <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-indigo-600 to-transparent pointer-events-none opacity-20"></div>
                 
                 <div className="p-6 pb-2 relative z-10 flex justify-between items-start">
                     <div>
-                        <h2 className="text-2xl font-black text-white italic uppercase tracking-wider">Hourly Rush</h2>
-                        <p className="text-indigo-200 text-xs">Top 1% wins 500 Beans!</p>
+                        <h2 className="text-2xl font-black text-slate-900 italic uppercase tracking-wider">Hourly Rush</h2>
+                        <p className="text-indigo-600 text-xs">Top 1% wins 500 Beans!</p>
                     </div>
-                    <button onClick={onClose} className="bg-black/20 p-2 rounded-full text-white hover:bg-black/40"><X size={20}/></button>
+                    <button onClick={onClose} className="bg-gray-100 p-2 rounded-full text-gray-600 hover:bg-gray-200"><X size={20}/></button>
                 </div>
 
                 {/* Game Selector */}
@@ -2041,8 +2311,8 @@ const HourlyRushModal = ({ onClose, t, inGame }) => {
                                 onClick={() => setSelectedGameId(game.id)}
                                 className={`flex-shrink-0 flex flex-col items-center gap-1 cursor-pointer transition-opacity ${selectedGameId === game.id ? 'opacity-100 scale-105' : 'opacity-50 hover:opacity-80'}`}
                             >
-                                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${game.image} border-2 ${selectedGameId === game.id ? 'border-white shadow-lg' : 'border-transparent'}`}></div>
-                                <span className="text-[10px] font-bold text-white truncate w-14 text-center">{game.title}</span>
+                                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${game.image} border-2 ${selectedGameId === game.id ? 'border-indigo-600 shadow-lg' : 'border-transparent'}`}></div>
+                                <span className="text-[10px] font-bold text-slate-900 truncate w-14 text-center">{game.title}</span>
                             </div>
                         ))}
                     </div>
@@ -2050,16 +2320,16 @@ const HourlyRushModal = ({ onClose, t, inGame }) => {
 
                 {/* Time Period Toggle */}
                 <div className="px-6 pb-4 relative z-10 flex justify-center">
-                    <div className="bg-black/30 p-1 rounded-full flex gap-1 border border-white/10">
+                    <div className="bg-gray-100 p-1 rounded-full flex gap-1 border border-gray-200">
                         <button 
                             onClick={() => setTimePeriod('last')}
-                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${timePeriod === 'last' ? 'bg-white text-indigo-900 shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${timePeriod === 'last' ? 'bg-white text-indigo-900 shadow-lg' : 'text-gray-500 hover:text-slate-900'}`}
                         >
                             Last Hour
                         </button>
                         <button 
                             onClick={() => setTimePeriod('current')}
-                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${timePeriod === 'current' ? 'bg-white text-indigo-900 shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${timePeriod === 'current' ? 'bg-white text-indigo-900 shadow-lg' : 'text-gray-500 hover:text-slate-900'}`}
                         >
                             Current Hour
                         </button>
@@ -2067,33 +2337,33 @@ const HourlyRushModal = ({ onClose, t, inGame }) => {
                 </div>
 
                 <div className="px-6 pb-4 relative z-10">
-                    <div className="bg-indigo-900/40 border border-indigo-500/30 rounded-xl p-4 flex items-center justify-between">
+                    <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-slate-700 border-2 border-white flex items-center justify-center font-bold text-white">Me</div>
+                            <div className="w-10 h-10 rounded-full bg-white border-2 border-indigo-100 flex items-center justify-center font-bold text-indigo-600">Me</div>
                             <div>
-                                <div className="text-white font-bold text-sm">My Rank</div>
-                                <div className="text-indigo-300 text-xs">#{timePeriod === 'last' ? '12' : '142'} <span className="text-green-400">(↑5)</span></div>
+                                <div className="text-slate-900 font-bold text-sm">My Rank</div>
+                                <div className="text-indigo-600 text-xs">#{timePeriod === 'last' ? '12' : '142'} <span className="text-green-600">(↑5)</span></div>
                             </div>
                         </div>
                         <div className="text-right">
-                            <div className="text-yellow-400 font-bold text-lg">{timePeriod === 'last' ? '4,500' : '1,250'}</div>
-                            <div className="text-slate-400 text-[10px]">Points</div>
+                            <div className="text-yellow-600 font-bold text-lg">{timePeriod === 'last' ? '4,500' : '1,250'}</div>
+                            <div className="text-gray-500 text-[10px]">Points</div>
                         </div>
                     </div>
                 </div>
 
                 <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2">
                     {getRankings().map((rank) => (
-                        <div key={rank} className={`flex items-center justify-between p-3 rounded-xl ${rank <= 3 ? 'bg-slate-800/80 border border-yellow-500/20' : 'bg-slate-800/40 border border-slate-800'}`}>
+                        <div key={rank} className={`flex items-center justify-between p-3 rounded-xl ${rank <= 3 ? 'bg-white border border-yellow-200 shadow-sm' : 'bg-gray-50 border border-gray-200'}`}>
                             <div className="flex items-center gap-3">
-                                <div className={`w-6 h-6 flex items-center justify-center font-bold text-xs rounded ${rank === 1 ? 'bg-yellow-500 text-black' : rank === 2 ? 'bg-gray-300 text-black' : rank === 3 ? 'bg-orange-700 text-white' : 'text-slate-500'}`}>
+                                <div className={`w-6 h-6 flex items-center justify-center font-bold text-xs rounded ${rank === 1 ? 'bg-yellow-500 text-black' : rank === 2 ? 'bg-gray-300 text-black' : rank === 3 ? 'bg-orange-700 text-white' : 'text-gray-500'}`}>
                                     {rank}
                                 </div>
-                                <div className="w-8 h-8 rounded-full bg-slate-700"></div>
-                                <div className="text-white font-bold text-sm">Player_{rank}</div>
+                                <div className="w-8 h-8 rounded-full bg-gray-200"></div>
+                                <div className="text-slate-900 font-bold text-sm">Player_{rank}</div>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="text-yellow-500 font-mono font-bold text-sm">{2000 - rank * 50}</div>
+                                <div className="text-yellow-600 font-mono font-bold text-sm">{2000 - rank * 50}</div>
                                 {timePeriod === 'last' && rank <= 3 && (
                                     <button className="bg-yellow-500 text-black text-[10px] font-bold px-2 py-1 rounded-full hover:bg-yellow-400 transition-colors animate-pulse">
                                         Claim
@@ -2124,7 +2394,6 @@ export default function App() {
   const [hourlyRushContext, setHourlyRushContext] = useState('global'); // 'global' or 'game'
   const [taskTab, setTaskTab] = useState('daily'); // 'daily' or 'achievements'
   const [isGameMinimized, setIsGameMinimized] = useState(false);
-  const [isBubbleDragging, setIsBubbleDragging] = useState(false);
   const t = TEXTS[lang];
 
   const showToast = (msg) => setToastMsg(msg);
@@ -2170,11 +2439,13 @@ export default function App() {
   };
 
   const handleGameStart = (players) => {
+      const roomToStart = activeRoom;
       setActiveRoom(null);
       setIsLoadingGame(true);
+      setIsGameMinimized(false); // Ensure game starts maximized
       setTimeout(() => {
           setIsLoadingGame(false);
-          setActiveGameSession({ room: activeRoom, players });
+          setActiveGameSession({ room: roomToStart, players });
       }, 2000);
   };
 
@@ -2201,23 +2472,46 @@ export default function App() {
       <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')} className="absolute top-4 right-4 bg-white px-4 py-2 rounded-full shadow-lg font-bold text-sm hover:bg-gray-100 transition-colors z-50 text-black">
           {lang === 'en' ? '中文' : 'English'}
       </button>
-      <div className="w-full max-w-md h-[850px] bg-black rounded-[40px] overflow-hidden shadow-2xl relative border-[8px] border-slate-900 ring-1 ring-slate-900/50">
-        <div className="absolute top-0 w-full h-10 z-50 flex justify-between items-center px-6 text-white pointer-events-none"><span className="text-xs font-bold">9:41</span><div className="flex gap-1.5"><div className="w-3 h-3 bg-white rounded-full opacity-80"></div><div className="w-3 h-3 bg-white rounded-full opacity-80"></div></div></div>
+      <div className="w-full max-w-md h-[850px] bg-white rounded-[40px] overflow-hidden shadow-2xl relative border-[8px] border-slate-900 ring-1 ring-slate-900/50">
+        <div className="absolute top-0 w-full h-10 z-50 flex justify-between items-center px-6 text-slate-900 pointer-events-none"><span className="text-xs font-bold">9:41</span><div className="flex gap-1.5"><div className="w-3 h-3 bg-slate-900 rounded-full opacity-80"></div><div className="w-3 h-3 bg-slate-900 rounded-full opacity-80"></div></div></div>
+        <GlobalExpTicker onClick={() => setShowTaskCenter(true)} />
         
         {isLoadingGame && (
-            <div className="absolute inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center animate-in fade-in">
+            <div className="absolute inset-0 z-[100] bg-white flex flex-col items-center justify-center animate-in fade-in">
                 <Loader2 size={64} className="text-blue-500 animate-spin mb-6" />
-                <h2 className="text-2xl font-bold text-white mb-2">{t.loading_game}</h2>
-                <p className="text-slate-400 text-sm">{t.preparing_assets}</p>
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">{t.loading_game}</h2>
+                <p className="text-gray-500 text-sm">{t.preparing_assets}</p>
             </div>
         )}
 
         <div className="h-full w-full">
           {activeTab === 'home' && <HomeTab t={t} onTabChange={setActiveTab} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} />}
-          {activeTab === 'game' && <GameTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} showToast={showToast} onOpenChat={handleOpenChat} onShowHourlyRush={() => handleShowHourlyRush('global')} onSystemAction={handleSystemAction} />}
-          {activeTab === 'inbox' && <InboxTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} activeRoom={activeRoom} showToast={showToast} activeChat={activeChat} setActiveChat={setActiveChat} onSystemAction={handleSystemAction} />}
+          {activeTab === 'game' && <GameTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} showToast={showToast} onOpenChat={handleOpenChat} onShowHourlyRush={() => handleShowHourlyRush('global')} onSystemAction={handleSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={() => setIsGameMinimized(false)} onCloseGame={() => setActiveGameSession(null)} />}
+          {activeTab === 'inbox' && <InboxTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} activeRoom={activeRoom} showToast={showToast} activeChat={activeChat} setActiveChat={setActiveChat} onSystemAction={handleSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={() => setIsGameMinimized(false)} onCloseGame={() => setActiveGameSession(null)} />}
           {activeTab === 'mine' && <MineTab lang={lang} setLang={setLang} t={t} showToast={showToast} />}
-          {activeTab === 'plus' && <div className="h-full flex items-center justify-center text-white"><button onClick={() => setActiveTab('home')}>Close Camera</button></div>}
+          {activeTab === 'plus' && (
+            <div className="absolute inset-0 bg-black z-50 flex flex-col animate-in slide-in-from-bottom">
+                <div className="relative flex-1 bg-gray-900 overflow-hidden">
+                     {/* Camera Preview Placeholder */}
+                     <div className="absolute inset-0 flex items-center justify-center text-white/50">
+                         <div className="text-center">
+                             <div className="w-16 h-16 border-2 border-white/30 rounded-lg mb-2 mx-auto border-dashed"></div>
+                             <span className="text-xs font-bold">Camera Preview</span>
+                         </div>
+                     </div>
+                     
+                     {/* Controls */}
+                     <button onClick={() => setActiveTab('home')} className="absolute top-12 left-4 p-2 bg-black/20 backdrop-blur-md rounded-full text-white hover:bg-black/40 transition-colors"><X size={24}/></button>
+                </div>
+                <div className="h-32 bg-black flex items-center justify-center gap-12 pb-8">
+                    <div className="w-10 h-10 rounded-lg bg-gray-800 border border-gray-700"></div>
+                    <div className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center cursor-pointer active:scale-95 transition-transform">
+                        <div className="w-16 h-16 bg-red-500 rounded-full"></div>
+                    </div>
+                    <div className="w-10 h-10 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center"><RefreshCw size={20} className="text-white"/></div>
+                </div>
+            </div>
+          )}
         </div>
         {activeRoom && <RoomLobby room={activeRoom} onClose={() => setActiveRoom(null)} t={t} onDisband={handleDisband} onStartGame={handleGameStart} showToast={showToast} />}
         
@@ -2227,36 +2521,13 @@ export default function App() {
             </div>
         )}
         
-        {/* Global Return to Game Bubble */}
-        {activeGameSession && isGameMinimized && activeTab !== 'plus' && activeTab !== 'home' && (
-            <DraggableGameBubble 
-                onClick={() => setIsGameMinimized(false)} 
-                activeGameSession={activeGameSession} 
-                onDragStart={() => setIsBubbleDragging(true)}
-                onDragEnd={() => setIsBubbleDragging(false)}
-                onClose={() => {
-                    setIsGameMinimized(false);
-                    handleExitGame();
-                }}
-            />
-        )}
 
-        {/* Drag to Close Zone */}
-        {isBubbleDragging && (
-            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-red-900/80 to-transparent z-[85] flex items-center justify-center animate-in fade-in slide-in-from-bottom-4">
-                <div className="flex flex-col items-center gap-2 text-red-200 animate-pulse">
-                    <div className="w-12 h-12 rounded-full border-2 border-red-400 flex items-center justify-center bg-red-500/20">
-                        <X size={24} />
-                    </div>
-                    <span className="text-xs font-bold uppercase tracking-wider">Drag here to close</span>
-                </div>
-            </div>
-        )}
+
+
         {gameResult && <GameResultModal result={gameResult} onClose={() => setGameResult(null)} t={t} onShowHourlyRush={() => handleShowHourlyRush('game')} />}
         {showHourlyRush && <HourlyRushModal onClose={() => setShowHourlyRush(false)} t={t} inGame={hourlyRushContext === 'game'} />}
         {toastMsg && <Toast message={toastMsg} onClose={() => setToastMsg(null)} />}
         {activeTab !== 'plus' && <BottomNav activeTab={activeTab} onTabChange={setActiveTab} t={t} />}
-        <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full z-50"></div>
       </div>
     </div>
   );
