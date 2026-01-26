@@ -177,7 +177,7 @@ const BottomNav = ({ activeTab, onTabChange, t }) => {
     { id: 'home', icon: Home, label: t.home },
     { id: 'game', icon: Compass, label: t.game },
     { id: 'plus', icon: PlusSquare, label: '', isSpecial: true },
-    { id: 'inbox', icon: MessageCircle, label: t.inbox },
+    { id: 'inbox', icon: Gamepad2, label: t.game_tab },
     { id: 'mine', icon: User, label: t.mine },
   ];
   return (
@@ -741,7 +741,6 @@ const MineTab = ({ lang, setLang, t, showToast }) => {
   const [showVideoPlayer, setShowVideoPlayer] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [showWallet, setShowWallet] = useState(false);
-  const [showTaskCenter, setShowTaskCenter] = useState(false);
 
   const totalEarnings = GAME_HISTORY.reduce((acc, curr) => curr.amount > 0 ? acc + curr.amount : acc, 0);
 
@@ -756,10 +755,8 @@ const MineTab = ({ lang, setLang, t, showToast }) => {
 
   return (
     <div className="h-full bg-gray-50 text-slate-900 flex flex-col relative">
-       {showWallet && <WalletPage onClose={() => setShowWallet(false)} t={t} showToast={showToast} />}
-       {showTaskCenter && <TaskCenter onClose={() => setShowTaskCenter(false)} t={t} showToast={showToast} />}
-
        {/* Header */}
+
        <div className="pt-12 px-6 pb-6 bg-gradient-to-b from-blue-50 to-white">
            <div className="flex justify-between items-start mb-6">
                <div className="w-20 h-20 rounded-full border-4 border-white shadow-lg relative">
@@ -786,14 +783,10 @@ const MineTab = ({ lang, setLang, t, showToast }) => {
        </div>
 
        {/* Feature Grid */}
-       <div className="px-4 grid grid-cols-3 gap-3 mb-4">
+       <div className="px-4 grid grid-cols-2 gap-3 mb-4">
            <div onClick={() => setShowWallet(true)} className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center gap-1 active:scale-95 transition-transform">
                <Wallet className="text-blue-500" size={24}/>
                <span className="text-xs font-bold text-slate-700">{t.wallet}</span>
-           </div>
-           <div onClick={() => setShowTaskCenter(true)} className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center gap-1 active:scale-95 transition-transform">
-               <Target className="text-orange-500" size={24}/>
-               <span className="text-xs font-bold text-slate-700">{t.task_center}</span>
            </div>
            <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center gap-1 active:scale-95 transition-transform">
                <Trophy className="text-yellow-500" size={24}/>
@@ -1375,44 +1368,9 @@ const SystemBanner = ({ t, onAction, activeGameSession, isGameMinimized, onMaxim
     );
 };
 
-const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSystemAction, activeGameSession, isGameMinimized, onMaximize, onCloseGame, joinedGroupCount, joinedGroupIds, onJoinGroup }) => {
-  const [showWallet, setShowWallet] = useState(false);
-  const [showTaskCenter, setShowTaskCenter] = useState(false);
-  const [selectedGame, setSelectedGame] = useState(null);
-  const [groupTab, setGroupTab] = useState('recommended');
-  const [recSubTab, setRecSubTab] = useState('newbie');
-  const [showActivityPopup, setShowActivityPopup] = useState(false);
-  const [showRecommendedGroupModal, setShowRecommendedGroupModal] = useState(false);
-  const [showAllGames, setShowAllGames] = useState(false);
-  const [showInvitePopup, setShowInvitePopup] = useState(false);
-  const [taskOpenedFromExplore, setTaskOpenedFromExplore] = useState(false);
-  const [showTaskHint, setShowTaskHint] = useState(false);
-  const [recGroupIndex, setRecGroupIndex] = useState(0);
 
-  // Simulate showing popup on first visit
-  useEffect(() => {
-      const timer = setTimeout(() => {
-        if (joinedGroupCount > 0) {
-             setShowActivityPopup(true);
-        }
-      }, 2000);
-      return () => clearTimeout(timer);
-  }, [joinedGroupCount]);
-
-  // If there's a selected game (which should ideally be unreachable or reused for other purposes now), keep logic but we mainly focus on groups
-  if (selectedGame) {
-      return <GameRoomList game={selectedGame} onClose={() => setSelectedGame(null)} t={t} onJoinRoom={onJoinRoom} />;
-  }
-
-  const displayGroups = useMemo(() => {
-     if (recSubTab === 'newbie') return EXTENDED_GROUPS.filter(g => g.members < 500);
-     if (recSubTab === 'game') return EXTENDED_GROUPS.filter(g => g.tags.includes('Gaming'));
-     if (recSubTab === 'social') return EXTENDED_GROUPS.filter(g => g.tags.includes('Social'));
-     if (recSubTab === 'battle') return EXTENDED_GROUPS.filter(g => g.tags.includes('Action'));
-     if (recSubTab === 'ludo') return EXTENDED_GROUPS.filter(g => g.tags.includes('Ludo'));
-     return EXTENDED_GROUPS;
-  }, [recSubTab]);
-
+const GameTab = ({ t, onJoinRoom, showToast, onOpenInbox, onOpenChat, onShowHourlyRush, onSystemAction, activeGameSession, isGameMinimized, onMaximize, onCloseGame, joinedGroupCount, joinedGroupIds, onJoinGroup }) => {
+  const [groupTab, setGroupTab] = useState('nearby');
   const adminGroupCard = useMemo(() => ({
       id: DEFAULT_ADMIN_GROUP.id,
       name: DEFAULT_ADMIN_GROUP.name,
@@ -1431,349 +1389,92 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSys
       return list;
   }, [joinedGroupIds, adminGroupCard]);
 
-  const groupTabs = joinedGroupCount >= 2
-      ? [
-          { id: 'recommended', label: t.recommended },
-          { id: 'mine', label: t.mine },
-        ]
-      : [{ id: 'recommended', label: t.recommended }];
-
-  useEffect(() => {
-      const allowedTabs = joinedGroupCount >= 2 ? ['recommended', 'mine'] : ['recommended'];
-      if (!allowedTabs.includes(groupTab)) {
-          setGroupTab('recommended');
-      }
-  }, [joinedGroupCount, groupTab]);
-
-  const nearbyPopularGroups = useMemo(() => {
-      return [...EXTENDED_GROUPS].sort((a,b) => b.members - a.members).slice(0, 5);
-  }, []);
-
-  const handleJoinClick = () => {
-      setRecGroupIndex(0);
-      setShowRecommendedGroupModal(true);
-  };
-
-  const confirmJoinGroup = (group) => {
-      setShowRecommendedGroupModal(false);
-      onJoinGroup({ ...group, type: 'group' });
-  };
+  const nearbyGroups = [adminGroupCard];
 
   return (
     <div className="h-full bg-gray-50 flex flex-col text-slate-900 pb-20 relative">
-      {showWallet && <WalletPage onClose={() => setShowWallet(false)} t={t} showToast={showToast} />}
-      {showTaskCenter && <TaskCenter onClose={() => {
-          setShowTaskCenter(false);
-          if (taskOpenedFromExplore) {
-              setTaskOpenedFromExplore(false);
-              setShowTaskHint(true);
-              setTimeout(() => setShowTaskHint(false), 5000);
-          }
-      }} t={t} showToast={showToast} />}
-
-      {showTaskHint && (
-          <div className="absolute top-24 right-4 z-[100] animate-in fade-in slide-in-from-top-2">
-              <div className="bg-indigo-600 text-white px-4 py-2 rounded-xl shadow-xl relative">
-                  <div className="absolute -top-2 right-4 w-4 h-4 bg-indigo-600 rotate-45"></div>
-                  <p className="text-xs font-bold">{t.check_tasks_hint}</p>
-              </div>
-          </div>
-      )}
-
-      {showInvitePopup && (
-          <div className="absolute inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in">
-              <div className="bg-white w-full max-w-sm rounded-[2.5rem] p-8 animate-zoom-in relative overflow-hidden shadow-2xl">
-                  <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-yellow-400 to-orange-500"></div>
-                  <button onClick={() => setShowInvitePopup(false)} className="absolute top-4 right-4 bg-black/20 p-1.5 rounded-full text-white hover:bg-black/40 z-20 transition-colors"><X size={20}/></button>
-                  
-                  <div className="relative z-10 mt-6 mb-8 flex flex-col items-center">
-                      <div className="w-20 h-20 bg-white rounded-3xl shadow-xl flex items-center justify-center mb-4">
-                          <Gift size={40} className="text-orange-500" fill="currentColor" />
-                      </div>
-                      <h2 className="text-2xl font-black text-white text-center drop-shadow-md">{t.invite_friends}</h2>
-                      <p className="text-white/90 text-center text-xs mt-1">{t.invite_desc}</p>
-                  </div>
-
-                  <div className="space-y-6">
-                      <div className="bg-orange-50 rounded-2xl p-5 border border-orange-100">
-                          <p className="text-[10px] text-orange-600 font-black uppercase mb-2 tracking-wider">{t.invite_code}</p>
-                          <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-orange-200 shadow-inner">
-                              <span className="font-mono font-black text-xl text-slate-900 tracking-widest">GAME777</span>
-                              <button 
-                                onClick={() => { showToast(t.copied); }}
-                                className="bg-orange-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold active:scale-95 transition-transform"
-                              >
-                                {t.copy}
-                              </button>
-                          </div>
-                      </div>
-
-                      <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
-                          <div className="flex items-center gap-3 mb-3">
-                              <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600">
-                                  <Target size={18} />
-                              </div>
-                              <div>
-                                  <p className="text-xs font-black text-slate-900">{t.invite_task}</p>
-                                  <p className="text-[10px] text-gray-500">{t.invite_task_desc}</p>
-                              </div>
-                          </div>
-                          <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-1.5">
-                                  <Coins size={14} className="text-yellow-500" fill="currentColor" />
-                                  <span className="text-sm font-black text-slate-900">+1,000</span>
-                              </div>
-                              <button className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg shadow-indigo-100 active:scale-95 transition-transform">
-                                  {t.share_link}
-                              </button>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      )}
-
-      {showAllGames && (
-          <div className="absolute inset-0 z-[70] bg-white flex flex-col animate-in slide-in-from-right">
-              <div className="px-4 pt-12 pb-4 flex items-center gap-4 border-b border-gray-100">
-                  <button onClick={() => setShowAllGames(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><ChevronLeft size={24}/></button>
-                  <h2 className="text-xl font-black text-slate-900">{t.all_games}</h2>
-              </div>
-              <div className="flex-1 overflow-y-auto p-4">
-                  <div className="grid grid-cols-3 gap-4">
-                      {GAMES.map(game => (
-                          <div key={game.id} onClick={() => {
-                              const room = { id: 999, gameName: game.title, mode: 'compete', entry: 100, capacity: 4, host: 'System', current: 4, isMyRoom: false, players: [] };
-                              onJoinRoom({ ...room, autoStart: true });
-                              setShowAllGames(false);
-                          }} className="flex flex-col items-center gap-2 cursor-pointer active:scale-95 transition-transform">
-                              <div className={`w-full aspect-square rounded-2xl bg-gradient-to-br ${game.image} shadow-md border border-white/20 flex flex-col items-center justify-center relative overflow-hidden`}>
-                                  <Gamepad2 size={32} className="text-white/50" />
-                                  <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-sm py-1 flex items-center justify-center gap-1">
-                                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                                      <span className="text-[8px] font-bold text-white">{game.online}</span>
-                                  </div>
-                              </div>
-                              <span className="text-xs font-bold text-slate-700 text-center leading-tight">{game.title}</span>
-                          </div>
-                      ))}
-                  </div>
-              </div>
-          </div>
-      )}
-      
-      {showRecommendedGroupModal && (
-          <div className="absolute inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-              <div className="w-full max-w-xs relative h-[480px]">
-                  {/* Stack of cards */}
-                  {EXTENDED_GROUPS.slice(0, 3).map((group, idx) => {
-                      const isCurrent = idx === recGroupIndex;
-                      if (idx < recGroupIndex) return null;
-                      
-                      return (
-                          <div 
-                            key={group.id} 
-                            className={`absolute inset-0 bg-white rounded-[2.5rem] p-6 shadow-2xl transition-all duration-500 flex flex-col ${
-                                isCurrent ? 'z-30 scale-100 translate-y-0 opacity-100' : 
-                                idx === recGroupIndex + 1 ? 'z-20 scale-95 translate-y-4 opacity-80' : 
-                                'z-10 scale-90 translate-y-8 opacity-60'
-                            }`}
-                          >
-                               <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-t-[2.5rem]"></div>
-                               <button onClick={() => setShowRecommendedGroupModal(false)} className="absolute top-4 right-4 bg-black/20 p-1.5 rounded-full text-white hover:bg-black/40 z-40 transition-colors"><X size={20}/></button>
-                               
-                               <div className="relative z-10 mt-4 mb-6 flex flex-col items-center">
-                                   <div className="w-20 h-20 rounded-2xl bg-white p-1 shadow-md mb-4">
-                                       <div className="w-full h-full rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-3xl">{group.name[0]}</div>
-                                   </div>
-                                   <h3 className="text-lg font-black text-slate-900 text-center">{group.name}</h3>
-                                   <div className="flex gap-4 text-gray-500 text-xs mt-2">
-                                       <span className="flex items-center gap-1"><Users size={12}/> {group.members}</span>
-                                       <span className="flex items-center gap-1"><MapPin size={12}/> {group.dist}km</span>
-                                   </div>
-                               </div>
-
-                               <div className="flex-1 flex flex-col justify-center gap-4">
-                                   <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
-                                       <p className="text-[10px] text-gray-400 font-bold uppercase mb-1">{t.group_intro}</p>
-                                       <p className="text-xs text-slate-600 leading-relaxed">{t.group_intro_desc}</p>
-                                   </div>
-                               </div>
-
-                               <div className="mt-6 flex flex-col gap-3">
-                                   <button 
-                                     onClick={() => confirmJoinGroup(group)} 
-                                     className="w-full py-3.5 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 active:scale-95 transition-transform"
-                                   >
-                                       {t.join}
-                                   </button>
-                                   {idx < 2 && (
-                                       <button 
-                                         onClick={() => setRecGroupIndex(idx + 1)}
-                                         className="w-full py-2 text-gray-400 text-xs font-bold hover:text-gray-600 transition-colors"
-                                       >
-                                           {t.next}
-                                       </button>
-                                   )}
-                               </div>
-                          </div>
-                      );
-                  })}
-              </div>
-          </div>
-      )}
-
-      {/* Group Activity Popup - Only show if joined */}
-      {showActivityPopup && joinedGroupCount > 0 && (
-          <div className="absolute bottom-20 left-4 right-4 z-50 animate-in slide-in-from-bottom-4">
-              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-4 text-white shadow-2xl relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-1">
-                      <button onClick={() => setShowActivityPopup(false)} className="bg-white/20 rounded-full p-1 hover:bg-white/30"><X size={14}/></button>
-                  </div>
-                  <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl">🎉</div>
-                      <div>
-                          <h3 className="font-bold text-lg mb-1">{t.play_games_in_groups}</h3>
-                          <p className="text-xs opacity-90 mb-3">{t.play_games_desc}</p>
-                          <button onClick={() => { 
-                              setShowActivityPopup(false); 
-                              setTaskOpenedFromExplore(true);
-                              setShowTaskCenter(true);
-                          }} className="bg-white text-indigo-600 px-4 py-2 rounded-lg text-xs font-bold shadow-md active:scale-95 transition-transform">{t.explore_groups}</button>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      )}
-
-      {/* Header */}
       <div className="px-4 pt-12 pb-2 bg-white flex justify-between items-center sticky top-0 z-10 shadow-sm">
-         <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-full bg-gray-200 border border-gray-300 overflow-hidden">
-                 <img src="https://github.com/shadcn.png" alt="User" className="w-full h-full object-cover" />
-             </div>
-             <div className="flex items-center gap-1 bg-yellow-100 px-3 py-1 rounded-full border border-yellow-200" onClick={() => setShowWallet(true)}>
-                 <Coins className="text-yellow-500" size={16} fill="currentColor" />
-                 <span className="font-bold text-yellow-700 text-sm">11.5K</span>
-                 <div className="w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs ml-1">+</div>
-             </div>
+         <div className="flex items-center gap-2">
+             <Users size={20} className="text-slate-900" />
+             <h2 className="text-lg font-black text-slate-900">{t.game}</h2>
          </div>
-         <div className="relative" onClick={() => setShowTaskCenter(true)}>
-             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 active:scale-95 transition-transform">
-                  <TrendingUp size={20} className="text-slate-900" />
-             </div>
-             <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
-         </div>
+         <button
+           onClick={onOpenInbox}
+           className="relative w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 active:scale-95 transition-transform"
+         >
+             <MessageCircle size={20} className="text-slate-900" />
+             <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white text-[8px] text-white flex items-center justify-center font-bold">3</span>
+         </button>
       </div>
 
       <SystemBanner t={t} onAction={onSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={onMaximize} onCloseGame={onCloseGame} />
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
-         {joinedGroupCount === 0 ? (
-             <>
-                {/* Hero Banner for Non-Joined Users */}
-                <div className="w-full aspect-[4/5] bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl relative overflow-hidden shadow-xl mb-6">
-                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-30 mix-blend-overlay"></div>
-                    <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
-                        <div className="mb-4">
-                            <span className="bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-md uppercase tracking-wider mb-2 inline-block">New</span>
-                            <h2 className="text-4xl font-black leading-tight mb-2">{t.join_now}<br/>{t.start_journey}</h2>
-                            <p className="text-sm opacity-90">{t.unlock_exclusive}</p>
-                        </div>
-                        <button onClick={handleJoinClick} className="w-full py-4 bg-white text-indigo-600 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
-                            {t.join_now} <ChevronRight size={20}/>
-                        </button>
-                    </div>
-                </div>
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="bg-white rounded-full p-1 flex items-center gap-2 border border-gray-100 shadow-sm">
+              <button
+                onClick={() => setGroupTab('nearby')}
+                className={`flex-1 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${groupTab === 'nearby' ? 'bg-slate-900 text-white' : 'text-gray-500 hover:text-slate-900'}`}
+              >
+                {t.nearby_groups}
+              </button>
+              <button
+                onClick={() => setGroupTab('mine')}
+                className={`flex-1 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${groupTab === 'mine' ? 'bg-slate-900 text-white' : 'text-gray-500 hover:text-slate-900'}`}
+              >
+                {t.mine}
+              </button>
+          </div>
 
-                {/* Nearby Popular Groups List */}
-                <div>
-                    <div className="flex justify-between items-center mb-3">
-                        <h3 className="text-lg font-bold text-slate-900">{t.nearby_popular}</h3>
-                        <span className="text-xs text-gray-400 font-bold">{t.top_5}</span>
-                    </div>
-                    <div className="space-y-3">
-                        {nearbyPopularGroups.map((group, index) => (
-                            <div key={group.id} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4 relative overflow-hidden">
-                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 to-purple-500"></div>
-                                <div className="text-lg font-black text-gray-300 w-4 text-center">{index + 1}</div>
-                                <div className="w-12 h-12 rounded-xl bg-gray-100 text-gray-500 flex items-center justify-center font-bold text-lg">
-                                    {group.name[0]}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <h4 className="font-bold text-slate-900 text-sm truncate">{group.name}</h4>
-                                    <div className="flex items-center gap-3 text-[10px] text-gray-500 mt-0.5">
-                                        <span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span>
-                                        <span className="flex items-center gap-0.5"><MapPin size={10}/> {group.dist}km</span>
-                                    </div>
-                                </div>
-                                <button 
-                                  onClick={(e) => {
+          {groupTab === 'nearby' ? (
+              <div>
+                  <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">{t.nearby_groups}</h3>
+                  </div>
+                  <div className="space-y-3">
+                      {nearbyGroups.map(group => {
+                          const isJoined = joinedGroupIds.includes(group.id) || group.isAdmin;
+                          const canChat = isJoined;
+
+                          return (
+                              <div
+                                key={group.id}
+                                onClick={() => {
+                                  if (canChat) {
+                                    onOpenChat({
+                                      id: group.id,
+                                      name: group.name,
+                                      avatar: group.avatar || group.name[0],
+                                      lastMsg: t.welcome_group,
+                                      time: t.just_now,
+                                      type: group.type || 'group',
+                                      members: group.members,
+                                    });
+                                  }
+                                }}
+                                className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 active:bg-gray-50 transition-colors"
+                              >
+                                  <div className="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg relative">
+                                      {group.name[0]}
+                                      {group.activity > 90 && <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                      <div className="flex justify-between items-center mb-0.5">
+                                          <h3 className="font-bold text-slate-900 text-sm truncate flex items-center gap-1">
+                                              {group.name}
+                                              {group.isAdmin && <span className="bg-green-100 text-green-700 text-[8px] px-1.5 py-0.5 rounded font-bold uppercase">{t.current_area_group}</span>}
+                                          </h3>
+                                          <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                                               <span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span>
+                                               <span className="flex items-center gap-0.5"><MapPin size={10}/> {group.dist < 1 ? '<1' : group.dist}km</span>
+                                          </div>
+                                      </div>
+                                      <p className="text-xs text-gray-500 truncate">
+                                          {t.join_group_desc}
+                                      </p>
+                                  </div>
+                                  <button
+                                    onClick={(e) => {
                                       e.stopPropagation();
-                                      onJoinGroup({ ...group, type: 'group' });
-                                  }} 
-                                  className="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-full text-xs font-bold active:scale-95 transition-transform"
-                                >
-                                    {t.join}
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-             </>
-         ) : (
-             <>
-                 {/* Group Chat Section Promoted */}
-                 <div>
-                      <div className="flex justify-between items-center mb-4 border-b border-gray-200 sticky top-0 bg-gray-50 z-10 pt-2">
-                          <div className="flex gap-6 overflow-x-auto no-scrollbar">
-                              {groupTabs.map(tab => (
-                                  <button 
-                                     key={tab.id} 
-                                     onClick={() => setGroupTab(tab.id)}
-                                     className={`pb-2 text-sm font-bold transition-colors relative whitespace-nowrap ${groupTab === tab.id ? 'text-slate-900' : 'text-gray-400'}`}
-                                  >
-                                      {tab.label}
-                                      {groupTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-900 rounded-full"></div>}
-                                  </button>
-                              ))}
-                          </div>
-                      </div>
-
-                     {/* Sub-categories for Recommended */}
-                     {groupTab === 'recommended' && (
-                         <div className="flex gap-2 overflow-x-auto no-scrollbar mb-4">
-                             {[
-                                 { id: 'newbie', label: t.newbie_friendly },
-                                 { id: 'game', label: t.gaming },
-                                 { id: 'social', label: t.social },
-                                 { id: 'battle', label: t.battle },
-                                 { id: 'ludo', label: t.ludo }
-                             ].map(sub => (
-                                 <button
-                                   key={sub.id}
-                                   onClick={() => setRecSubTab(sub.id)}
-                                   className={`px-4 py-1.5 rounded-full text-[10px] font-black transition-all ${
-                                       recSubTab === sub.id 
-                                       ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100' 
-                                       : 'bg-white text-gray-500 border border-gray-100'
-                                   }`}
-                                 >
-                                     {sub.label}
-                                 </button>
-                             ))}
-                         </div>
-                     )}
-
-                      <div className="space-y-3">
-                          {(groupTab === 'mine' ? myGroups : displayGroups).map(group => {
-                              const isJoined = joinedGroupIds.includes(group.id) || group.isAdmin;
-                              const canChat = groupTab === 'mine' || isJoined;
-
-                              return (
-                                  <div
-                                    key={group.id}
-                                    onClick={() => {
                                       if (canChat) {
                                         onOpenChat({
                                           id: group.id,
@@ -1784,112 +1485,311 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSys
                                           type: group.type || 'group',
                                           members: group.members,
                                         });
+                                      } else {
+                                        onJoinGroup({ ...group, type: group.type || 'group' });
                                       }
                                     }}
-                                    className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 active:bg-gray-50 transition-colors"
+                                    className={`px-3 py-1.5 rounded-full text-xs font-bold ${canChat ? 'bg-indigo-50 text-indigo-600' : 'bg-blue-50 text-blue-600'}`}
                                   >
-                                      <div className="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg relative">
-                                          {group.name[0]}
-                                          {group.activity > 90 && <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>}
+                                      {canChat ? t.chat_now : t.join}
+                                  </button>
+                              </div>
+                          );
+                      })}
+                  </div>
+              </div>
+          ) : (
+              <div>
+                  <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">{t.mine}</h3>
+                  </div>
+                  <div className="space-y-3">
+                      {myGroups.map(group => (
+                          <div
+                            key={group.id}
+                            onClick={() => {
+                              onOpenChat({
+                                id: group.id,
+                                name: group.name,
+                                avatar: group.avatar || group.name[0],
+                                lastMsg: t.welcome_group,
+                                time: t.just_now,
+                                type: group.type || 'group',
+                                members: group.members,
+                              });
+                            }}
+                            className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 active:bg-gray-50 transition-colors"
+                          >
+                              <div className="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg relative">
+                                  {group.name[0]}
+                                  {group.activity > 90 && <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                  <div className="flex justify-between items-center mb-0.5">
+                                      <h3 className="font-bold text-slate-900 text-sm truncate flex items-center gap-1">
+                                          {group.name}
+                                          {group.isAdmin && <span className="bg-green-100 text-green-700 text-[8px] px-1.5 py-0.5 rounded font-bold uppercase">{t.current_area_group}</span>}
+                                          {group.id === 101 && <span className="bg-yellow-400 text-black text-[8px] px-1.5 py-0.5 rounded font-bold uppercase">{t.owner}</span>}
+                                      </h3>
+                                      <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                                           <span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span>
+                                           <span className="flex items-center gap-0.5"><MapPin size={10}/> {group.dist < 1 ? '<1' : group.dist}km</span>
                                       </div>
-                                      <div className="flex-1 min-w-0">
-                                          <div className="flex justify-between items-center mb-0.5">
-                                              <h3 className="font-bold text-slate-900 text-sm truncate flex items-center gap-1">
-                                                  {group.name}
-                                                  {group.isAdmin && <span className="bg-green-100 text-green-700 text-[8px] px-1.5 py-0.5 rounded font-bold uppercase">{t.current_area_group}</span>}
-                                                  {/* Mock Owner Logic: ID 101 is owner */}
-                                                  {group.id === 101 && groupTab === 'mine' && <span className="bg-yellow-400 text-black text-[8px] px-1.5 py-0.5 rounded font-bold uppercase">{t.owner}</span>}
-                                              </h3>
-                                              <div className="flex items-center gap-2 text-[10px] text-gray-400">
-                                                   <span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span>
-                                                   <span className="flex items-center gap-0.5"><MapPin size={10}/> {group.dist < 1 ? '<1' : group.dist}km</span>
-                                              </div>
-                                          </div>
-                                          <p className="text-xs text-gray-500 truncate">
-                                              {groupTab === 'mine' ? `User_123: ${t.welcome_group}` : t.join_group_desc}
-                                          </p>
-                                      </div>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          if (canChat) {
-                                            onOpenChat({
-                                              id: group.id,
-                                              name: group.name,
-                                              avatar: group.avatar || group.name[0],
-                                              lastMsg: t.welcome_group,
-                                              time: t.just_now,
-                                              type: group.type || 'group',
-                                              members: group.members,
-                                            });
-                                          } else {
-                                            onJoinGroup({ ...group, type: group.type || 'group' });
-                                          }
-                                        }}
-                                        className={`px-3 py-1.5 rounded-full text-xs font-bold ${canChat ? 'bg-indigo-50 text-indigo-600' : 'bg-blue-50 text-blue-600'}`}
-                                      >
-                                          {canChat ? t.chat_now : t.join}
-                                      </button>
                                   </div>
-                              );
-                          })}
-                      </div>
-                 </div>
-
-                 {/* Quick Games Section for Joined Users */}
-                 <div>
-                     <div className="flex justify-between items-center mb-3">
-                         <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                             <Zap size={20} className="text-yellow-500" fill="currentColor"/> {t.quick_game}
-                         </h2>
-                         <button className="text-blue-600 text-xs font-bold flex items-center gap-1" onClick={() => setShowAllGames(true)}>
-                             {t.all_games} <ChevronRight size={14}/>
-                         </button>
-                     </div>
-                     <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
-                         {GAMES.slice(0, 5).map(game => (
-                             <div key={game.id} onClick={() => {
-                                 const room = { id: 999, gameName: game.title, mode: 'compete', entry: 100, capacity: 4, host: 'System', current: 4, isMyRoom: false, players: [] };
-                                 onJoinRoom({ ...room, autoStart: true });
-                             }} className="flex flex-col items-center gap-1 cursor-pointer active:scale-95 transition-transform flex-shrink-0 w-16">
-                                 <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${game.image} shadow-md border border-white/20 relative overflow-hidden`}>
-                                     <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-sm py-0.5 flex items-center justify-center gap-0.5">
-                                         <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse"></div>
-                                         <span className="text-[7px] font-bold text-white">{game.online}</span>
-                                     </div>
-                                 </div>
-                                 <span className="text-[10px] font-bold text-slate-700 text-center leading-tight truncate w-full">{game.title}</span>
-                             </div>
-                         ))}
-                     </div>
-                 </div>
-
-                 {/* Invite Friends Entry */}
-                 <div 
-                   onClick={() => setShowInvitePopup(true)}
-                   className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-4 flex items-center justify-between shadow-lg shadow-orange-100 active:scale-[0.98] transition-transform cursor-pointer"
-                 >
-                     <div className="flex items-center gap-4">
-                         <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white">
-                             <UserPlus size={24} />
-                         </div>
-                         <div>
-                             <h3 className="font-black text-white text-sm">{t.invite_friends}</h3>
-                             <p className="text-white/80 text-[10px] font-bold">{t.invite_desc}</p>
-                         </div>
-                     </div>
-                     <div className="bg-white/20 p-2 rounded-full text-white">
-                         <ChevronRight size={20} />
-                     </div>
-                 </div>
-             </>
-         )}
-       </div>
+                                  <p className="text-xs text-gray-500 truncate">
+                                      {`User_123: ${t.welcome_group}`}
+                                  </p>
+                              </div>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onOpenChat({
+                                    id: group.id,
+                                    name: group.name,
+                                    avatar: group.avatar || group.name[0],
+                                    lastMsg: t.welcome_group,
+                                    time: t.just_now,
+                                    type: group.type || 'group',
+                                    members: group.members,
+                                  });
+                                }}
+                                className="px-3 py-1.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-600"
+                              >
+                                  {t.chat_now}
+                              </button>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+          )}
+      </div>
     </div>
   );
 };
 
-const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, showToast, activeChat, setActiveChat, onSystemAction, activeGameSession, isGameMinimized, onMaximize, onCloseGame }) => {
+const GameHubTab = ({ t, onJoinRoom, showToast, onSystemAction, activeGameSession, isGameMinimized, onMaximize, onCloseGame }) => {
+  const [selectedGame, setSelectedGame] = useState(null);
+  const [showAllGames, setShowAllGames] = useState(false);
+  const [showInvitePopup, setShowInvitePopup] = useState(false);
+  const [showWallet, setShowWallet] = useState(false);
+  const [showTaskCenter, setShowTaskCenter] = useState(false);
+
+  const buildPlayers = () => ([
+      { id: 99, name: t.you, isHost: false, status: 'ready', avatar: 'Me', hasPaid: true },
+      { id: 2, name: `${t.player_prefix}_2`, isHost: false, status: 'ready', avatar: 'P2', hasPaid: true },
+      { id: 3, name: `${t.player_prefix}_3`, isHost: false, status: 'ready', avatar: 'P3', hasPaid: true },
+      { id: 4, name: `${t.player_prefix}_4`, isHost: false, status: 'ready', avatar: 'P4', hasPaid: true }
+  ]);
+
+  const startQuickMatch = (game) => {
+      const players = buildPlayers();
+      const room = { id: 999, gameName: game.title, mode: 'compete', entry: game.minEntry || 100, capacity: 4, host: t.system, current: 4, isMyRoom: false };
+      onJoinRoom({ ...room, autoStart: true, players });
+  };
+
+  if (selectedGame) {
+      return <GameRoomList game={selectedGame} onClose={() => setSelectedGame(null)} t={t} onJoinRoom={onJoinRoom} />;
+  }
+
+  return (
+      <div className="h-full bg-gray-50 flex flex-col text-slate-900 pb-20 relative">
+          {showWallet && <WalletPage onClose={() => setShowWallet(false)} t={t} showToast={showToast} />}
+          {showTaskCenter && <TaskCenter onClose={() => setShowTaskCenter(false)} t={t} showToast={showToast} />}
+          {showInvitePopup && (
+              <div className="absolute inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in">
+                  <div className="bg-white w-full max-w-sm rounded-[2.5rem] p-8 animate-zoom-in relative overflow-hidden shadow-2xl">
+                      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-yellow-400 to-orange-500"></div>
+                      <button onClick={() => setShowInvitePopup(false)} className="absolute top-4 right-4 bg-black/20 p-1.5 rounded-full text-white hover:bg-black/40 z-20 transition-colors"><X size={20}/></button>
+                      
+                      <div className="relative z-10 mt-6 mb-8 flex flex-col items-center">
+                          <div className="w-20 h-20 bg-white rounded-3xl shadow-xl flex items-center justify-center mb-4">
+                              <Gift size={40} className="text-orange-500" fill="currentColor" />
+                          </div>
+                          <h2 className="text-2xl font-black text-white text-center drop-shadow-md">{t.invite_friends}</h2>
+                          <p className="text-white/90 text-center text-xs mt-1">{t.invite_desc}</p>
+                      </div>
+
+                      <div className="space-y-6">
+                          <div className="bg-orange-50 rounded-2xl p-5 border border-orange-100">
+                              <p className="text-[10px] text-orange-600 font-black uppercase mb-2 tracking-wider">{t.invite_code}</p>
+                              <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-orange-200 shadow-inner">
+                                  <span className="font-mono font-black text-xl text-slate-900 tracking-widest">GAME777</span>
+                                  <button 
+                                    onClick={() => { showToast(t.copied); }}
+                                    className="bg-orange-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold active:scale-95 transition-transform"
+                                  >
+                                    {t.copy}
+                                  </button>
+                              </div>
+                          </div>
+
+                          <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                              <div className="flex items-center gap-3 mb-3">
+                                  <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600">
+                                      <Target size={18} />
+                                  </div>
+                                  <div>
+                                      <p className="text-xs font-black text-slate-900">{t.invite_task}</p>
+                                      <p className="text-[10px] text-gray-500">{t.invite_task_desc}</p>
+                                  </div>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-1.5">
+                                      <Coins size={14} className="text-yellow-500" fill="currentColor" />
+                                      <span className="text-sm font-black text-slate-900">+1,000</span>
+                                  </div>
+                                  <button className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg shadow-indigo-100 active:scale-95 transition-transform">
+                                      {t.share_link}
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          )}
+
+          {showAllGames && (
+              <div className="absolute inset-0 z-[70] bg-white flex flex-col animate-in slide-in-from-right">
+                  <div className="px-4 pt-12 pb-4 flex items-center gap-4 border-b border-gray-100">
+                      <button onClick={() => setShowAllGames(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><ChevronLeft size={24}/></button>
+                      <h2 className="text-xl font-black text-slate-900">{t.all_games}</h2>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-4">
+                      <div className="grid grid-cols-3 gap-4">
+                          {GAMES.map(game => (
+                              <div key={game.id} onClick={() => {
+                                  setSelectedGame(game);
+                                  setShowAllGames(false);
+                              }} className="flex flex-col items-center gap-2 cursor-pointer active:scale-95 transition-transform">
+                                  <div className={`w-full aspect-square rounded-2xl bg-gradient-to-br ${game.image} shadow-md border border-white/20 flex flex-col items-center justify-center relative overflow-hidden`}>
+                                      <Gamepad2 size={32} className="text-white/50" />
+                                      <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-sm py-1 flex items-center justify-center gap-1">
+                                          <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                                          <span className="text-[8px] font-bold text-white">{game.online}</span>
+                                      </div>
+                                  </div>
+                                  <span className="text-xs font-bold text-slate-700 text-center leading-tight">{game.title}</span>
+                              </div>
+                          ))}
+                      </div>
+                  </div>
+              </div>
+          )}
+
+          <div className="px-4 pt-12 pb-4 bg-white flex justify-between items-center sticky top-0 z-10 shadow-sm">
+              <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gray-200 border border-gray-300 overflow-hidden">
+                      <img src="https://github.com/shadcn.png" alt="User" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex items-center gap-1 bg-yellow-100 px-3 py-1 rounded-full border border-yellow-200" onClick={() => setShowWallet(true)}>
+                      <Coins className="text-yellow-500" size={16} fill="currentColor" />
+                      <span className="font-bold text-yellow-700 text-sm">11.5K</span>
+                      <div className="w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs ml-1">+</div>
+                  </div>
+              </div>
+              <button
+                onClick={() => setShowTaskCenter(true)}
+                className="relative w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 active:scale-95 transition-transform"
+              >
+                  <TrendingUp size={20} className="text-slate-900" />
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+              </button>
+          </div>
+
+          <SystemBanner t={t} onAction={onSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={onMaximize} onCloseGame={onCloseGame} />
+
+          <div className="flex-1 overflow-y-auto p-4 space-y-6">
+              <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-black text-slate-900">{t.game_tab}</h2>
+                  <button className="text-blue-600 text-xs font-bold flex items-center gap-1" onClick={() => setShowAllGames(true)}>
+                      {t.all_games} <ChevronRight size={14}/>
+                  </button>
+              </div>
+              <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+                  <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                          <Zap size={16} className="text-yellow-500" fill="currentColor"/> {t.quick_match_title}
+                      </h3>
+                  </div>
+                  <p className="text-[10px] text-gray-400 mb-4">{t.quick_match_sub}</p>
+                  <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                      {GAMES.slice(0, 6).map(game => (
+                          <div key={game.id} onClick={() => setSelectedGame(game)} className="flex-shrink-0 w-28 bg-gray-50 rounded-2xl border border-gray-100 p-2 cursor-pointer active:scale-95 transition-transform">
+                              <div className={`w-full h-20 rounded-xl bg-gradient-to-br ${game.image} shadow-md border border-white/20 relative overflow-hidden`}></div>
+                              <div className="mt-2 text-[10px] font-bold text-slate-700 truncate">{game.title}</div>
+                              <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    startQuickMatch(game);
+                                }}
+                                className="mt-2 w-full bg-blue-600 text-white text-[10px] font-bold py-1.5 rounded-lg"
+                              >
+                                  {t.play_now}
+                              </button>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+
+              <div>
+                  <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-lg font-bold text-slate-900">{t.all_games}</h3>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                      {GAMES.map(game => (
+                          <div
+                            key={game.id}
+                            onClick={() => setSelectedGame(game)}
+                            className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex flex-col gap-2 cursor-pointer active:scale-95 transition-transform"
+                          >
+                              <div className={`w-full h-24 rounded-xl bg-gradient-to-br ${game.image} shadow-md border border-white/20 relative overflow-hidden`}>
+                                  <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-sm py-1 flex items-center justify-center gap-1">
+                                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                                      <span className="text-[8px] font-bold text-white">{game.online}</span>
+                                  </div>
+                              </div>
+                              <div className="text-sm font-bold text-slate-900 truncate">{game.title}</div>
+                              <div className="flex items-center justify-between text-[10px] text-gray-500">
+                                  <span className="flex items-center gap-1"><Users size={10}/> {game.players}</span>
+                                  <span className="flex items-center gap-1"><Coins size={10}/> {game.minEntry}</span>
+                              </div>
+                              <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    startQuickMatch(game);
+                                }}
+                                className="mt-1 w-full bg-slate-900 text-white text-[10px] font-bold py-1.5 rounded-lg"
+                              >
+                                  {t.play_now}
+                              </button>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+
+              <div 
+                onClick={() => setShowInvitePopup(true)}
+                className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-4 flex items-center justify-between shadow-lg shadow-orange-100 active:scale-[0.98] transition-transform cursor-pointer"
+              >
+                  <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white">
+                          <UserPlus size={24} />
+                      </div>
+                      <div>
+                          <h3 className="font-black text-white text-sm">{t.invite_friends}</h3>
+                          <p className="text-white/80 text-[10px] font-bold">{t.invite_desc}</p>
+                      </div>
+                  </div>
+                  <div className="bg-white/20 p-2 rounded-full text-white">
+                      <ChevronRight size={20} />
+                  </div>
+              </div>
+          </div>
+      </div>
+  );
+};
+
+const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, showToast, activeChat, setActiveChat, onSystemAction, activeGameSession, isGameMinimized, onMaximize, onCloseGame, embedded = false, onClose }) => {
   const [chatHistory, setChatHistory] = useState([]);
   const [inputMsg, setInputMsg] = useState('');
   const [showInviteMenu, setShowInviteMenu] = useState(false);
@@ -2076,31 +1976,40 @@ const InboxTab = ({ t, onCreateRoom, onJoinRoom, createCooldown, activeRoom, sho
   return (
     <div className="h-full bg-white text-slate-900 flex flex-col pb-20 relative">
        {/* Header */}
-       <div className="pt-12 px-4 pb-2 bg-white flex items-center justify-between sticky top-0 z-10">
-           {isSearching ? (
-               <div className="flex-1 flex items-center gap-2 animate-in fade-in slide-in-from-right-4">
-                   <div className="relative flex-1">
-                       <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
-                       <input 
-                           autoFocus
-                           type="text" 
-                           placeholder={t.search_placeholder} 
-                           value={messageSearch}
-                           onChange={(e) => setMessageSearch(e.target.value)}
-                           className="w-full bg-gray-100 rounded-full pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                       />
-                   </div>
-                   <button onClick={() => { setIsSearching(false); setMessageSearch(""); }} className="text-sm font-bold text-gray-500 hover:text-slate-900">{t.cancel}</button>
+       <div className="pt-12 px-4 pb-2 bg-white sticky top-0 z-10">
+           <div className="flex items-center gap-2">
+               {embedded && (
+                   <button onClick={onClose} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+                       <ChevronLeft size={20} className="text-gray-600"/>
+                   </button>
+               )}
+               <div className="flex-1 flex items-center justify-between">
+                   {isSearching ? (
+                       <div className="flex-1 flex items-center gap-2 animate-in fade-in slide-in-from-right-4">
+                           <div className="relative flex-1">
+                               <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+                               <input 
+                                   autoFocus
+                                   type="text" 
+                                   placeholder={t.search_placeholder} 
+                                   value={messageSearch}
+                                   onChange={(e) => setMessageSearch(e.target.value)}
+                                   className="w-full bg-gray-100 rounded-full pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                               />
+                           </div>
+                           <button onClick={() => { setIsSearching(false); setMessageSearch(""); }} className="text-sm font-bold text-gray-500 hover:text-slate-900">{t.cancel}</button>
+                       </div>
+                   ) : (
+                       <>
+                           <div className="flex gap-6 text-lg font-bold text-gray-400">
+                               <span className="text-black relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-1 after:bg-orange-500 after:rounded-full">{t.inbox}</span>
+                               <span className="relative">{t.official} <div className="absolute top-0 -right-2 w-2 h-2 bg-red-500 rounded-full"></div></span>
+                           </div>
+                           <button onClick={() => setIsSearching(true)} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"><Search size={20} className="text-gray-600"/></button>
+                       </>
+                   )}
                </div>
-           ) : (
-               <>
-                   <div className="flex gap-6 text-lg font-bold text-gray-400">
-                       <span className="text-black relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-1 after:bg-orange-500 after:rounded-full">{t.inbox}</span>
-                       <span className="relative">{t.official} <div className="absolute top-0 -right-2 w-2 h-2 bg-red-500 rounded-full"></div></span>
-                   </div>
-                   <button onClick={() => setIsSearching(true)} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"><Search size={20} className="text-gray-600"/></button>
-               </>
-           )}
+           </div>
        </div>
 
        <SystemBanner t={t} onAction={onSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={onMaximize} onCloseGame={onCloseGame} />
@@ -2744,8 +2653,10 @@ export default function App() {
   const [toastMsg, setToastMsg] = useState(null);
   const [activeChat, setActiveChat] = useState(null); // Lifted state for chat
   const [activeGroupChat, setActiveGroupChat] = useState(null); // Separate state for Group Chat in Explore Tab
+  const [showGroupInbox, setShowGroupInbox] = useState(false);
   const [joinedGroupIds, setJoinedGroupIds] = useState([DEFAULT_ADMIN_GROUP.id]);
   const [autoOpenAdminGroup, setAutoOpenAdminGroup] = useState(true);
+  const [showPublishGuide, setShowPublishGuide] = useState(false);
 
   const [showHourlyRush, setShowHourlyRush] = useState(false);
   const [hourlyRushContext, setHourlyRushContext] = useState('global'); // 'global' or 'game'
@@ -2835,16 +2746,19 @@ export default function App() {
   };
 
   const handleOpenChat = (chat) => {
-      // Feedback: If it's a group chat, stay on game (explore) tab. If DM, go to inbox.
+      // Group chat stays in Group tab; DMs open the inbox overlay inside Group.
       const isGroup = ['State', 'District', 'City', 'Game', 'Interest', 'group'].includes(chat.type);
       
       if (isGroup) {
           setActiveGroupChat(chat);
           setActiveTab('game');
+          setShowGroupInbox(false);
       } else {
           setActiveChat(chat);
-          setActiveTab('inbox');
           setActiveGroupChat(null); // Ensure no active group chat conflicts
+          setShowGroupInbox(true);
+          setAutoOpenAdminGroup(false);
+          setActiveTab('game');
       }
   };
 
@@ -2852,15 +2766,23 @@ export default function App() {
       if (activeTab !== 'game') {
           setAutoOpenAdminGroup(true);
           setActiveGroupChat(null);
+          setShowGroupInbox(false);
+          setActiveChat(null);
       }
   }, [activeTab]);
 
   useEffect(() => {
-      if (activeTab === 'game' && !activeGroupChat && autoOpenAdminGroup && joinedGroupCount > 0) {
+      if (activeTab === 'game' && !activeGroupChat && !activeChat && !showGroupInbox && autoOpenAdminGroup && joinedGroupCount > 0) {
           openGroupChat(DEFAULT_ADMIN_GROUP);
           setAutoOpenAdminGroup(false);
       }
-  }, [activeTab, activeGroupChat, autoOpenAdminGroup, joinedGroupCount, t]);
+  }, [activeTab, activeGroupChat, activeChat, showGroupInbox, autoOpenAdminGroup, joinedGroupCount, t]);
+
+  useEffect(() => {
+      if (activeTab === 'plus') {
+          setShowPublishGuide(true);
+      }
+  }, [activeTab]);
 
   const handleShowHourlyRush = (context = 'global') => {
       setHourlyRushContext(context);
@@ -2874,7 +2796,7 @@ export default function App() {
       </button>
       <div className="w-full max-w-md h-[850px] bg-white rounded-[40px] overflow-hidden shadow-2xl relative border-[8px] border-slate-900 ring-1 ring-slate-900/50">
         <div className="absolute top-0 w-full h-10 z-50 flex justify-between items-center px-6 text-slate-900 pointer-events-none"><span className="text-xs font-bold">9:41</span><div className="flex gap-1.5"><div className="w-3 h-3 bg-slate-900 rounded-full opacity-80"></div><div className="w-3 h-3 bg-slate-900 rounded-full opacity-80"></div></div></div>
-        <GlobalExpTicker onClick={() => setShowTaskCenter(true)} />
+        <GlobalExpTicker />
         
         {isLoadingGame && (
             <div className="absolute inset-0 z-[100] bg-white flex flex-col items-center justify-center animate-in fade-in">
@@ -2890,10 +2812,19 @@ export default function App() {
               activeGroupChat ? (
                   <InboxTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} activeRoom={activeRoom} showToast={showToast} activeChat={activeGroupChat} setActiveChat={setActiveGroupChat} onSystemAction={handleSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={() => setIsGameMinimized(false)} onCloseGame={() => setActiveGameSession(null)} />
               ) : (
-                  <GameTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} showToast={showToast} onOpenChat={handleOpenChat} onShowHourlyRush={() => handleShowHourlyRush('global')} onSystemAction={handleSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={() => setIsGameMinimized(false)} onCloseGame={() => setActiveGameSession(null)} joinedGroupCount={joinedGroupCount} joinedGroupIds={joinedGroupIds} onJoinGroup={handleJoinGroup} />
+                  <>
+                      <GameTab t={t} onJoinRoom={handleJoinRoom} showToast={showToast} onOpenInbox={() => { setShowGroupInbox(true); setActiveChat(null); }} onOpenChat={handleOpenChat} onShowHourlyRush={() => handleShowHourlyRush('global')} onSystemAction={handleSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={() => setIsGameMinimized(false)} onCloseGame={() => setActiveGameSession(null)} joinedGroupCount={joinedGroupCount} joinedGroupIds={joinedGroupIds} onJoinGroup={handleJoinGroup} />
+                      {showGroupInbox && (
+                          <div className="absolute inset-0 z-[90]">
+                              <InboxTab embedded onClose={() => { setShowGroupInbox(false); setActiveChat(null); }} t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} activeRoom={activeRoom} showToast={showToast} activeChat={activeChat} setActiveChat={setActiveChat} onSystemAction={handleSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={() => setIsGameMinimized(false)} onCloseGame={() => setActiveGameSession(null)} />
+                          </div>
+                      )}
+                  </>
               )
           )}
-          {activeTab === 'inbox' && <InboxTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} activeRoom={activeRoom} showToast={showToast} activeChat={activeChat} setActiveChat={setActiveChat} onSystemAction={handleSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={() => setIsGameMinimized(false)} onCloseGame={() => setActiveGameSession(null)} />}
+          {activeTab === 'inbox' && (
+              <GameHubTab t={t} onJoinRoom={handleJoinRoom} showToast={showToast} onSystemAction={handleSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={() => setIsGameMinimized(false)} onCloseGame={() => setActiveGameSession(null)} />
+          )}
           {activeTab === 'mine' && <MineTab lang={lang} setLang={setLang} t={t} showToast={showToast} />}
           {activeTab === 'plus' && (
             <div className="absolute inset-0 bg-black z-50 flex flex-col animate-in slide-in-from-bottom">
@@ -2916,6 +2847,25 @@ export default function App() {
                     </div>
                     <div className="w-10 h-10 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center"><RefreshCw size={20} className="text-white"/></div>
                 </div>
+                {showPublishGuide && (
+                    <div className="absolute inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
+                        <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl animate-in fade-in">
+                            <div className="w-12 h-12 rounded-2xl bg-orange-500/10 text-orange-500 flex items-center justify-center mb-4">
+                                <Play size={20} />
+                            </div>
+                            <h3 className="text-xl font-black text-slate-900 mb-2">{t.publish_guide_title}</h3>
+                            <p className="text-sm text-gray-500 mb-6">{t.publish_guide_desc}</p>
+                            <div className="flex gap-3">
+                                <button onClick={() => setShowPublishGuide(false)} className="flex-1 bg-slate-900 text-white py-3 rounded-xl text-sm font-bold active:scale-95 transition-transform">
+                                    {t.start}
+                                </button>
+                                <button onClick={() => setActiveTab('home')} className="flex-1 bg-gray-100 text-slate-700 py-3 rounded-xl text-sm font-bold active:scale-95 transition-transform">
+                                    {t.cancel}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
           )}
         </div>
