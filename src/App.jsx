@@ -68,6 +68,50 @@ const VIDEOS = [
   { id: 3, user: "@Foodie_Amit", desc: "Best Curry in Town 🍛 #IndianFood", likes: 24000, comments: 890, location: "New Delhi, DL", color: "from-orange-800 to-red-900" },
 ];
 
+const VIDEO_COMMENTS = {
+  1: [
+    { id: 1, user: "User_128", text: "Love this street vibe.", time: "2m" },
+    { id: 2, user: "User_514", text: "Which stall is this?", time: "9m" },
+    { id: 3, user: "User_872", text: "The lighting looks great.", time: "14m" },
+  ],
+  2: [
+    { id: 1, user: "User_221", text: "Clean setup!", time: "4m" },
+    { id: 2, user: "User_040", text: "What mic are you using?", time: "12m" },
+  ],
+  3: [
+    { id: 1, user: "User_631", text: "That curry looks legit.", time: "6m" },
+    { id: 2, user: "User_704", text: "Where is this spot?", time: "18m" },
+  ],
+};
+
+const AUTHOR_COMMENTS = {
+  1: [
+    { id: 1, user: "@Priya_Dance", text: "I usually post around 8pm.", time: "1m" },
+    { id: 2, user: "User_266", text: "Do a quick route map next time!", time: "10m" },
+  ],
+  2: [
+    { id: 1, user: "@TechGuru_Ravi", text: "Cable setup video coming soon.", time: "3m" },
+    { id: 2, user: "User_118", text: "Show the monitor settings!", time: "16m" },
+  ],
+  3: [
+    { id: 1, user: "@Foodie_Amit", text: "This one is near Connaught Place.", time: "5m" },
+    { id: 2, user: "User_382", text: "Try their naan too.", time: "21m" },
+  ],
+};
+
+const LOCATION_GROUP_CHATS = {
+  1: [
+    { id: 1, group: "Maharashtra State Group", user: "Rohan", text: "Market is busiest after 7pm.", time: "just now" },
+    { id: 2, group: "Mumbai Night Walk", user: "Anita", text: "We are meeting near the station.", time: "6m" },
+  ],
+  2: [
+    { id: 1, group: "Bangalore Techies", user: "Dev", text: "Any good shops for chairs?", time: "3m" },
+  ],
+  3: [
+    { id: 1, group: "Delhi Foodies", user: "Neha", text: "This lane has 3 more spots.", time: "2m" },
+  ],
+};
+
 const CHATS = [
   { id: 1, name: "Maharashtra State Group", lastMsg: "System: Welcome!", time: "12:30", type: "State", unread: 5, avatar: "M", members: 12500 },
   { id: 2, name: "Pune District Gamers", lastMsg: "Rohan: Anyone for Ludo?", time: "11:45", type: "District", unread: 2, avatar: "P", members: 3400 },
@@ -75,6 +119,8 @@ const CHATS = [
   { id: 4, name: "Ludo Champions", lastMsg: "Rahul: Good game!", time: "Yesterday", type: "Game", unread: 0, avatar: "L" },
   { id: 5, name: "Cricket Fans", lastMsg: "Match delayed due to rain", time: "Yesterday", type: "Interest", unread: 12, avatar: "C" },
 ];
+
+const DEFAULT_ADMIN_GROUP = CHATS.find(chat => chat.type === "State") || CHATS[0];
 
 const GAME_HISTORY = [
   { id: 1, game: "Ludo Master", result: "Win", amount: 800, time: "14:30", entry: 100, players: 4, avatars: ["A", "B", "R", "Me"] },
@@ -153,10 +199,11 @@ const BottomNav = ({ activeTab, onTabChange, t }) => {
   );
 };
 
-const HomeTab = ({ t, onTabChange, onJoinRoom, onCreateRoom, hasJoinedGroup, setHasJoinedGroup, showToast, onOpenChat }) => {
+const HomeTab = ({ t, onTabChange, onJoinRoom, onCreateRoom, onJoinGroup }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [activeTab, setActiveTab] = useState('foryou');
   const [showComments, setShowComments] = useState(false);
+  const [commentFilter, setCommentFilter] = useState('video');
 
   // Mix content: Video, Video, Group, Video, Game, Video
   const feedItems = useMemo(() => [
@@ -182,7 +229,16 @@ const HomeTab = ({ t, onTabChange, onJoinRoom, onCreateRoom, hasJoinedGroup, set
                   <div className="absolute right-2 bottom-24 flex flex-col items-center gap-6 z-20" onClick={(e) => e.stopPropagation()}>
                       <div className="flex flex-col items-center gap-1"><div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white shadow-lg"><Gift size={20} /></div><span className="text-white text-xs font-bold">{t.gift}</span></div>
                       <div className="flex flex-col items-center gap-1"><Heart size={32} className="text-white" /><span className="text-white text-xs">{currentItem.data.likes}</span></div>
-                      <div className="flex flex-col items-center gap-1" onClick={() => setShowComments(true)}><MessageSquare size={32} className="text-white" /><span className="text-white text-xs">{currentItem.data.comments}</span></div>
+                      <div
+                        className="flex flex-col items-center gap-1"
+                        onClick={() => {
+                          setCommentFilter('video');
+                          setShowComments(true);
+                        }}
+                      >
+                        <MessageSquare size={32} className="text-white" />
+                        <span className="text-white text-xs">{currentItem.data.comments}</span>
+                      </div>
                       <div className="flex flex-col items-center gap-1"><Star size={32} className="text-white" /><span className="text-white text-xs">{t.favorite}</span></div>
                       <div className="flex flex-col items-center gap-1"><Share2 size={32} className="text-white" /><span className="text-white text-xs">{t.share}</span></div>
                   </div>
@@ -219,7 +275,6 @@ const HomeTab = ({ t, onTabChange, onJoinRoom, onCreateRoom, hasJoinedGroup, set
               </div>
           );
       } else if (currentItem.type === 'group_card') {
-          const isJoined = hasJoinedGroup;
           return (
               <div className="h-full w-full bg-white flex flex-col items-center justify-center p-8 relative">
                   <div className="absolute top-4 right-4 text-gray-400 text-xs font-bold uppercase tracking-widest">{t.rec_groups}</div>
@@ -232,9 +287,7 @@ const HomeTab = ({ t, onTabChange, onJoinRoom, onCreateRoom, hasJoinedGroup, set
                   <button 
                     onClick={(e) => {
                         e.stopPropagation();
-                        setHasJoinedGroup(true);
-                        showToast(t.joined_group_toast);
-                        onOpenChat({ id: currentItem.data.id, name: currentItem.data.name, avatar: currentItem.data.name[0], lastMsg: t.welcome_group, time: t.just_now, type: 'group' });
+                        onJoinGroup({ ...currentItem.data, type: 'group' });
                     }}
                     className={`w-full py-4 rounded-2xl font-bold text-white text-lg shadow-lg transition-all bg-blue-600 shadow-blue-600/20 active:scale-95`}
                   >
@@ -355,15 +408,55 @@ const HomeTab = ({ t, onTabChange, onJoinRoom, onCreateRoom, hasJoinedGroup, set
                       <h3 className="font-bold text-slate-900">{t.comments} ({currentItem.data.comments || 0})</h3>
                       <button onClick={() => setShowComments(false)}><X size={20} className="text-gray-400"/></button>
                   </div>
+                  <div className="flex gap-2 mb-4">
+                      {[
+                          { id: 'video', label: t.comment_filter_video },
+                          { id: 'author', label: t.comment_filter_author },
+                          { id: 'location', label: t.comment_filter_location }
+                      ].map(filter => (
+                          <button
+                            key={filter.id}
+                            onClick={() => setCommentFilter(filter.id)}
+                            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                              commentFilter === filter.id
+                                ? 'bg-slate-900 text-white'
+                                : 'bg-gray-100 text-gray-500'
+                            }`}
+                          >
+                            {filter.label}
+                          </button>
+                      ))}
+                  </div>
                   <div className="flex-1 overflow-y-auto space-y-4">
-                      {[1,2,3,4,5].map(i => (
-                          <div key={i} className="flex gap-3">
+                      {(commentFilter === 'video'
+                        ? VIDEO_COMMENTS[currentItem.data.id] || []
+                        : commentFilter === 'author'
+                          ? AUTHOR_COMMENTS[currentItem.data.id] || []
+                          : LOCATION_GROUP_CHATS[currentItem.data.id] || []
+                      ).map((comment) => (
+                        commentFilter === 'location' ? (
+                          <div key={comment.id} className="border border-gray-100 rounded-2xl p-3 bg-gray-50">
+                              <div className="flex items-center gap-3">
+                                  <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xs font-bold">
+                                      {comment.group[0]}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                      <div className="text-xs font-bold text-slate-900 truncate">{comment.group}</div>
+                                      <div className="text-[10px] text-gray-400">{comment.user} · {comment.time}</div>
+                                  </div>
+                                  <button className="text-xs font-bold text-indigo-600">{t.chat_now}</button>
+                              </div>
+                              <div className="text-sm text-slate-700 mt-2">{comment.text}</div>
+                          </div>
+                        ) : (
+                          <div key={comment.id} className="flex gap-3">
                               <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0"></div>
                               <div>
-                                  <div className="text-xs font-bold text-slate-400 mb-0.5">{t.user_prefix}_{i}</div>
-                                  <div className="text-sm text-slate-900">{t.sample_comment}</div>
+                                  <div className="text-xs font-bold text-slate-400 mb-0.5">{comment.user}</div>
+                                  <div className="text-sm text-slate-900">{comment.text}</div>
                               </div>
                           </div>
+                        )
                       ))}
                   </div>
                   <div className="mt-4 flex gap-2">
@@ -1282,7 +1375,7 @@ const SystemBanner = ({ t, onAction, activeGameSession, isGameMinimized, onMaxim
     );
 };
 
-const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSystemAction, activeGameSession, isGameMinimized, onMaximize, onCloseGame, hasJoinedGroup, setHasJoinedGroup }) => {
+const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSystemAction, activeGameSession, isGameMinimized, onMaximize, onCloseGame, joinedGroupCount, joinedGroupIds, onJoinGroup }) => {
   const [showWallet, setShowWallet] = useState(false);
   const [showTaskCenter, setShowTaskCenter] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
@@ -1299,34 +1392,58 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSys
   // Simulate showing popup on first visit
   useEffect(() => {
       const timer = setTimeout(() => {
-        if (hasJoinedGroup) {
+        if (joinedGroupCount > 0) {
              setShowActivityPopup(true);
         }
       }, 2000);
       return () => clearTimeout(timer);
-  }, [hasJoinedGroup]);
+  }, [joinedGroupCount]);
 
   // If there's a selected game (which should ideally be unreachable or reused for other purposes now), keep logic but we mainly focus on groups
   if (selectedGame) {
       return <GameRoomList game={selectedGame} onClose={() => setSelectedGame(null)} t={t} onJoinRoom={onJoinRoom} />;
   }
 
-  // Filter groups based on tab
   const displayGroups = useMemo(() => {
-     if (groupTab === 'mine') return EXTENDED_GROUPS.slice(0, 3); // Simulate my joined groups
-     if (groupTab === 'recommended') {
-         // Filter by sub-tab
-         if (recSubTab === 'newbie') return EXTENDED_GROUPS.filter(g => g.members < 500);
-         if (recSubTab === 'game') return EXTENDED_GROUPS.filter(g => g.tags.includes('Gaming'));
-         if (recSubTab === 'social') return EXTENDED_GROUPS.filter(g => g.tags.includes('Social'));
-         if (recSubTab === 'battle') return EXTENDED_GROUPS.filter(g => g.tags.includes('Action'));
-         if (recSubTab === 'ludo') return EXTENDED_GROUPS.filter(g => g.tags.includes('Ludo'));
-         return EXTENDED_GROUPS;
-     }
-     if (groupTab === 'nearby') return EXTENDED_GROUPS.filter(g => g.dist < 5); // < 5km
-     if (groupTab === 'popular') return [...EXTENDED_GROUPS].sort((a,b) => b.members - a.members);
+     if (recSubTab === 'newbie') return EXTENDED_GROUPS.filter(g => g.members < 500);
+     if (recSubTab === 'game') return EXTENDED_GROUPS.filter(g => g.tags.includes('Gaming'));
+     if (recSubTab === 'social') return EXTENDED_GROUPS.filter(g => g.tags.includes('Social'));
+     if (recSubTab === 'battle') return EXTENDED_GROUPS.filter(g => g.tags.includes('Action'));
+     if (recSubTab === 'ludo') return EXTENDED_GROUPS.filter(g => g.tags.includes('Ludo'));
      return EXTENDED_GROUPS;
-  }, [groupTab, recSubTab]);
+  }, [recSubTab]);
+
+  const adminGroupCard = useMemo(() => ({
+      id: DEFAULT_ADMIN_GROUP.id,
+      name: DEFAULT_ADMIN_GROUP.name,
+      dist: 0,
+      members: DEFAULT_ADMIN_GROUP.members || 12500,
+      activity: 99,
+      tags: ['Admin'],
+      isAdmin: true,
+      avatar: DEFAULT_ADMIN_GROUP.avatar || DEFAULT_ADMIN_GROUP.name[0],
+      type: DEFAULT_ADMIN_GROUP.type || 'group',
+  }), []);
+
+  const myGroups = useMemo(() => {
+      const joined = EXTENDED_GROUPS.filter(group => joinedGroupIds.includes(group.id));
+      const list = joinedGroupIds.includes(adminGroupCard.id) ? [adminGroupCard, ...joined] : joined;
+      return list;
+  }, [joinedGroupIds, adminGroupCard]);
+
+  const groupTabs = joinedGroupCount >= 2
+      ? [
+          { id: 'recommended', label: t.recommended },
+          { id: 'mine', label: t.mine },
+        ]
+      : [{ id: 'recommended', label: t.recommended }];
+
+  useEffect(() => {
+      const allowedTabs = joinedGroupCount >= 2 ? ['recommended', 'mine'] : ['recommended'];
+      if (!allowedTabs.includes(groupTab)) {
+          setGroupTab('recommended');
+      }
+  }, [joinedGroupCount, groupTab]);
 
   const nearbyPopularGroups = useMemo(() => {
       return [...EXTENDED_GROUPS].sort((a,b) => b.members - a.members).slice(0, 5);
@@ -1338,10 +1455,8 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSys
   };
 
   const confirmJoinGroup = (group) => {
-      setHasJoinedGroup(true);
       setShowRecommendedGroupModal(false);
-      showToast(t.joined_group_toast);
-      onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: t.welcome_group, time: t.just_now, type: 'group' });
+      onJoinGroup({ ...group, type: 'group' });
   };
 
   return (
@@ -1509,7 +1624,7 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSys
       )}
 
       {/* Group Activity Popup - Only show if joined */}
-      {showActivityPopup && hasJoinedGroup && (
+      {showActivityPopup && joinedGroupCount > 0 && (
           <div className="absolute bottom-20 left-4 right-4 z-50 animate-in slide-in-from-bottom-4">
               <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-4 text-white shadow-2xl relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-1">
@@ -1554,7 +1669,7 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSys
       <SystemBanner t={t} onAction={onSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={onMaximize} onCloseGame={onCloseGame} />
 
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
-         {!hasJoinedGroup ? (
+         {joinedGroupCount === 0 ? (
              <>
                 {/* Hero Banner for Non-Joined Users */}
                 <div className="w-full aspect-[4/5] bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl relative overflow-hidden shadow-xl mb-6">
@@ -1595,9 +1710,7 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSys
                                 <button 
                                   onClick={(e) => {
                                       e.stopPropagation();
-                                      setHasJoinedGroup(true);
-                                      showToast(t.joined_group_toast);
-                                      onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: t.welcome_group, time: t.just_now, type: 'group' });
+                                      onJoinGroup({ ...group, type: 'group' });
                                   }} 
                                   className="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-full text-xs font-bold active:scale-95 transition-transform"
                                 >
@@ -1610,6 +1723,119 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSys
              </>
          ) : (
              <>
+                 {/* Group Chat Section Promoted */}
+                 <div>
+                      <div className="flex justify-between items-center mb-4 border-b border-gray-200 sticky top-0 bg-gray-50 z-10 pt-2">
+                          <div className="flex gap-6 overflow-x-auto no-scrollbar">
+                              {groupTabs.map(tab => (
+                                  <button 
+                                     key={tab.id} 
+                                     onClick={() => setGroupTab(tab.id)}
+                                     className={`pb-2 text-sm font-bold transition-colors relative whitespace-nowrap ${groupTab === tab.id ? 'text-slate-900' : 'text-gray-400'}`}
+                                  >
+                                      {tab.label}
+                                      {groupTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-900 rounded-full"></div>}
+                                  </button>
+                              ))}
+                          </div>
+                      </div>
+
+                     {/* Sub-categories for Recommended */}
+                     {groupTab === 'recommended' && (
+                         <div className="flex gap-2 overflow-x-auto no-scrollbar mb-4">
+                             {[
+                                 { id: 'newbie', label: t.newbie_friendly },
+                                 { id: 'game', label: t.gaming },
+                                 { id: 'social', label: t.social },
+                                 { id: 'battle', label: t.battle },
+                                 { id: 'ludo', label: t.ludo }
+                             ].map(sub => (
+                                 <button
+                                   key={sub.id}
+                                   onClick={() => setRecSubTab(sub.id)}
+                                   className={`px-4 py-1.5 rounded-full text-[10px] font-black transition-all ${
+                                       recSubTab === sub.id 
+                                       ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100' 
+                                       : 'bg-white text-gray-500 border border-gray-100'
+                                   }`}
+                                 >
+                                     {sub.label}
+                                 </button>
+                             ))}
+                         </div>
+                     )}
+
+                      <div className="space-y-3">
+                          {(groupTab === 'mine' ? myGroups : displayGroups).map(group => {
+                              const isJoined = joinedGroupIds.includes(group.id) || group.isAdmin;
+                              const canChat = groupTab === 'mine' || isJoined;
+
+                              return (
+                                  <div
+                                    key={group.id}
+                                    onClick={() => {
+                                      if (canChat) {
+                                        onOpenChat({
+                                          id: group.id,
+                                          name: group.name,
+                                          avatar: group.avatar || group.name[0],
+                                          lastMsg: t.welcome_group,
+                                          time: t.just_now,
+                                          type: group.type || 'group',
+                                          members: group.members,
+                                        });
+                                      }
+                                    }}
+                                    className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 active:bg-gray-50 transition-colors"
+                                  >
+                                      <div className="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg relative">
+                                          {group.name[0]}
+                                          {group.activity > 90 && <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>}
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                          <div className="flex justify-between items-center mb-0.5">
+                                              <h3 className="font-bold text-slate-900 text-sm truncate flex items-center gap-1">
+                                                  {group.name}
+                                                  {group.isAdmin && <span className="bg-green-100 text-green-700 text-[8px] px-1.5 py-0.5 rounded font-bold uppercase">{t.current_area_group}</span>}
+                                                  {/* Mock Owner Logic: ID 101 is owner */}
+                                                  {group.id === 101 && groupTab === 'mine' && <span className="bg-yellow-400 text-black text-[8px] px-1.5 py-0.5 rounded font-bold uppercase">{t.owner}</span>}
+                                              </h3>
+                                              <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                                                   <span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span>
+                                                   <span className="flex items-center gap-0.5"><MapPin size={10}/> {group.dist < 1 ? '<1' : group.dist}km</span>
+                                              </div>
+                                          </div>
+                                          <p className="text-xs text-gray-500 truncate">
+                                              {groupTab === 'mine' ? `User_123: ${t.welcome_group}` : t.join_group_desc}
+                                          </p>
+                                      </div>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          if (canChat) {
+                                            onOpenChat({
+                                              id: group.id,
+                                              name: group.name,
+                                              avatar: group.avatar || group.name[0],
+                                              lastMsg: t.welcome_group,
+                                              time: t.just_now,
+                                              type: group.type || 'group',
+                                              members: group.members,
+                                            });
+                                          } else {
+                                            onJoinGroup({ ...group, type: group.type || 'group' });
+                                          }
+                                        }}
+                                        className={`px-3 py-1.5 rounded-full text-xs font-bold ${canChat ? 'bg-indigo-50 text-indigo-600' : 'bg-blue-50 text-blue-600'}`}
+                                      >
+                                          {canChat ? t.chat_now : t.join}
+                                      </button>
+                                  </div>
+                              );
+                          })}
+                      </div>
+                 </div>
+
                  {/* Quick Games Section for Joined Users */}
                  <div>
                      <div className="flex justify-between items-center mb-3">
@@ -1654,84 +1880,6 @@ const GameTab = ({ t, onJoinRoom, showToast, onOpenChat, onShowHourlyRush, onSys
                      </div>
                      <div className="bg-white/20 p-2 rounded-full text-white">
                          <ChevronRight size={20} />
-                     </div>
-                 </div>
-
-                 {/* Group Chat Section Promoted */}
-                 <div>
-                     <div className="flex justify-between items-center mb-4 border-b border-gray-200 sticky top-0 bg-gray-50 z-10 pt-2">
-                         <div className="flex gap-6 overflow-x-auto no-scrollbar">
-                             {[
-                                 { id: 'recommended', label: t.recommended },
-                                 { id: 'popular', label: t.popular },
-                                 { id: 'nearby', label: t.nearby },
-                                 { id: 'mine', label: t.mine }
-                             ].map(tab => (
-                                 <button 
-                                    key={tab.id} 
-                                    onClick={() => setGroupTab(tab.id)}
-                                    className={`pb-2 text-sm font-bold transition-colors relative whitespace-nowrap ${groupTab === tab.id ? 'text-slate-900' : 'text-gray-400'}`}
-                                 >
-                                     {tab.label}
-                                     {groupTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-900 rounded-full"></div>}
-                                 </button>
-                             ))}
-                         </div>
-                     </div>
-
-                     {/* Sub-categories for Recommended */}
-                     {groupTab === 'recommended' && (
-                         <div className="flex gap-2 overflow-x-auto no-scrollbar mb-4">
-                             {[
-                                 { id: 'newbie', label: t.newbie_friendly },
-                                 { id: 'game', label: t.gaming },
-                                 { id: 'social', label: t.social },
-                                 { id: 'battle', label: t.battle },
-                                 { id: 'ludo', label: t.ludo }
-                             ].map(sub => (
-                                 <button
-                                   key={sub.id}
-                                   onClick={() => setRecSubTab(sub.id)}
-                                   className={`px-4 py-1.5 rounded-full text-[10px] font-black transition-all ${
-                                       recSubTab === sub.id 
-                                       ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100' 
-                                       : 'bg-white text-gray-500 border border-gray-100'
-                                   }`}
-                                 >
-                                     {sub.label}
-                                 </button>
-                             ))}
-                         </div>
-                     )}
-
-                     <div className="space-y-3">
-                         {displayGroups.map(group => (
-                             <div key={group.id} onClick={() => onOpenChat({ id: group.id, name: group.name, avatar: group.name[0], lastMsg: groupTab === 'mine' ? t.welcome_group : t.join_group_desc, time: t.just_now, type: 'group' })} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 active:bg-gray-50 transition-colors">
-                                 <div className="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg relative">
-                                     {group.name[0]}
-                                     {group.activity > 90 && <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>}
-                                 </div>
-                                 <div className="flex-1 min-w-0">
-                                     <div className="flex justify-between items-center mb-0.5">
-                                         <h3 className="font-bold text-slate-900 text-sm truncate flex items-center gap-1">
-                                             {group.name}
-                                             {/* Mock Owner Logic: ID 101 is owner */}
-                                             {group.id === 101 && groupTab === 'mine' && <span className="bg-yellow-400 text-black text-[8px] px-1.5 py-0.5 rounded font-bold uppercase">{t.owner}</span>}
-                                         </h3>
-                                         <div className="flex items-center gap-2 text-[10px] text-gray-400">
-                                              <span className="flex items-center gap-0.5"><Users size={10}/> {group.members}</span>
-                                              <span className="flex items-center gap-0.5"><MapPin size={10}/> {group.dist < 1 ? '<1' : group.dist}km</span>
-                                         </div>
-                                     </div>
-                                     <p className="text-xs text-gray-500 truncate">
-                                         {groupTab === 'mine' ? `User_123: ${t.welcome_group}` : t.join_group_desc}
-                                     </p>
-                                 </div>
-                                 <button className={`px-3 py-1.5 rounded-full text-xs font-bold ${groupTab === 'my_groups' ? 'bg-indigo-50 text-indigo-600' : 'bg-blue-50 text-blue-600'}`}>
-                                     {groupTab === 'my_groups' ? t.chat_now : t.join}
-                                 </button>
-                             </div>
-                         ))}
                      </div>
                  </div>
              </>
@@ -2596,15 +2744,36 @@ export default function App() {
   const [toastMsg, setToastMsg] = useState(null);
   const [activeChat, setActiveChat] = useState(null); // Lifted state for chat
   const [activeGroupChat, setActiveGroupChat] = useState(null); // Separate state for Group Chat in Explore Tab
-  const [hasJoinedGroup, setHasJoinedGroup] = useState(false); // Track if user has joined a group
+  const [joinedGroupIds, setJoinedGroupIds] = useState([DEFAULT_ADMIN_GROUP.id]);
+  const [autoOpenAdminGroup, setAutoOpenAdminGroup] = useState(true);
 
   const [showHourlyRush, setShowHourlyRush] = useState(false);
   const [hourlyRushContext, setHourlyRushContext] = useState('global'); // 'global' or 'game'
   const [taskTab, setTaskTab] = useState('daily'); // 'daily' or 'achievements'
   const [isGameMinimized, setIsGameMinimized] = useState(false);
   const t = TEXTS[lang];
+  const joinedGroupCount = joinedGroupIds.length;
 
   const showToast = (msg) => setToastMsg(msg);
+
+  const openGroupChat = (group) => {
+      handleOpenChat({
+          id: group.id,
+          name: group.name,
+          avatar: group.avatar || group.name[0],
+          lastMsg: t.welcome_group,
+          time: t.just_now,
+          unread: 0,
+          type: group.type || 'group',
+          members: group.members,
+      });
+  };
+
+  const handleJoinGroup = (group) => {
+      setJoinedGroupIds(prev => (prev.includes(group.id) ? prev : [...prev, group.id]));
+      showToast(t.joined_group_toast);
+      openGroupChat(group);
+  };
 
   const handleSystemAction = (action) => {
       if (action.type === 'game') {
@@ -2679,6 +2848,20 @@ export default function App() {
       }
   };
 
+  useEffect(() => {
+      if (activeTab !== 'game') {
+          setAutoOpenAdminGroup(true);
+          setActiveGroupChat(null);
+      }
+  }, [activeTab]);
+
+  useEffect(() => {
+      if (activeTab === 'game' && !activeGroupChat && autoOpenAdminGroup && joinedGroupCount > 0) {
+          openGroupChat(DEFAULT_ADMIN_GROUP);
+          setAutoOpenAdminGroup(false);
+      }
+  }, [activeTab, activeGroupChat, autoOpenAdminGroup, joinedGroupCount, t]);
+
   const handleShowHourlyRush = (context = 'global') => {
       setHourlyRushContext(context);
       setShowHourlyRush(true);
@@ -2702,12 +2885,12 @@ export default function App() {
         )}
 
         <div className="h-full w-full">
-          {activeTab === 'home' && <HomeTab t={t} onTabChange={setActiveTab} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} hasJoinedGroup={hasJoinedGroup} setHasJoinedGroup={setHasJoinedGroup} showToast={showToast} onOpenChat={handleOpenChat} />}
+          {activeTab === 'home' && <HomeTab t={t} onTabChange={setActiveTab} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} onJoinGroup={handleJoinGroup} />}
           {activeTab === 'game' && (
               activeGroupChat ? (
                   <InboxTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} activeRoom={activeRoom} showToast={showToast} activeChat={activeGroupChat} setActiveChat={setActiveGroupChat} onSystemAction={handleSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={() => setIsGameMinimized(false)} onCloseGame={() => setActiveGameSession(null)} />
               ) : (
-                  <GameTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} showToast={showToast} onOpenChat={handleOpenChat} onShowHourlyRush={() => handleShowHourlyRush('global')} onSystemAction={handleSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={() => setIsGameMinimized(false)} onCloseGame={() => setActiveGameSession(null)} hasJoinedGroup={hasJoinedGroup} setHasJoinedGroup={setHasJoinedGroup} />
+                  <GameTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} showToast={showToast} onOpenChat={handleOpenChat} onShowHourlyRush={() => handleShowHourlyRush('global')} onSystemAction={handleSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={() => setIsGameMinimized(false)} onCloseGame={() => setActiveGameSession(null)} joinedGroupCount={joinedGroupCount} joinedGroupIds={joinedGroupIds} onJoinGroup={handleJoinGroup} />
               )
           )}
           {activeTab === 'inbox' && <InboxTab t={t} onJoinRoom={handleJoinRoom} onCreateRoom={handleCreateRoom} createCooldown={createCooldown} activeRoom={activeRoom} showToast={showToast} activeChat={activeChat} setActiveChat={setActiveChat} onSystemAction={handleSystemAction} activeGameSession={activeGameSession} isGameMinimized={isGameMinimized} onMaximize={() => setIsGameMinimized(false)} onCloseGame={() => setActiveGameSession(null)} />}
